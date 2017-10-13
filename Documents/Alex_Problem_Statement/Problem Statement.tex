@@ -1,0 +1,129 @@
+\documentclass[onecolumn, draftclsnofoot,10pt, compsoc]{IEEEtran}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{setspace}
+
+\usepackage{geometry}
+\geometry{textheight=9.5in, textwidth=7in}
+
+% 1. Fill in these details
+\def \CapstoneTeamName{		The Cleverly Named Team}
+\def \CapstoneTeamNumber{		12}
+\def \GroupMemberOne{			Quanah Green}
+\def \GroupMemberTwo{			Alex Ruef}
+\def \GroupMemberThree{			Ethan Takla}
+\def \CapstoneProjectName{		Remote Seed Identification}
+\def \CapstoneSponsorCompany{	Crop and Soil Science Department, OSU}
+\def \CapstoneSponsorPerson{		Dan Curry}
+
+% 2. Uncomment the appropriate line below so that the document type works
+\def \DocType{		Problem Statement
+				%Requirements Document
+				%Technology Review
+				%Design Document
+				%Progress Report
+				}
+			
+\newcommand{\NameSigPair}[1]{\par
+\makebox[2.75in][r]{#1} \hfil 	\makebox[3.25in]{\makebox[2.25in]{\hrulefill} \hfill		\makebox[.75in]{\hrulefill}}
+\par\vspace{-12pt} \textit{\tiny\noindent
+\makebox[2.75in]{} \hfil		\makebox[3.25in]{\makebox[2.25in][r]{Signature} \hfill	\makebox[.75in][r]{Date}}}}
+% 3. If the document is not to be signed, uncomment the RENEWcommand below
+\renewcommand{\NameSigPair}[1]{#1}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\begin{titlepage}
+    \pagenumbering{gobble}
+    \begin{singlespace}
+    	%\includegraphics[height=4cm]{coe_v_spot1}
+        \hfill 
+        % 4. If you have a logo, use this includegraphics command to put it on the coversheet.
+        %\includegraphics[height=4cm]{CompanyLogo}   
+        \par\vspace{.2in}
+        \centering
+        \scshape{
+            \huge CS Capstone \DocType \par
+            {\large\today}\par
+            \vspace{.5in}
+            \textbf{\Huge\CapstoneProjectName}\par
+            \vfill
+            {\large Prepared for}\par
+            \Huge \CapstoneSponsorCompany\par
+            \vspace{5pt}
+            {\Large\NameSigPair{\CapstoneSponsorPerson}\par}
+            {\large Prepared by }\par
+            Group\CapstoneTeamNumber\par
+            % 5. comment out the line below this one if you do not wish to name your team
+            %\CapstoneTeamName\par 
+            \vspace{5pt}
+            {\Large
+                \NameSigPair{\GroupMemberOne}\par
+                \NameSigPair{\GroupMemberTwo}\par
+                \NameSigPair{\GroupMemberThree}\par
+            }
+            \vspace{20pt}
+        }
+        \begin{abstract}
+        % 6. Fill in your abstract    
+        %This document is written using one sentence per line.
+        %This allows you to have sensible diffs when you use \LaTeX with version control, as well as giving a quick visual test to see if sentences are too short/long.
+        %If you have questions, ``The Not So Short Guide to LaTeX'' is a great resource (\url{https://tobi.oetiker.ch/lshort/lshort.pdf})
+	An inefficiency has been discovered in the seed identification process.
+	Seed cleaning facilities must send cleaned seeds to a seed lab for them to be analyzed.
+	The cleaning facilities must then wait for the results to come back.
+	The seeds are analyzed by hand at the seed lab further adding to the time delay.
+	Our solution to this problem will reduce or eliminate both the time required to send the sample and the time required to analyze the sample.
+	We will use a machine learning algorithm to teach a processor how to identify different seed types in an image containing thousands of seeds.
+	This will greatly speed up the analysis time.
+	These images will be sent to the process from Ipads out in the field.
+	By sending images over network we can effectively eliminate the time required to transport the seed.
+        \end{abstract}     
+    \end{singlespace}
+\end{titlepage}
+\newpage
+\pagenumbering{arabic}
+\tableofcontents
+% 7. uncomment this (if applicable). Consider adding a page break.
+%\listoffigures
+%\listoftables
+\clearpage
+
+% 8. now you write!
+\section{Description}
+This project aims to resolve a bottleneck in the seed identification process.
+In the current system seeds need to be cleaned and then sent to a seed lab for analysis.
+The cleaning machines need to be shut down until the results come back from the lab.
+The seeds are physically sent to a lab to be analyzed by hand.
+Physically sending the seeds to a lab and analyzing them takes a significant amount of time.
+The cleaning process has to stall and wait for the results creating a time deficiency.
+The results contain information on how well the seeds were cleaned and how many unwanted seeds were in the sample.
+How well a seed is cleaned is defined by how much dirt and other matter is left on the seed.
+The information is then sent back to the cleaning facility where it is used to improve the cleaning process.
+
+\section{Solution}
+To solve this issue, we will eliminate the need to physically send the seeds to a lab.
+Users will take pictures of seeds using an Ipad or high quality camera and send them to a server.
+A camera rig may be required to help users take better images of the seeds.
+These images will ideally contain 2500 seeds each.
+If the image quality is not good enough to contain 2500 seeds then less seeds can be included in an image but more images will have to be sent.
+The number of seeds in each imagine and whether we need a camera rig or not depends on the base resolution of the camera and how powerful our identification algorithm is.
+The server will use machine learning to identify each seed and some information about them.
+A Jetson TX2 processor will be used to run the algorithm.
+This information will contain things like how well each seed was cleaned and how many unwanted seeds there are.
+The information is then stored in a database to aid our server with future identifications.
+A PDF is generated based on the information from the sample and is sent back to the cleaning facility so they modify their equipment and continue cleaning.
+
+\section{Performance Metrics}
+The base requirements for remote seed identification are as follows.
+Users in the field must be able to take images using an Ipad and send them remotely to a server.
+They do not necessarily have to be Ipads but that is what we are using as of now.
+These Images will ideally contain 2500 seeds.
+If the cameras do not have enough resolution for 2500 seeds then less seeds can be sent in a single image but more images will need to be sent for a total of 2500 seeds.
+The server will contain our algorithm for identifying seeds.
+The algorithm will ideally be able to handle 2500 seeds in a single image but as I have said before less seeds can be sent in a single image.
+The algorithm determines what seeds are present, how clean they are, and how many unwanted seeds are present.
+The results of the algorithm are stored in a database and emailed back to the users who took the images.
+
+
+\end{document}
