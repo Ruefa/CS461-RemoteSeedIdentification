@@ -1,0 +1,97 @@
+\documentclass[onecolumn, draftclsnofoot,10pt, compsoc]{IEEEtran}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{setspace}
+
+\usepackage{geometry}
+\geometry{textheight=9.5in, textwidth=7in}
+
+% 1. Fill in these details
+\def \CapstoneTeamName{		The Cleverly Named Team}
+\def \CapstoneTeamNumber{		12}
+\def \GroupMemberOne{			Quanah Green}
+\def \GroupMemberTwo{			Alex Ruef}
+\def \GroupMemberThree{			Ethan Takla}
+\def \CapstoneProjectName{		Remote Seed Identification}
+\def \CapstoneSponsorCompany{	Crop and Soil Science Department, OSU}
+\def \CapstoneSponsorPerson{		Dan Curry}
+
+% 2. Uncomment the appropriate line below so that the document type works
+\def \DocType{		Problem Statement
+				%Requirements Document
+				%Technology Review
+				%Design Document
+				%Progress Report
+				}
+			
+\newcommand{\NameSigPair}[1]{\par
+\makebox[2.75in][r]{#1} \hfil 	\makebox[3.25in]{\makebox[2.25in]{\hrulefill} \hfill		\makebox[.75in]{\hrulefill}}
+\par\vspace{-12pt} \textit{\tiny\noindent
+\makebox[2.75in]{} \hfil		\makebox[3.25in]{\makebox[2.25in][r]{Signature} \hfill	\makebox[.75in][r]{Date}}}}
+% 3. If the document is not to be signed, uncomment the RENEWcommand below
+\renewcommand{\NameSigPair}[1]{#1}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\begin{titlepage}
+    \pagenumbering{gobble}
+    \begin{singlespace}
+    	%\includegraphics[height=4cm]{coe_v_spot1}
+        \hfill 
+        % 4. If you have a logo, use this includegraphics command to put it on the coversheet.
+        %\includegraphics[height=4cm]{CompanyLogo}   
+        \par\vspace{.2in}
+        \centering
+        \scshape{
+            \huge CS Capstone \DocType \par
+            {\large\today}\par
+            \vspace{.5in}
+            \textbf{\Huge\CapstoneProjectName}\par
+            \vfill
+            {\large Prepared for}\par
+            \Huge \CapstoneSponsorCompany\par
+            \vspace{5pt}
+            {\Large\NameSigPair{\CapstoneSponsorPerson}\par}
+            {\large Prepared by }\par
+            Group\CapstoneTeamNumber\par
+            % 5. comment out the line below this one if you do not wish to name your team
+            %\CapstoneTeamName\par 
+            \vspace{5pt}
+            {\Large
+                \NameSigPair{\GroupMemberOne}\par
+                \NameSigPair{\GroupMemberTwo}\par
+                \NameSigPair{\GroupMemberThree}\par
+            }
+            \vspace{20pt}
+        }
+        \begin{abstract}
+        % 6. Fill in your abstract    
+        %This document is written using one sentence per line.
+        %This allows you to have sensible diffs when you use \LaTeX with version control, as well as giving a quick visual test to see if sentences are too short/long.
+        %If you have questions, ``The Not So Short Guide to LaTeX'' is a great resource (\url{https://tobi.oetiker.ch/lshort/lshort.pdf})
+	In a world where machine learning and computer vision are exponentially growing industries, combing through thousands of seeds to find rouge ones seems quite archaic. Currently, individuals at the Oregon State Seed lab sift through thousands of seeds a day using nothing more than some simple machinery and microscopes. Seed analysts in the field have to send their samples to expensive testing facilities that take days to process. The seed identification business isn't too big of an industry, so a high-tech solution for seed processing hasn't been developed yet. A mobile, robust, and efficient solution to these problems is proposed in this paper, in which clients can send images of seeds via their mobile phones to be processed, and get the results in minutes.
+
+        \end{abstract}     
+    \end{singlespace}
+\end{titlepage}
+\newpage
+\pagenumbering{arabic}
+\tableofcontents
+% 7. uncomment this (if applicable). Consider adding a page break.
+%\listoffigures
+%\listoftables
+\clearpage
+
+% 8. now you write!
+\section{Description}
+Seed identification at Oregon State is a time-consuming, inefcient process that often leaves analysts with eyestrain and headache. A seed analyst will look over up to 25,000 seeds a day, which is currently done using a vibrating conveyor belt apparatus with magnifying lenses for the human operator. In addition to in-lab testing, seed analysts often have to take samples in the field and mail the seeds to remote locations that do the analysis for them. This is also a long, expensive process that only contributes to the urgency of finding a more elegant solution for seed identification. One of the primary reasons that nobody has developed a solution for this yet is that grass seeds are extremely small and diffcult to differentiate from one another without using expensive equipment. Instead of just being able to determine whether there is a bad seed in the sample, it would also be advantageous for a solution to this problem to correctly classify what type of seeds are in the sample. A typical sample consists of 2500 seeds, meaning identification with a normal resolution camera can be difficult.
+
+
+\section{Solution}
+In light of the glaring inefficiencies and issues with Oregon State's current seed analysis methods, our team proposes a robust, mobile solution that can be used in the field, and doesn't require expensive camera equipment. Using an IOS or Android based smart phone or tablet, analysts can take pictures of the seed samples, which are sent to a remote NVIDIA Jetson TX2 processor that runs machine learning algorithms to correctly identify rogue seeds. Once the processing is complete, the results are sent back to the client, speeding up the seed identification process enormously. Each seed sample will be contained in a pre-made 3D-Printed tray with dimension markers on the edges to improve classification of different-sized seeds. For image classification, both NVIDIA and OpenCV have powerful, multi-threaded, deep neural network libraries that can run on the Jetson's 256 CUDA cores for quick results. Upon the return of a result, the client will be able to see where the abnormal seeds are in the sample, and what type of seed they are. On top of all this, we hope to allow an easy way for analysts to add new types of seeds to the image classifier, so that the system can stay current without the need of computer science specialists constantly updating the image classifiers.
+
+\section{Performance Metrics}
+Upon completion of the project, a user-friendly, portable, and efficient seed identification solution will be in the hands of OSU seed analysts. Due to the novel nature of this project, there is a degree of uncertainty inherent within whether or not our ultimate ambitions for the end product will be met. In order to consider the project completed, the bare-minimum following components must be completed: 3D printed seed tray, intuitive client application, web server for communication with the Jetson TX2, image classifiers with a greater than 95 percent positive yes/no seed identification rate (for a 500 seed sample), and an easy to understand image and data output that gives the analysts important metrics on the sample. The yes/no image classifier can tell the client which seeds aren't like the others, but cannot properly identify what species the rogue seeds actually are. Ultimately, the goals is to have a classifier that can identify the correct species of each of the seeds as well. Another ambitious goal set for this project is to be able to use 2500 seed samples, rather than just 500, to speed up the process. 
+
+
+\end{document}
