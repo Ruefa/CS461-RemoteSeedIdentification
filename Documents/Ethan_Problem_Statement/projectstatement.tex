@@ -1,0 +1,71 @@
+\documentclass[letterpaper,10pt,titlepage,fleqn]{article}
+\setlength{\mathindent}{1cm}
+
+\usepackage{graphicx}
+
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+
+\usepackage{alltt}
+\usepackage{float}
+\usepackage{color}
+
+\usepackage{url}
+
+\usepackage{balance}
+\usepackage[TABBOTCAP, tight]{subfigure}
+\usepackage{enumitem}
+
+\usepackage{pstricks, pst-node}
+
+\usepackage{geometry}
+\geometry{textheight=9in, textwidth=6.5in}
+
+\newcommand{\cred}[1]{{\color{red}#1}}
+\newcommand{\cblue}[1]{{\color{blue}#1}}
+
+\usepackage{hyperref}
+
+\usepackage{textcomp}
+\usepackage{listings}
+
+\def\name{Ethan Takla}
+\hypersetup{
+    colorlinks = true,
+    urlcolor = black,
+    pdfauthor = {\name}
+    pdfkeywords = {cs444}
+    pdftitle = {CS444 HW1}
+    pdfsubject = {CS444 HW1}
+    pdfpagemode = UseNone
+}
+
+\parindent = 0.0 in
+\parskip = 0.2 in
+
+\begin{document}
+
+\section*{CS461 Senior Capstone Problem Statement}
+Ethan Takla, Remote Seed Identification Group
+
+\textbf{Due Date: Monday, October 9th}
+
+\textbf{Abstract}
+\newline
+\newline In a world where machine learning and computer vision is an exponentially growing field, combing through thousands of seeds to find rouge ones seems quite archaic. Currently, individuals at the Oregon State Seed lab sift through thousands of seeds a day using nothing more than some simple machinery and microscopes. Seed analysts in the field have to send their samples to expensive testing facilities that take days to process. The seed identification business isn’t too big of an industry, so a high-tech solution hasn’t been made yet. A mobile, robust, and efficient solution to these problems is proposed in this paper, in which clients can send images of seeds to be processed, and get the results in minutes. 
+
+\textbf{Problem Definition}
+\newline
+\newline Seed identification at Oregon State is a time-consuming, inefficient process that often leaves analysts with eyestrain and headache. A seed analyst will look over up to 25,000 seeds a day, which is currently done using a vibrating conveyor belt apparatus with magnifying lenses for the human operator. In addition to in-lab testing, seed analysts often have to take samples in the field, and send the seeds to remote locations that do the analysis for them. This is also a long, expensive process that only contributes to the urgency of finding a more elegant solution for seed identification. One of the primary reasons that nobody has developed a solution for this yet is that grass seeds are extremely small and difficult to differentiate from one another without using expensive equipment. Instead of just being able to determine whether there is a bad seed in the sample, it would also be advantageous for the computer-vision based system to correctly classify what type of seeds are in the sample. A typical sample consists of 2500 seeds, meaning identification with a normal resolution camera can be difficult.
+
+\textbf{Solution}
+\newline
+\newline In light of the glaring inefficiencies and issues with Oregon State’s current seed analysis methods, our team proposes a robust, mobile solution that can be used in the field, and doesn’t require expensive camera equipment. Using an android smartphone or tablet, analysts can take pictures of the seed samples, which are sent to a remote NVIDIA Jetson TX2 processor that runs machine learning algorithms to correctly identify rogue seeds. Once the processing is complete, the results are sent back to the client, speeding up the seed identification process enormously. Each seed sample will be contained in a pre-made 3D-Printed tray with dimension markers on the edges to improve classification of different-sized seeds. For image classification, both NVIDIA and OpenCV have powerful, multi-threaded, deep neural network libraries that can run on the Jetson’s 256 CUDA cores for quick results. Upon the return of a result, the client will be able to see where the abnormal seeds are in the sample, and what type of seed they are. On top of all this, we hope to allow an easy way for analysts to add new types of seeds to the image classifier, so that the system can stay current without the need of computer science specialists constantly updating the image classifiers.
+\newline
+\textbf{Performance Metrics}
+\newline
+\newline Upon completion of the project, a user-friendly, portable, and efficient seed identification solution will be in the hands of OSU seed analysts. In order to consider the project as completed, the following components must be completed: sample tray with dimension markers, intuitive client application, web server for communication with the Jetson TX2, image classifiers with a greater than 95 percent positive seed identification capability, and an easy to understand image and data output that gives the analysts important metrics. 
+
+
+\end{document}
