@@ -78,14 +78,31 @@
 %\listoftables
 \clearpage
 
-% 8. now you write!
-\section{Description}
+\section{Introduction}
+\subsection{Purpose}
+The purpose of this document is to outline the important qualities of the finished project.
+Don't really know what else to say here
+
+\subsection{Scope}
+We will produce software that can process images containing seeds.
+The processing will output information on the type of seeds and the quality (cleanliness) of the seeds.
+
+\section{Overall Description}
+\subsection{Product Perspective}
+This project will be put in as a replacement to a part of the seed cleaning process.
+Instead of sending the seed samples to a lab users will send images of the seeds to our processor.
+Users will interface with our seed identification algorithm through a phone/tablet app.
+Interface should be designed so that any non-technical person can learn to use in less than 1 hour
+The app will then connect with our central processor over the internet.
+After the processor has done its work the result will be stored in a database and sent back
+to the user via email.
+
+\subsection{Product Functions}
 This project has 3 major components.
 We need a phone/tablet app that can take pictures and send them to a Jetson TX2 processor.
 On the Jetson processor will be an algorithm that can determine what seeds are in the picture and quality of the seeds.
 The output of the algorithm will need to be saved in a database and sent to the user who sent the picture.
 
-The app for phone/tablet will be an android(?) app developed in Java.
 The app will need to be able to access the phones cameras and take pictures or pull from the users pictures.
 Will we need rig to help take better pictures?
 Will there need to be a rig to place the seeds in?
@@ -93,9 +110,8 @@ The app will then connect remotely to our Jetson processor and send the image.
 Does the app need to be able to recieve processed image data or just send to users email?
 
 Algorithm will use machine learning to decide what is in the images.
-which learning algorithm will we use?
-Coded in C++?
-Can we deliver 500 seeds over 5 images?
+Can we deliver 2,500 seeds over 5 images?
+Is this a design decision?
 Stretch goal 2,500 seeds in one image.
 What is a reasonable time to process the images in?
 
@@ -104,7 +120,18 @@ What will output look like?
 what exact information needs to be conveyed?
 Do we need to give information on each individual seed?
 We will have a database to store this information and use it to improve learning algorithm.
-Who will be hosting the database?
-I know seed cert/seed lab already has a database in place.
+
+\subsection{User Characteristics}
+Users have wide range of education level.
+Can't assume any level of technical prowess.
+App should be "easily" used by anyone who has used a smart phone before. %define easily
+
+\subsection{Constraints}
+We are given a Jetson TX2 processor to use as the central processor.
+The power of the Jetson will directly impact the processing time and the format of the input images.
+Ask Dan about reliability requirements.
+
+\subsection{Assumptions and Dependencies}
+I can't think of anything.
 
 \end{document}
