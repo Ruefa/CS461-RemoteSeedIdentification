@@ -1,31 +1,39 @@
 LATEX	= /usr/local/apps/tex_live/current/bin/x86_64-linux/latex -shell-escape
-BIBTEX	= bibtex
+LATEX2	= pdflatex -shell-escape
 DVIPS	= dvips
 DVIPDF  = dvipdft
 XDVI	= xdvi -gamma 4
 GH		= gv
 
-EXAMPLES = $(wildcard *.h)
+EXAMPLES = $(wildcard *.c)
 SRC	:= $(shell egrep -l '^[^%]*\\begin\{document\}' *.tex)
 TRG	= $(SRC:%.tex=%.dvi)
 PSF	= $(SRC:%.tex=%.ps)
 PDF	= $(SRC:%.tex=%.pdf)
 
+all: pdf assignment1
+
 pdf: $(PDF)
 
 ps: $(PSF)
 
-$(TRG): %.dvi: %.tex *.bib $(EXAMPLES)
+$(TRG): %.dvi: %.tex $(EXAMPLES)
+	#one way of including source code is to use pygments
+#	pygmentize -f latex -o __${EXAMPLES}.tex ${EXAMPLES}
+	#requires that you \include{pygments.tex} in your preamble
+
 	$(LATEX) $<
-	$(BIBTEX) $(<:%.tex=%)
+#	$(BIBTEX) $(<:%.tex=%)
 	$(LATEX) $<
-	$(LATEX) $<
+	$(LATEX2) $<
+	#remove the pygmentized output to avoid cluttering up the directory
+	#rm __${SRC}.tex
+
 
 $(PSF):%.ps: %.dvi
 	$(DVIPS) -R -Poutline -t letter $< -o $@
 
 $(PDF): %.pdf: %.ps
-#	$(DVIPDF) -o $@ $<
 	ps2pdf $<
 
 show: $(TRG)
@@ -33,8 +41,13 @@ show: $(TRG)
 
 showps: $(PSF)
 	@for i in $(PSF) ; do $(GH) $$i & done
-all: pdf
+
+assignment1: hw1.c
+	gcc -pthread hw1.c -o hw1
+
+#all: pdf
 
 clean:
-	rm -f *.pdf *.ps *.dvi *.out *.log *.aux *.bbl *.blg *.pyg
+	rm -f *.ps *.dvi *.out *.log *.aux *.bbl *.blg *.pyg *.o *.toc
+
 .PHONY: all show clean ps pdf showps
