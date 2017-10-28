@@ -87,6 +87,10 @@ Don't really know what else to say here.
 We will produce software that can process images containing seeds.
 The processing will output information on the type of seeds and the quality (cleanliness) of the seeds.
 
+\subsection{Definitions}
+An important constraint on this project is that the users will send seeds in groups of 2500.
+This will be called a sample.
+
 \section{Overall Description}
 \subsection{Product Perspective}
 This project will be put in as a replacement to a part of the seed cleaning process.
@@ -135,6 +139,55 @@ We rely heavily on the quality of images that phones and tablets can produce.
 
 \section{Specific requirements}
 \subsection{External interfaces}
+\subsection{OpenCV}
+Open Source Computer Vision Library will be used to implement our image processing and machine learning algorithm.
+It will recieve image input from our app and it will output data on the quality and types of seeds.
+
+\subsection{Functions}
+This system shall open a connection to allow users to send images.
+Validate that users are sending actual images.
+Can we check the images for quality?
+Jetson will then recieve image input.
+Jetson will run our algorithm to determine seed type and quality in the image.
+output will be stored in database.
+PDF is then generated and sent back to the user.
+
+\subsection{Performance Requirements}
+Samples from users can be placed into a first in first out queue.
+This will allow many users to send samples to our processor.
+No clue how long it will take but the users will have to wait.
+
+\subsection{Database Requirements}
+Need more fine details on output of image processing.
+
+\subsection{Standards Compliance}
+Should ask Dan if he has any sample output from the seed lab.
+
+\subsection{Reliability}
+How reliable to we need to be and how can we insure that?
+
+\subsection{Availability}
+Probably only really needs to be up during the day.
+Can be down at need to recover/restart.
+
+\subsection{Security}
+Mostly need to protect the Jetson.
+validate incoming images to make sure they are images and don't contain malicious code.
+Database is pretty safe since it is only accessed by Jetson.
+
+\subsection{Maintainability}
+Should make an attempt but its going to be hard being new to the technology.
+
+\subsection{Portability}
+App can be designed to be ported to IOS.
+Image processing algorithm will probably be dependent on the Jetson.
+
+\subsection{Objects}
+May need objects to represent images and seeds.
+
+\subsection{Features}
+Would phone/tablet camera fit in here?
+
 
 
 \end{document}
