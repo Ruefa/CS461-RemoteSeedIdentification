@@ -1,4 +1,4 @@
-LATEX	= /usr/local/apps/tex_live/current/bin/x86_64-linux/latex -shell-escape
+LATEX	= latex -shell-escape
 LATEX2	= pdflatex -shell-escape
 DVIPS	= dvips
 DVIPDF  = dvipdft
@@ -11,7 +11,7 @@ TRG	= $(SRC:%.tex=%.dvi)
 PSF	= $(SRC:%.tex=%.ps)
 PDF	= $(SRC:%.tex=%.pdf)
 
-all: pdf assignment1
+all: pdf requirementsdoc
 
 pdf: $(PDF)
 
@@ -47,7 +47,7 @@ assignment1: hw1.c
 
 #all: pdf
 
-clean:
-	rm -f *.ps *.dvi *.out *.log *.aux *.bbl *.blg *.pyg *.o *.toc
+#clean:
+#	rm -f *.pdf *.ps *.dvi *.out *.log *.aux *.bbl *.blg *.pyg *.o
 
 .PHONY: all show clean ps pdf showps
