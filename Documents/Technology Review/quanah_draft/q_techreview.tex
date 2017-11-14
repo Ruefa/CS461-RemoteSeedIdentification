@@ -1,0 +1,177 @@
+\documentclass[onecolumn, draftclsnofoot,10pt, compsoc]{IEEEtran}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{setspace}
+\usepackage{cite}
+
+\usepackage{geometry}
+\geometry{textheight=9.5in, textwidth=7in}
+
+% 1. Fill in these details
+\def \CapstoneTeamName{		Remote Seed}
+\def \CapstoneTeamNumber{		12}
+\def \GroupMemberOne{			Quanah Green}
+\def \CapstoneProjectName{		Remote Seed Identification}
+\def \CapstoneSponsorCompany{	Crop and Soil Science Department, OSU}
+\def \CapstoneSponsorPerson{		Dan Curry}
+
+% 2. Uncomment the appropriate line below so that the document type works
+\def \DocType{		%Problem Statement
+				%Requirements Document
+				Technology Review
+				%Design Document
+				%Progress Report
+				}
+		
+\newcommand{\NameSigPair}[1]{\par
+\makebox[2.75in][r]{#1} \hfil 	\makebox[3.25in]{\makebox[2.25in]{\hrulefill} \hfill		\makebox[.75in]{\hrulefill}}
+\par\vspace{-12pt} \textit{\tiny\noindent
+\makebox[2.75in]{} \hfil		\makebox[3.25in]{\makebox[2.25in][r]{Signature} \hfill	\makebox[.75in][r]{Date}}}}
+% 3. If the document is not to be signed, uncomment the RENEWcommand below
+\renewcommand{\NameSigPair}[1]{#1}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\begin{titlepage}
+    \pagenumbering{gobble}
+    \begin{singlespace}
+    	%\includegraphics[height=4cm]{coe_v_spot1}
+        \hfill 
+        
+        % 4. If you have a logo, use this includegraphics command to put it on the coversheet.
+        %\includegraphics[height=4cm]{CompanyLogo}   
+        \par\vspace{.2in}
+        \centering
+        \scshape{
+            \huge CS Capstone \DocType \par
+            {\large\today}\par
+            \vspace{.5in}
+            \textbf{\Huge\CapstoneProjectName}\par
+            \vfill
+            {\large Prepared for}\par
+            \Huge \CapstoneSponsorCompany\par
+            \vspace{5pt}
+            {\Large\NameSigPair{\CapstoneSponsorPerson}\par}
+            {\large Prepared by }\par
+            Group\CapstoneTeamNumber\par
+            % 5. comment out the line below this one if you do not wish to name your team
+            \CapstoneTeamName\par 
+            \vspace{5pt}
+            {\Large
+                \NameSigPair{\GroupMemberOne}\par
+                \NameSigPair{\GroupMemberTwo}\par
+                \NameSigPair{\GroupMemberThree}\par
+            }
+            \vspace{20pt}
+        }
+        \begin{abstract}
+        % 6. Fill in your abstract    
+        	This document is written using one sentence per line.
+        	This allows you to have sensible diffs when you use \LaTeX with version control, as well as giving a quick visual test to see if sentences are too short/long.
+        	If you have questions, ``The Not So Short Guide to LaTeX'' is a great resource (\url{https://tobi.oetiker.ch/lshort/lshort.pdf})
+        \end{abstract}     
+    \end{singlespace}
+\end{titlepage}
+\newpage
+\pagenumbering{arabic}
+\tableofcontents
+% 7. uncomment this (if applicable). Consider adding a page break.
+%\listoffigures
+%\listoftables
+\clearpage
+
+% 8. now you write!
+\section{Training Data Acquisition}
+In order to successfully train a machine learning algorithm to indentify seeds, we need to provide it with training data.
+This training data will consist of a large number of seed pictures, which as of yet do not exist, so they will need to be created.
+What technologies will be best suited for this task is as of yet not completely clear, we will need to actually experiment with them to determine what will create acceptable training data the quickest.
+
+
+\subsection{Technology 1}
+Our first concern is selecting a camera to take training images of sufficient quality to properly train our machine learning algorithm.
+One option is to use and iPhone or iPad camera.
+This option is convenient in that the devices are readily available, though the nature of these devices means that we would have to manually take and transfer large numbers of pictures by actually interacting with the device, a potentially tedious and time consuming process.
+That said, modern iPad and iPhone cameras are surprisingly capable, boasting up to 12 megapixels, depending on model.
+The fact that we are ultimately hoping to use iPad/iPhone cameras to take pictures for identification in the final product design is also worth noting.
+Having parity between the cameras used for training and those used to take images for identification could potentially have some advantages for correct seed identification.
+It should also be considered, however, that these cameras are not intended for computer vision applications, and thus may prove unsuitable for generating effective training images.
+
+\subsection{Technology 2}
+Another possible camera option we are considering (and that we have access to) for creating training images is the FLIR Chameleon3 USB3 camera, fitted with a macro lens.
+These cameras are manufactured specifically for use in computer vision applications, and thus should be well suited for our purposes, and the sensors in them may offer higher quality images with less distortion as compared to iPad/iPhone cameras.
+Furthermore, the macro lens should help take quality pictures of grass seeds which are, after all, quite small.
+Because these cameras are specialized individual units we would be able to dedicate one to the task, mounting it and controlling it through the USB interface, allowing for ease of use and direct transfer of images in to our machine learning algorithms.
+This cameras, however, does have a fairly low megapixel count of 5, so knowing if the pictures they take will be of sufficient quality to create good training images is difficult without further testing.
+
+
+\subsection{Technology 3}
+Another issue we need to consider is how to actually display the seeds to the camera to ensure that each seed can be identified individually.
+The seeds must be evenly spread without clumping, and, ideally, with no two seeds actually touching eachother.
+This can be achieved manually, if slowly, but we do have access to a prototype of a machine to do this for us, spreading the seeds on to a sort of conveyor belt.
+Assuming this device works properly it should be invaluable to help us generate the large quantities of training data we will need.
+We have also been told that further developement to improve the prototype is in progress.
+
+\subsection{Conclusion}
+It is frankly just too early to tell which camera option will work better, determining this will take a lot of experimentation and testing in parallel with the developement of our machine learning algorithms.
+
+As for the machine to distribute the seeds evenly, hopefully it works as promised and we don't have to do it manually, though we can if need be.
+
+\section{Jetson Communication}
+We well need a way for images to be transfered from a users device to our Jetson Processor to be analyzed. The Jetson will then analyze the images and generate a report which will be sent back to the user. There are a number of ways to accomplish this.
+
+\subsection{Technology 1}
+One option is to set up the Jetson to run a webserver, with the users connecting as clients.
+This is fairly simple to accomplish using any number of programming languages, or by using a third party open source library.
+This option has the advantage of not requiring aditional hardware, though not without some serious tradeoffs.
+If the Jetson performs analysis while running its own server we are looking at serious scalability issues, the more requests it recieves the less processing power it will have for analysis, creating something of a bottleneck.
+Because so much will be running on the Jetson there is a lack of modularity, so if these issues start to occur, essentially all of the non-client hardware needs to be upgraded.
+
+\subsection{Technology 2}
+Another option is to have a dedicated server that both the users and the Jetson connect to as clients, creating a client-queue-client system.
+This option does require additional hardware (either provided by us or a third party service), and thus is more costly, but far more scalable.
+A server is fairly easy to set up ourselves, and there are any number of third party subscription services that provide servers.
+Using this option, the Jetson will be able to dedicate all of its power towards analysis, thus increasing throughput.
+Should usage exceed the capabilities of the Jetson to provide timely results, additional Jetsons could be added to the system as additional clients to further increase throughput. If the demands exceed the servers capabilities it too can be upgraded in isolation.
+
+\subsection{Conclusion}
+While more expensive, a dedicated server is the obvious choice. Having the server run on the same device that is doing all of the calculation might be okay for a proof of concept or in testing phases, but the downsides of that model are simply too great. The performance and scalability issues are unacceptable in a finished product.
+
+\section{Result Conveyance}
+Once we have performed an analysis, we need to decide how to display the results. 
+There are tons of options, and not all are necessarily mutually exclusive, there could be multiple options.
+
+\subsection{Technology 1}
+Probably the simplest option is to simply generate a textual, ASCII report.
+This option is simple quick and direct, but not particularly aesthetically pleasing.
+Furthermore, since plaintext is so easy to parse this option provides a lot of options, either for the user to generate their own visualizations, or as a base for our app to do the same. There is really not too much to say about the technology, it is old, fast, and simple.
+
+\subsection{Technology 2}
+Another option is to format the results in the app UI itself.
+This allows for very well formatted, easily visualized data, though sacrifices portability unless some other option is implemented in addition.
+There are a plethora of options for data visualization, with 2 out of 3 of the UI frameworks Alex is considering having their own libraries for creating graphs and charts.
+iOS also has a built in charts API that can be used to draw graphs and charts for data visualization.
+
+\subsection{Technology 3}
+Yet another option is to format the report as a PDF.
+PDF is extremely common, so this option provides great portability. 
+Users may, however, be unhappy with the exact formatting of our reports and want to generate their own from the data, something PDF cannot do very well.
+The PDF report could be generated either on the Jetson or within the client app using the data received from the Jetson
+There are a number of options for generating PDF's, including the open source library libharu.
+
+\subsection{Technology 4}
+One more option is to generate a report in HTML.
+Again this allows for a highly portable report, and like the PDF option the actual HTML formatted report could be generated on the Jetson or client side.
+HTML formatting is easy enough to code manually, if a bit tedious, or a templating system like handlebars could be used.
+
+\subsection{Conclusion}
+It seems smart to do as little processing of the generated data as possible on the Jetson, so we will send a plaintext report to the app. This plain text report will be accessible by the user, but the app will further generate a PDF report, so that the user has something a little better formatted that can be inserted in to just about any document or email or anything else they wish.
+
+While it would be nice to format the results so they look pretty in the UI, there is not any real reason to do so aside for aesthetics. It is the least portable option, and thus the least useful.
+
+HTML formatted reports and PDF reports share many of the same benefits, with HTML reports being a little more customizable and PDF reports being a bit easier to share. Since the plaintext report will also be available if the user wants to use the data and customize a report, there is no real reason to choose HTML over PDF. 
+
+
+
+
+
+\end{document}
