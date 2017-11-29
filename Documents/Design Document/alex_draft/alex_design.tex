@@ -88,10 +88,25 @@
 		When the app is ran for the first time the user will have to login or create a new account.
 		These accounts will be used to track who is sending seed samples so the results can be sent back to the right person.
 		The fields required to create a account will be name, email, and password??
-		Communication with the server will be done via HTTP calls to an API on the server.
+		Communication with the server will be done using the Volley library to send HTTP requests to an API on the server.
 		Once users have successfully logged in they will be shown a home or a navigation page.
 
 	\subsection{Navigation}
+		If a user has logged in previously the navigation page will be the first page they see.
+		This page will be used to send users to either the send seed sample section or the section where they can see results.
+		There will also be an options button should we need it.
+
+	\subsection{Send Sample}
+		There will likely be multiple images for a single sample.
+		Users will first have input how many images will be sent in the sample.
+		Once that is done the user needs to present an image to be sent.
+		Selecting an image can be done from the users images or by utilizing the phones camera in the app.
+		The images will be sent by HTTP requests to our server which will then be processed by the Jetson.
+
+	\subsection{Results}
+		Users can be sent a notification and/or an email when the results are done processing.
+		If processing is quick enough users will be send to the results page after uploading a sample.
+		
 		
 
 \bibliographystyle{ieeetr}
