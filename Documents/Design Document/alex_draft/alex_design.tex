@@ -78,8 +78,21 @@
 %\listoffigures
 %\listoftables
 \clearpage
-\section{UI Framework}
-	
+\section{Mobile App}
+	The mobile app for our project will need to perform three main features.
+	The app will need to take pictures or access the users images, send the images to our Jetson processor, and receive back data from the Jetson.
+	We will be using the Xamarin UI framework to build the app.
+	The code will be written in C\# since Xamarin works best with C\#.
+
+	\subsection{First Time Running}
+		When the app is ran for the first time the user will have to login or create a new account.
+		These accounts will be used to track who is sending seed samples so the results can be sent back to the right person.
+		The fields required to create a account will be name, email, and password??
+		Communication with the server will be done via HTTP calls to an API on the server.
+		Once users have successfully logged in they will be shown a home or a navigation page.
+
+	\subsection{Navigation}
+		
 
 \bibliographystyle{ieeetr}
 \bibliography{bib}
