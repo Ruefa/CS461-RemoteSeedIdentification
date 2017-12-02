@@ -88,6 +88,7 @@
 
 \section{Definitions}
 
+
 \section{Design}
     \subsection{Server}
         A server will be needed to facilitate transfer of images and reports between the mobile app and the Jetson processor where the actual analysis will happen.
@@ -108,13 +109,16 @@
     Once a job is processed and a report is generated, the address of the client who requested the analysis will be looked up in the database, and the report will be sent to that address.
 
     The database will be implemented in the Jetson application using SQLite.
-    This will be accessed in the Server program using the PonyORM python package.
+    This will be accessed in the server program using the PonyORM python package.
     This will allow for easy database access from the python based server.
 
 
     \subsection{Report Generation}
     When an analysis is run, the results need to be recorded and conveyed in an easily readable format.
     Once the analysis is completed on the Jetson, the results will be passed as numerical arguments to a function in the server interface, which will use the open source ReportLab python library to generate a PDF report, to be sent to the client.
+    This report will contain data on the homogeneity of the sample, and what species were identified.
+    It will also specify the number of seeds identified, and call to attention any seeds that could not be positively identified.
+
     
 
 
