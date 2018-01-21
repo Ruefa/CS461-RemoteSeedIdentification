@@ -1,5 +1,7 @@
 package com.tests.alex.remoteseedidentification;
 
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.util.Log;
 
@@ -30,6 +32,15 @@ public class CameraControl {
         if(mCamera != null){
             mCamera.release();
             mCamera = null;
+        }
+    }
+
+    private boolean checkCameraHardware(Context context){
+        if(context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
+            return true;
+        }
+        else{
+            return false;
         }
     }
 }
