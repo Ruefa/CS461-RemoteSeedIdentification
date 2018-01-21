@@ -53,6 +53,17 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
         }
     }
 
+    private void stopPreviewAndFreeCamera(){
+
+        if(mCamera != null){
+            mCamera.stopPreview();
+
+            mCamera.release();
+
+            mCamera = null;
+        }
+    }
+
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
 
@@ -60,8 +71,9 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
+
         Camera.Parameters parameters = mCamera.getParameters();
-        parameters.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
+        //parameters.setPreviewSize(mPreviewSize.width, mPreviewSize.height);
         requestLayout();
         mCamera.setParameters(parameters);
 
@@ -70,7 +82,10 @@ public class CameraView extends ViewGroup implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-        
+
+        if(mCamera != null){
+            mCamera.stopPreview();
+        }
     }
 
     @Override
