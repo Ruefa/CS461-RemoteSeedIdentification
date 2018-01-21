@@ -11,6 +11,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_main);
 
-         CameraControl.safeCameraOpen();
+        int camID = 5; //change this
+        CameraControl.safeCameraOpen(camID);
     }
 }
