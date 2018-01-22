@@ -31,31 +31,12 @@ public class CameraControl {
         return camOpened;
     }
 
-    public static Camera getCameraInstance(){
-        Camera cam = null;
 
-        try{
-            cam = Camera.open();
-        }catch (Exception e){
-            // Camera not available
-        }
-
-        return cam;
-    }
 
     private static void releaseCameraAndPreview(){
         if(mCamera != null){
             mCamera.release();
             mCamera = null;
-        }
-    }
-
-    private boolean checkCameraHardware(Context context){
-        if(context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
-            return true;
-        }
-        else{
-            return false;
         }
     }
 }
