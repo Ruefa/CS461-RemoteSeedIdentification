@@ -13,6 +13,9 @@ public class CameraControl {
 
     private static Camera mCamera;
 
+    /*
+    needs to be changed later
+     */
     public static boolean safeCameraOpen(int id){
         boolean camOpened = false;
 
@@ -26,6 +29,18 @@ public class CameraControl {
         }
 
         return camOpened;
+    }
+
+    public static Camera getCameraInstance(){
+        Camera cam = null;
+
+        try{
+            cam = Camera.open();
+        }catch (Exception e){
+            // Camera not available
+        }
+
+        return cam;
     }
 
     private static void releaseCameraAndPreview(){
