@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 26
     defaultConfig {
-        applicationId "com.tests.alex.remoteseedidentification"
+        applicationId "com.capstone.remoteseedidentification"
         minSdkVersion 16
         targetSdkVersion 26
         versionCode 1

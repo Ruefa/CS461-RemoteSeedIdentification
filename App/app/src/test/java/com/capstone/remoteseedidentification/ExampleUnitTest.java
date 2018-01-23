@@ -1,4 +1,4 @@
-package com.tests.alex.remoteseedidentification;
+package com.capstone.remoteseedidentification;
 
 import org.junit.Test;
 

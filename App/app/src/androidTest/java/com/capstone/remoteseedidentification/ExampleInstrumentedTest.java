@@ -1,4 +1,4 @@
-package com.tests.alex.remoteseedidentification;
+package com.capstone.remoteseedidentification;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.tests.alex.remoteseedidentification", appContext.getPackageName());
+        assertEquals("com.capstone.remoteseedidentification", appContext.getPackageName());
     }
 }

@@ -1,8 +1,9 @@
-package com.tests.alex.remoteseedidentification;
+package com.capstone.remoteseedidentification;
 
 import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
+import android.util.Log;
 import android.view.SurfaceView;
 import android.view.ViewGroup;
 import android.view.SurfaceHolder;
