@@ -26,7 +26,10 @@ def handleConn(conn):
         f.write(buf)
         buf = conn.recv(4096)
 
-    conn.shutdown()
+    print("File Received")
+
+    conn.send("Image Received\n".encode())
+
     conn.close()
 
 
