@@ -22,18 +22,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TextView debug = findViewById(R.id.debug_view);
+        mCamera = getCameraInstance();
 
-        if(checkCameraHardware(this)) {
-            mCamera = getCameraInstance();
-
-            mCameraView = new CameraView(this, mCamera);
-            FrameLayout frameLayout = findViewById(R.id.cam_view);
-            frameLayout.addView(mCameraView);
-        }
-        else{
-            debug.setText("No Camera");
-        }
+        mCameraView = new CameraView(this, mCamera);
+        FrameLayout frameLayout = findViewById(R.id.cam_view);
+        frameLayout.addView(mCameraView);
     }
 
     private Camera getCameraInstance(){
@@ -53,14 +46,5 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return cam;
-    }
-
-    private boolean checkCameraHardware(Context context){
-        if(context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
-            return true;
-        }
-        else{
-            return false;
-        }
     }
 }
