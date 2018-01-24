@@ -16,11 +16,14 @@
         android:id="@+id/navigation"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="start"/>
+        android:layout_gravity="start">
 
-    <ListView
-        android:id="@+id/navigation_list_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <ListView
+            android:id="@+id/navigation_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </android.support.design.widget.NavigationView>
+
+
 
 </android.support.v4.widget.DrawerLayout>
