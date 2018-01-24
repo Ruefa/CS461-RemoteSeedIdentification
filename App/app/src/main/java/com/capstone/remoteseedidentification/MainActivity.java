@@ -42,7 +42,8 @@ public class MainActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 50);
 
-        android.os.SystemClock.sleep(5000);
+        //sleep to give time to accept permissions or app will crash (only on first run)
+        //android.os.SystemClock.sleep(5000);
 
         try{
             cam = Camera.open(0);
@@ -55,14 +56,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initNavigation(){
-        mNavData = dummyData(5);
+        mNavData = dummyData(10);
         mDrawerLayout = findViewById(R.id.drawer_layout);
         mDrawerView = findViewById(R.id.navigation_list_view);
 
-        mDrawerView.setAdapter(new ArrayAdapter<String>(this, R.layout.nav_text_view, mNavData));
+        mDrawerView.setAdapter(new ArrayAdapter<>(this, R.layout.nav_text_view, mNavData));
     }
 
     private String[] dummyData(int numData){
+
         String[] data = new String[numData];
 
         for(int i=0; i<data.length; i++){
