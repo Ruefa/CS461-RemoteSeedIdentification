@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mCamera = getCameraInstance();
+        mCamera.setDisplayOrientation(90);
 
         mCameraView = new CameraView(this, mCamera);
         FrameLayout frameLayout = findViewById(R.id.cam_view);
@@ -33,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
         Camera cam = null;
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
-            //ask for authorisation
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 50);
 
         android.os.SystemClock.sleep(5000);
