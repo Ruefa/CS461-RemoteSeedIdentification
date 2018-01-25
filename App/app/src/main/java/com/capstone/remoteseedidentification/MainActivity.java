@@ -10,9 +10,12 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ListView;
+
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -63,6 +66,16 @@ public class MainActivity extends AppCompatActivity {
         mDrawerView = findViewById(R.id.navigation_list_view);
 
         mDrawerView.setAdapter(new ArrayAdapter<>(this, R.layout.nav_text_view, mNavData));
+
+        mDrawerView.setOnItemClickListener(new DrawerItemClickListener());
+    }
+
+    private class DrawerItemClickListener implements ListView.OnItemClickListener{
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            goLogin();
+        }
     }
 
     private String[] dummyData(int numData){
@@ -76,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         return data;
     }
 
-    private void goLogin(View view){
+    public void goLogin(){
         Intent intent = new Intent(this, LoginController.class);
 
         startActivity(intent);
