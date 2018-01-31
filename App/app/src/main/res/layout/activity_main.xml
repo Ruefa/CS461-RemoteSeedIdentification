@@ -12,6 +12,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="takePictureIntent"
+        android:text="Snap" />
+
     <FrameLayout
         android:id="@+id/cam_view"
         android:layout_width="match_parent"
