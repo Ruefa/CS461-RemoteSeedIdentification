@@ -3,6 +3,7 @@ package com.capstone.remoteseedidentification;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import java.util.List;
@@ -26,13 +28,16 @@ public class MainActivity extends AppCompatActivity {
     private String[] mNavData;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerView;
+    private ImageView mThumbView;
 
-    static final int REQUEST_IMAGE_CAPTURE = 1; //"request code" figure out what that is
+    static final int REQUEST_IMAGE_CAPTURE = 1; //"request code" used to find results of request
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mThumbView = findViewById(R.id.thumb_view);
 
         mCamera = getCameraInstance();
         mCamera.setDisplayOrientation(90);
@@ -108,6 +113,10 @@ public class MainActivity extends AppCompatActivity {
     //show image thumbnail for testing
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        
+        if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK){
+            Bundle extras = data.getExtras();
+            Bitmap thumbBitmap = (Bitmap) extras.get("data");
+            mThumbView.setImageBitmap(thumbBitmap);
+        }
     }
 }
