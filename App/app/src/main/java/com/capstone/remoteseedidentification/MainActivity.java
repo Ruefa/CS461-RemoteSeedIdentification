@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -28,9 +30,10 @@ public class MainActivity extends AppCompatActivity {
     private String[] mNavData;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerView;
-    private ImageView mThumbView;
 
-    static final int REQUEST_IMAGE_CAPTURE = 1; //"request code" used to find results of request
+    //testing image capture
+    private Button mCaptureButton;
+    private ImageView mThumbView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mThumbView = findViewById(R.id.thumb_view);
+        mCaptureButton = findViewById(R.id.image_button);
 
         mCamera = getCameraInstance();
         mCamera.setDisplayOrientation(90);
@@ -103,20 +107,15 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void takePictureIntent(){
-        Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if(takePicIntent.resolveActivity(getPackageManager()) != null){
-            startActivityForResult(takePicIntent, 1);
-        }
-    }
+    public void takePicture(View v){
 
-    //show image thumbnail for testing
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK){
-            Bundle extras = data.getExtras();
-            Bitmap thumbBitmap = (Bitmap) extras.get("data");
-            mThumbView.setImageBitmap(thumbBitmap);
-        }
+        mCamera.takePicture(null, null, new Camera.PictureCallback() {
+            @Override
+            public void onPictureTaken(byte[] data, Camera camera) {
+                Bitmap thumbBitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                mThumbView.setImageBitmap(thumbBitmap);
+                mCaptureButton.setVisibility(View.INVISIBLE);
+            }
+        });
     }
 }
