@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
+import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -25,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
     private String[] mNavData;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerView;
+
+    static final int REQUEST_IMAGE_CAPTURE = 1; //"request code" figure out what that is
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,5 +96,18 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, LoginController.class);
 
         startActivity(intent);
+    }
+
+    private void takePictureIntent(){
+        Intent takePicIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if(takePicIntent.resolveActivity(getPackageManager()) != null){
+            startActivityForResult(takePicIntent, 1);
+        }
+    }
+
+    //show image thumbnail for testing
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        
     }
 }
