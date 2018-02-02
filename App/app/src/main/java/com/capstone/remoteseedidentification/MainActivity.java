@@ -109,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void takePicture(View v){
 
+        //using jpg because raw is not supported on every phone
         mCamera.takePicture(null, null, new Camera.PictureCallback() {
             @Override
             public void onPictureTaken(byte[] data, Camera camera) {
