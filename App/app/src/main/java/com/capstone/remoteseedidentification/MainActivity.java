@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -20,6 +21,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.List;
 
 
@@ -34,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
     //testing image capture
     private Button mCaptureButton;
     private ImageView mThumbView;
+
+    final static int RESULT_LOAD_IMAGE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +91,12 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            goLogin();
+            if(position == 0) {
+                getImageFromGallery();
+            }
+            else if(position == 9) {
+                goLogin();
+            }
         }
     }
 
@@ -118,5 +128,29 @@ public class MainActivity extends AppCompatActivity {
                 mCaptureButton.setVisibility(View.INVISIBLE);
             }
         });
+    }
+
+    private void getImageFromGallery(){
+        Intent getPhotoIntent = new Intent(Intent.ACTION_PICK);
+        getPhotoIntent.setType("image/*");
+        startActivityForResult(getPhotoIntent, RESULT_LOAD_IMAGE);
+    }
+
+    @Override
+    protected void onActivityResult(int reqCode, int resultCode, Intent data){
+        super.onActivityResult(reqCode, resultCode, data);
+
+        if(resultCode == RESULT_OK){
+            try {
+                Uri imageUri = data.getData();
+                InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                mThumbView.setImageBitmap(selectedImage);
+                mCameraView.setVisibility(View.INVISIBLE); //remove later
+            }
+            catch (FileNotFoundException e){
+                e.printStackTrace();
+            }
+        }
     }
 }
