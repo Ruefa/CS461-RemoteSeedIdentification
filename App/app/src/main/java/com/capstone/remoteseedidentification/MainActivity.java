@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mThumbView = findViewById(R.id.thumb_view);
-        mCaptureButton = findViewById(R.id.image_button);
+        mCaptureButton = findViewById(R.id.button_snap);
 
         mCamera = getCameraInstance();
         mCamera.setDisplayOrientation(90);
@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
                 mByteImage = data;
                 Bitmap thumbBitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
                 mThumbView.setImageBitmap(thumbBitmap);
-                mCaptureButton.setVisibility(View.INVISIBLE);
+                initConfirmation();
             }
         });
     }
@@ -172,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
                 Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
                 mThumbView.setImageBitmap(selectedImage);
                 mCameraView.setVisibility(View.INVISIBLE); //remove later
+                initConfirmation();
             }
             catch (FileNotFoundException e){
                 e.printStackTrace();
@@ -197,6 +198,15 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private void initConfirmation(){
+        Button acc = findViewById(R.id.button_conf_accept);
+        Button deny = findViewById(R.id.button_conf_deny);
+
+        acc.setVisibility(View.VISIBLE);
+        deny.setVisibility(View.VISIBLE);
+        mCaptureButton.setVisibility(View.INVISIBLE);
     }
 
     public void doImageConf(View v){
