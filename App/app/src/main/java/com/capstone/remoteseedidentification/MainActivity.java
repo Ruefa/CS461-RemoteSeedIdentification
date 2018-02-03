@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -80,9 +81,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void initNavigation(){
         mNavData = new ArrayList<>();
-        mNavData.add("Image from gallery");
-        mNavData.add("Results");
-        mNavData.add("Login");
+        mNavData.add(getResources().getString(R.string.nav_gallery));
+        mNavData.add(getResources().getString(R.string.nav_results));
+        mNavData.add(getResources().getString(R.string.nav_login));
 
         mDrawerLayout = findViewById(R.id.drawer_layout);
         mDrawerView = findViewById(R.id.navigation_list_view);
@@ -96,10 +97,15 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            if(position == 0) {
+            String viewText = (String)((TextView)view).getText();
+
+            if(viewText.equals(getResources().getString(R.string.nav_gallery))) {
                 getImageFromGallery();
             }
-            else if(position == 9) {
+            else if(viewText.equals(getResources().getString(R.string.nav_results))){
+                goResults();
+            }
+            else if(viewText.equals(getResources().getString(R.string.nav_login))) {
                 goLogin();
             }
         }
@@ -119,6 +125,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void goLogin(){
         Intent intent = new Intent(this, LoginController.class);
+
+        startActivity(intent);
+    }
+
+    private void goResults(){
+        Intent intent = new Intent(this, ResultsController.class);
 
         startActivity(intent);
     }
