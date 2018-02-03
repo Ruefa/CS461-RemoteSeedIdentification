@@ -6,9 +6,9 @@
     android:layout_height="match_parent"
     tools:context="com.capstone.remoteseedidentification.ResultsController">
 
-    <TextView
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Im here"/>
+        android:layout_height="match_parent"
+        android:src="@drawable/results_example"/>
 
 </android.support.constraint.ConstraintLayout>
