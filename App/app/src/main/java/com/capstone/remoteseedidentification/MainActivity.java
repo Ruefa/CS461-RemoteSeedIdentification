@@ -23,6 +23,7 @@ import android.widget.ListView;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -30,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Camera mCamera;
     private CameraView mCameraView;
-    private String[] mNavData;
+    private ArrayList<String> mNavData;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerView;
 
@@ -78,9 +79,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initNavigation(){
-        mNavData = dummyData(10);
-        mNavData[0] = "Image from gallery";
-        mNavData[9] = "Login";
+        mNavData = new ArrayList<>();
+        mNavData.add("Image from gallery");
+        mNavData.add("Results");
+        mNavData.add("Login");
 
         mDrawerLayout = findViewById(R.id.drawer_layout);
         mDrawerView = findViewById(R.id.navigation_list_view);
