@@ -79,6 +79,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void initNavigation(){
         mNavData = dummyData(10);
+        mNavData[0] = "Image from gallery";
+        mNavData[9] = "Login";
+
         mDrawerLayout = findViewById(R.id.drawer_layout);
         mDrawerView = findViewById(R.id.navigation_list_view);
 
@@ -100,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //makes dummy strings for testing
     private String[] dummyData(int numData){
 
         String[] data = new String[numData];
