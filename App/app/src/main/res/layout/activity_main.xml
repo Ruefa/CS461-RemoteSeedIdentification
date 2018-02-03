@@ -12,18 +12,41 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <Button
-        android:id="@+id/image_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="takePicture"
-        android:text="Snap"
-        android:visibility="invisible"/>
+
 
     <FrameLayout
         android:id="@+id/cam_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <!-- Button size explodes without LinearLayout -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="bottom">
+        <Button
+            android:id="@+id/image_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="takePicture"
+            android:text="Snap"
+            android:visibility="visible"/>
+
+        <Button
+            android:id="@+id/button_conf_accept"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            android:text="Accept"/>
+
+        <Button
+            android:id="@+id/button_conf_deny"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            android:text="Deny"/>
+    </LinearLayout>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/navigation"
