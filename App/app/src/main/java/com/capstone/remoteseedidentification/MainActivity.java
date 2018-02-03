@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 Uri imageUri = data.getData();
                 InputStream imageStream = getContentResolver().openInputStream(imageUri);
-                mByteImage = getBytes(imageStream);
+                //mByteImage = getBytes(imageStream);
                 Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
                 mThumbView.setImageBitmap(selectedImage);
                 mCameraView.setVisibility(View.INVISIBLE); //remove later
@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //https://stackoverflow.com/questions/10296734/image-uri-to-bytesarray
-    //needs testing
+    //needs testing. definitely a bug here
     private byte[] getBytes(InputStream inputStream){
         ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
         int bufferSize = 1024;
