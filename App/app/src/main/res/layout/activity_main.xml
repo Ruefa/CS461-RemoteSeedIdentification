@@ -26,7 +26,7 @@
         android:orientation="vertical"
         android:gravity="bottom">
         <Button
-            android:id="@+id/image_button"
+            android:id="@+id/button_snap"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="takePicture"
@@ -38,6 +38,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="invisible"
+            android:onClick="doImageConf"
             android:text="Accept"/>
 
         <Button
@@ -45,6 +46,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="invisible"
+            android:onClick="doImageConf"
             android:text="Deny"/>
     </LinearLayout>
 
