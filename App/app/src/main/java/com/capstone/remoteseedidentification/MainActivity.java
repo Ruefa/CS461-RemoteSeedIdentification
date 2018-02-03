@@ -22,7 +22,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
     //testing image capture
     private Button mCaptureButton;
     private ImageView mThumbView;
+
+    //image data
+    private byte[] mByteImage;
 
     final static int RESULT_LOAD_IMAGE = 1;
 
@@ -141,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
         mCamera.takePicture(null, null, new Camera.PictureCallback() {
             @Override
             public void onPictureTaken(byte[] data, Camera camera) {
+                mByteImage = data;
                 Bitmap thumbBitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
                 mThumbView.setImageBitmap(thumbBitmap);
                 mCaptureButton.setVisibility(View.INVISIBLE);
@@ -162,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 Uri imageUri = data.getData();
                 InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                mByteImage = getBytes(imageStream);
                 Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
                 mThumbView.setImageBitmap(selectedImage);
                 mCameraView.setVisibility(View.INVISIBLE); //remove later
@@ -170,5 +177,29 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+    }
+
+    //https://stackoverflow.com/questions/10296734/image-uri-to-bytesarray
+    //needs testing
+    private byte[] getBytes(InputStream inputStream){
+        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+        int bufferSize = 1024;
+        byte[] buffer = new byte[bufferSize];
+
+        int len = 0;
+        try {
+            while ((len = inputStream.read(buffer)) != -1) {
+                byteBuffer.write(buffer, 0, len);
+            }
+            return byteBuffer.toByteArray();
+        }
+        catch (IOException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void doImageConf(View v){
+
     }
 }
