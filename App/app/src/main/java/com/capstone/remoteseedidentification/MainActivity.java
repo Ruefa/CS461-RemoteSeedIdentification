@@ -13,6 +13,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -21,6 +22,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -210,6 +212,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void doImageConf(View v){
+        Toast toast;
 
+        switch(v.getId()){
+            case R.id.button_conf_accept:
+                toast = Toast.makeText(this, "Image Sent", Toast.LENGTH_LONG);
+                break;
+
+            case R.id.button_conf_deny:
+                toast = Toast.makeText(this, "Image Denied", Toast.LENGTH_LONG);
+                break;
+
+            default:
+                Log.e("doImageConf", "Unknown id: " + v.getId() );
+                return;
+        }
+
+        toast.show();
+
+        mCamera.startPreview();
+        mCameraView.setVisibility(View.VISIBLE);
+        mCaptureButton.setVisibility(View.VISIBLE);
+        findViewById(R.id.button_conf_accept).setVisibility(View.GONE);
+        findViewById(R.id.button_conf_deny).setVisibility(View.GONE);
     }
 }
