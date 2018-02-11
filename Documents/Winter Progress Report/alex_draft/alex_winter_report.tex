@@ -85,6 +85,7 @@
 		Most of our activities do not make full use of the screen real estate available so we decided to integrate the camera into our app.
 		Now that we could directly access the camera in the app we made the camera preview the central activity, much like Snapchat.
 		Once the camera preview was setup, getting an image to send was an easy task and it is conveniently passed in as a byte array.
+		We also allow users to select images from their phones gallery; this is much easier because Android can call on the phones native gallery and pass the image back to our code.
 
 		Now that the camera is the central component of the app we need a way to navigate through the app that does not cover the camera preview.
 		A navigation drawer is used to create a menu that can be displayed by swiping in from the left side of the screen.
