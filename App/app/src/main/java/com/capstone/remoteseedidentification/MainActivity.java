@@ -230,6 +230,8 @@ public class MainActivity extends AppCompatActivity {
 
         toast.show();
 
+        //restart camera preview
+        //set visibility appropriately
         mCamera.startPreview();
         mCameraView.setVisibility(View.VISIBLE);
         mCaptureButton.setVisibility(View.VISIBLE);
