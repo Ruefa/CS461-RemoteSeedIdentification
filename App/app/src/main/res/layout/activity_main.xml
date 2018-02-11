@@ -37,7 +37,7 @@
             android:id="@+id/button_conf_accept"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="invisible"
+            android:visibility="gone"
             android:onClick="doImageConf"
             android:text="Accept"/>
 
@@ -45,7 +45,7 @@
             android:id="@+id/button_conf_deny"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="invisible"
+            android:visibility="gone"
             android:onClick="doImageConf"
             android:text="Deny"/>
     </LinearLayout>
