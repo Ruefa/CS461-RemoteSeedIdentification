@@ -86,6 +86,14 @@
 		Now that we could directly access the camera in the app we made the camera preview the central activity, much like Snapchat.
 		Once the camera preview was setup, getting an image to send was an easy task and it is conveniently passed in as a byte array.
 
+		Now that the camera is the central component of the app we need a way to navigate through the app that does not cover the camera preview.
+		A navigation drawer is used to create a menu that can be displayed by swiping in from the left side of the screen.
+		The navigation drawer currently allows users to navigate back to the login activity, to the results activity, or select an image from their phones gallery.
+
+		The login and results activity are mostly skeleton activities.
+		Clicking the login button on the login activity just sends you to the main activity without checking the username or password fields.
+		The results activity just shows an example image from Ethan's work.
+
 \bibliographystyle{ieeetr}
 \bibliography{bib}
 
