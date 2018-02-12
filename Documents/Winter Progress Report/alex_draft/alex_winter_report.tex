@@ -92,6 +92,7 @@
 		The navigation drawer currently allows users to navigate back to the login activity, to the results activity, or select an image from their phones gallery.
 
 		The login and results activity are mostly skeleton activities.
+		When the app is launched it starts on the login activity, I will need to find a way to save the users credentials and bypass this if they have logged in before.
 		Clicking the login button on the login activity just sends you to the main activity without checking the username or password fields.
 		The results activity just shows an example image from Ethan's work.
 
@@ -120,6 +121,10 @@
 		The purpose of the guide will be to show users what the app can do and how to access or navigate to what they need.
 		The navigation drawer is most pertinent here as users can not see it until they slide it out from the left side.
 
+		An activity to create accounts and a link to it on the login activity need to be created.
+		The only fields needed for account creation is an email and password.
+		The password will have to be protected for transport, how this is done will depend on how we store it in the database.
+
 	\subsection{Issues}
 		The most difficult part so far was just getting started.
 		I first wanted to get a preview from the phone camera but the app kept immediately crashing from what seemed like a completely unrelated issue.
@@ -141,8 +146,8 @@
 		For whatever reason this layout manager made button sizes cover the entire screen even if you manually set the size of the button.
 		I was able to fix this by wrapping the button in a simpler LinearLayout manager.
 
-\bibliographystyle{ieeetr}
-\bibliography{bib}
+%\bibliographystyle{ieeetr}
+%\bibliography{bib}
 
 
 \end{document}
