@@ -95,6 +95,11 @@
 		Clicking the login button on the login activity just sends you to the main activity without checking the username or password fields.
 		The results activity just shows an example image from Ethan's work.
 
+		Currently I am working on converting the output from gallery image selection.
+		As I said earlier images taken directly from the camera are returned in a byte array that is easy to send to our server.
+		Images from the phone's gallery come in a Uri object format and need to be converted to an format that is easier to transmit.
+		Unfortunately the method I wrote to do the conversion is crashing the app and I need to read into the objects more to understand why.
+
 	\subsection{What Is Left}
 		The largest piece of remaining functionality is a connection with our server.
 		The app will need to be able to send images and data for login purposes.
