@@ -123,6 +123,14 @@
 		Mostly the guides would reference an object or variable but not show where it came from or how it was instantiated.
 		Thankfully they used good naming conventions on their variables and I was able to infer what most of the variables did.
 
+		Android uses XML to specify the look and layout of each activity.
+		There are many different layout managers that effect how its children are displayed on the screen.
+		Usually these layouts just relate to where the children components are displayed with each other.
+		The layout manager for the navigation drawer is an exception that caused some headache.
+		In order for the navigation drawer to work it had to be the main layout manager for the activity.
+		For whatever reason this layout manager made button sizes cover the entire screen even if you manually set the size of the button.
+		I was able to fix this by wrapping the button in a simpler LinearLayout manager.
+
 \bibliographystyle{ieeetr}
 \bibliography{bib}
 
