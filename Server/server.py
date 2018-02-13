@@ -1,5 +1,5 @@
-
 import socket
+from connectionHandler import handleConn
 
 def serverInit():
     host = ''
@@ -18,19 +18,19 @@ def serverLoop():
         handleConn(conn)
 
         
-def handleConn(conn):
-    f = open('ReceivedImg.jpg', 'wb')
-
-    buf = conn.recv(4096)
-    while buf:
-        f.write(buf)
-        buf = conn.recv(4096)
-
-    print("File Received")
-
-    conn.send("Image Received\n".encode())
-
-    conn.close()
+#def handleConn(conn):
+#    f = open('ReceivedImg.jpg', 'wb')
+#
+#    buf = conn.recv(4096)
+#    while buf:
+#        f.write(buf)
+#        buf = conn.recv(4096)
+#
+#    print("File Received")
+#
+#    conn.send("Image Received\n".encode())
+#
+#    conn.close()
 
 
 serverLoop()
