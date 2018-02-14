@@ -19,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView mDrawerView;
 
     //testing image capture
-    private Button mCaptureButton;
+    private ImageButton mCaptureButton;
     private ImageView mThumbView;
 
     //image data
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         mThumbView = findViewById(R.id.thumb_view);
         mCaptureButton = findViewById(R.id.button_snap);
+
 
         mCamera = getCameraInstance();
         mCamera.setDisplayOrientation(90);
