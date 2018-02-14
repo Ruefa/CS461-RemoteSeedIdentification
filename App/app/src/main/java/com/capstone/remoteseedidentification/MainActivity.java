@@ -58,13 +58,7 @@ public class MainActivity extends AppCompatActivity {
         mThumbView = findViewById(R.id.thumb_view);
         mCaptureButton = findViewById(R.id.button_snap);
 
-
-        mCamera = getCameraInstance();
-        mCamera.setDisplayOrientation(90);
-
-        mCameraView = new CameraView(this, mCamera);
-        FrameLayout frameLayout = findViewById(R.id.cam_view);
-        frameLayout.addView(mCameraView);
+        initCamera();
 
         initNavigation();
     }
@@ -72,27 +66,32 @@ public class MainActivity extends AppCompatActivity {
     private Camera getCameraInstance(){
         Camera cam = null;
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 50);
-        }
-        else {
-
-            //sleep to give time to accept permissions or app will crash (only on first run)
-            //android.os.SystemClock.sleep(5000);
-
-            try {
-                cam = Camera.open(0);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        try {
+            cam = Camera.open(0);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-            return cam;
+        return cam;
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
 
+    }
+
+    private void initCamera(){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 50);
+        }
+        else {
+            mCamera = getCameraInstance();
+            mCamera.setDisplayOrientation(90);
+
+            mCameraView = new CameraView(this, mCamera);
+            FrameLayout frameLayout = findViewById(R.id.cam_view);
+            frameLayout.addView(mCameraView);
+        }
     }
 
     private void initNavigation(){
