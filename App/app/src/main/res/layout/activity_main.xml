@@ -41,7 +41,7 @@
             android:onClick="takePicture"
             android:src="@drawable/ic_action_snap"
             android:background="@android:color/transparent"
-            android:contentDescription="Yolo"
+            android:contentDescription="@string/button_snap"
             android:scaleType="fitCenter"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="20dp"/>
