@@ -72,20 +72,27 @@ public class MainActivity extends AppCompatActivity {
     private Camera getCameraInstance(){
         Camera cam = null;
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 50);
-
-        //sleep to give time to accept permissions or app will crash (only on first run)
-        //android.os.SystemClock.sleep(5000);
-
-        try{
-            cam = Camera.open(0);
         }
-        catch (Exception e){
-            e.printStackTrace();
+        else {
+
+            //sleep to give time to accept permissions or app will crash (only on first run)
+            //android.os.SystemClock.sleep(5000);
+
+            try {
+                cam = Camera.open(0);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
-        return cam;
+            return cam;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
+
     }
 
     private void initNavigation(){
