@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private byte[] mByteImage;
 
     final static int RESULT_LOAD_IMAGE = 1;
+    final static int CAMERA_PERMISSION_REQUEST = 50;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,12 +78,18 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
-
+        switch (requestCode){
+            case CAMERA_PERMISSION_REQUEST:
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    initCamera();
+                }
+                break;
+        }
     }
 
     private void initCamera(){
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 50);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST);
         }
         else {
             mCamera = getCameraInstance();
