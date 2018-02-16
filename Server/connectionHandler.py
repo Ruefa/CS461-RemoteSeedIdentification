@@ -27,9 +27,7 @@ def makeLogin(credentials):
 # a the username if they are correct or None if not
 def checkLogin(credentials):
     username, password = credentials.split(b'@')
-
-    #TODO Do something to check credentials against DB
-    if True:
+    if db.checkLogin(username, password):
         return 'user'
     else:
         return None
