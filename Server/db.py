@@ -1,22 +1,19 @@
 from pony.orm import *
 
+db = Database()
 
-def dbSetup():
-    db = Database()
+class Account(db.Entity):
+    username = PrimaryKey(bytes)
+    password = Required(bytes)
+    reports = Set('Report')
 
-    class Account(db.Entity):
-        username = PrimaryKey(str)
-        password = Required(str)
-        reports = Set('Report')
+class Report(db.Entity):
+    results = Required(bytes)
+    owner = Required(Account)
 
-    class Report(db.Entity):
-        results = Required(str)
-        owner = Required(Account)
+db.bind(provider='sqlite', filename=':memory:')
+db.generate_mapping(create_tables=True)
 
-    db.bind(provider='sqlite', filename=':memory:')
-    db.generate_mapping(create_tables=True)
-
-    return db
 
 @db_session
 def makeLogin(username, password):
