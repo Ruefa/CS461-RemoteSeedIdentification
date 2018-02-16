@@ -81,16 +81,36 @@ def testRunAnalysis(path):
 
         s.shutdown(socket.SHUT_WR)
 
-        print(s.recv(1024).decode())
+        print('Run Analysis Results:', s.recv(1024).decode())
+    except (ConnectionRefusedError, socket.gaierror):
+        print ('Connection failed')
+    finally:
+        s.close()
+
+def testGetReportList():
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect(('localhost', port))
+        
+        msg = b'dUserName@Password'
+
+        s.sendall(msg)
+
+        s.shutdown(socket.SHUT_WR)
+
+        print('Get Report List Results:', s.recv(1024).decode())
     except (ConnectionRefusedError, socket.gaierror):
         print ('Connection failed')
     finally:
         s.close()
 
 
+
         
 testMakeAccount()
 testLogin()
 testRunAnalysis('/Users/quanah/Desktop/test.jpg') # Only works on my local machine (obviously)
+testGetReportList()
+
 
 

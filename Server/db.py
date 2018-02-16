@@ -37,7 +37,7 @@ def addReport(username, results):
 
 @db_session
 def getReportList(username):
-    return select(x.id for x in Account[username].reports)[:]
+    return select(x.results for x in Report if x.owner == Account[username])[:]
 
 @db_session
 def getReport(username, report):

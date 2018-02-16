@@ -48,10 +48,9 @@ def runAnalysis(img, user):
     return results
     
 def getReportList(user):
-    #TODO More database stuff
     #TODO Figure out a format for this. Could just use delimiters or
     #     could use xml or JSON, ect.
-    return [b'Test Report 1', b'Test Report 2']
+    return db.getReportList(user)
 
 # Get the report stored in the data base with id 'report' under username 'user'
 def getReport(user, report):
@@ -88,7 +87,7 @@ def handleConn(conn):
         user = checkLogin(readData(conn))
         if user:
             data = b'|'.join(getReportList(user))
-            conn.sendData(conn, data)
+            sendData(conn, data)
         else:
             conn.send(bytes([0])) # Invalid login
     elif msgType == b'e': # Request a specific report
