@@ -1,0 +1,153 @@
+\documentclass[onecolumn, draftclsnofoot,10pt, compsoc]{IEEEtran}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{setspace}
+\usepackage{cite}
+
+\usepackage{geometry}
+\geometry{textheight=9.5in, textwidth=7in}
+
+% 1. Fill in these details
+\def \CapstoneTeamName{		Remote Seed}
+\def \CapstoneTeamNumber{		12}
+\def \GroupMemberOne{			Quanah Green}
+\def \GroupMemberTwo{			Alex Ruef}
+\def \GroupMemberThree{			Ethan Takla}
+\def \CapstoneProjectName{		Remote Seed Identification}
+\def \CapstoneSponsorCompany{	Crop and Soil Science Department, OSU}
+\def \CapstoneSponsorPerson{		Dan Curry}
+
+% 2. Uncomment the appropriate line below so that the document type works
+\def \DocType{		%Problem Statement
+				%Requirements Document
+				%Technology Review
+				%Design Document
+				Progress Report
+				}
+			
+\newcommand{\NameSigPair}[1]{\par
+\makebox[2.75in][r]{#1} \hfil 	\makebox[3.25in]{\makebox[2.25in]{\hrulefill} \hfill		\makebox[.75in]{\hrulefill}}
+\par\vspace{-12pt} \textit{\tiny\noindent
+\makebox[2.75in]{} \hfil		\makebox[3.25in]{\makebox[2.25in][r]{Signature} \hfill	\makebox[.75in][r]{Date}}}}
+% 3. If the document is not to be signed, uncomment the RENEWcommand below
+\renewcommand{\NameSigPair}[1]{#1}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\begin{titlepage}
+    \pagenumbering{gobble}
+    \begin{singlespace}
+    	%\includegraphics[height=4cm]{coe_v_spot1}
+        \hfill 
+        % 4. If you have a logo, use this includegraphics command to put it on the coversheet.
+        %\includegraphics[height=4cm]{CompanyLogo}   
+        \par\vspace{.2in}
+        \centering
+        \scshape{
+            \huge CS Capstone \DocType \par
+            {\large\today}\par
+            \vspace{.5in}
+            \textbf{\Huge\CapstoneProjectName}\par
+            \vfill
+            {\large Prepared for}\par
+            \Huge \CapstoneSponsorCompany\par
+            \vspace{5pt}
+            {\Large\NameSigPair{\CapstoneSponsorPerson}\par}
+            {\large Prepared by }\par
+            Group\CapstoneTeamNumber\par
+            % 5. comment out the line below this one if you do not wish to name your team
+            \CapstoneTeamName\par 
+            \vspace{5pt}
+            {\Large
+                \NameSigPair{\GroupMemberOne}\par
+                \NameSigPair{\GroupMemberTwo}\par
+                \NameSigPair{\GroupMemberThree}\par
+            }
+            \vspace{20pt}
+        }
+        \begin{abstract}
+        		
+
+        \end{abstract}     
+    \end{singlespace}
+\end{titlepage}
+\newpage
+\pagenumbering{arabic}
+\tableofcontents
+% 7. uncomment this (if applicable). Consider adding a page break.
+%\listoffigures
+%\listoftables
+\clearpage
+\section{Mobile Application}
+	\subsection{Where We Are}
+		At its core the app will be used to send images to the server, because of this I decided to tackle camera manipulation first.
+		For our purposes there are two options for including the camera, the phones camera application can be called or the camera can be integrated directly into the app.
+		Most of our activities do not make full use of the screen real estate available so we decided to integrate the camera into our app.
+		Now that we could directly access the camera in the app we made the camera preview the central activity, much like Snapchat.
+		Once the camera preview was setup, getting an image to send was an easy task and it is conveniently passed in as a byte array.
+		We also allow users to select images from their phones gallery; this is much easier because Android can call on the phones native gallery and pass the image back to our code.
+
+		Now that the camera is the central component of the app we need a way to navigate through the app that does not cover the camera preview.
+		A navigation drawer is used to create a menu that can be displayed by swiping in from the left side of the screen.
+		The navigation drawer currently allows users to navigate back to the login activity, to the results activity, or select an image from their phones gallery.
+
+		The login and results activity are mostly skeleton activities.
+		When the app is launched it starts on the login activity, I will need to find a way to save the users credentials and bypass this if they have logged in before.
+		Clicking the login button on the login activity just sends you to the main activity without checking the username or password fields.
+		The results activity just shows an example image from Ethan's work.
+
+		Currently I am working on converting the output from gallery image selection.
+		As I said earlier images taken directly from the camera are returned in a byte array that is easy to send to our server.
+		Images from the phone's gallery come in a Uri object format and need to be converted to an format that is easier to transmit.
+		Unfortunately the method I wrote to do the conversion is crashing the app and I need to read into the objects more to understand why.
+
+	\subsection{What Is Left}
+		The largest piece of remaining functionality is a connection with our server.
+		The app will need to be able to send images and data for login purposes.
+		Results also need to be sent from the server to be displayed in the app.
+		Once a connection is established an account creation activity needs to be created as well.
+
+		When all the functionality is working the UI and general look of the app needs to be made to look like a professional app.
+		The navigation drawer needs a lot of adjustments to its size and each element within it needs to be stylized.
+		Buttons need to be changed to match a more consistent style.
+		A logo to display and more use of icons would go a long way in making the app look cleaner.
+
+		The results activity needs a lot of work once the exact output from the seed identification algorithm is ironed out.
+		A list is needed to show all the current user's sample results.
+		A single result will consist of an image marked by the algorithm and text describing what the algorithm found.
+
+		When more of the UI is done a user guide will need to be made.
+		This can either be shown on first launch of the app or by the click of the button.
+		The purpose of the guide will be to show users what the app can do and how to access or navigate to what they need.
+		The navigation drawer is most pertinent here as users can not see it until they slide it out from the left side.
+
+		An activity to create accounts and a link to it on the login activity need to be created.
+		The only fields needed for account creation is an email and password.
+		The password will have to be protected for transport, how this is done will depend on how we store it in the database.
+
+	\subsection{Issues}
+		The most difficult part so far was just getting started.
+		I first wanted to get a preview from the phone camera but the app kept immediately crashing from what seemed like a completely unrelated issue.
+		The app could not find the startup activity despite it clearly existing where it should be and the IDE being able to find it.
+		I read through a lot of Stackoverflow posts but none of them helped.
+		Finally, I created a brand new project and copied the camera code to it and it worked just fine.
+		The initial project had to be scrapped and created anew; thankfully I caught this early and not much except for time was lost.
+		
+		Getting the camera to display in the app was not easy either.
+		Android has a few different guides for doing this, all of which were missing important bits of code here and there.
+		Mostly the guides would reference an object or variable but not show where it came from or how it was instantiated.
+		Thankfully they used good naming conventions on their variables and I was able to infer what most of the variables did.
+
+		Android uses XML to specify the look and layout of each activity.
+		There are many different layout managers that effect how its children are displayed on the screen.
+		Usually these layouts just relate to where the children components are displayed with each other.
+		The layout manager for the navigation drawer is an exception that caused some headache.
+		In order for the navigation drawer to work it had to be the main layout manager for the activity.
+		For whatever reason this layout manager made button sizes cover the entire screen even if you manually set the size of the button.
+		I was able to fix this by wrapping the button in a simpler LinearLayout manager.
+
+%\bibliographystyle{ieeetr}
+%\bibliography{bib}
+
+
+\end{document}
