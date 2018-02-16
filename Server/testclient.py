@@ -104,6 +104,23 @@ def testGetReportList():
     finally:
         s.close()
 
+def testGetReport():
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect(('localhost', port))
+        
+        msg = b'eUserName@Password|' + (1).to_bytes(4, 'big')
+
+        s.sendall(msg)
+
+        s.shutdown(socket.SHUT_WR)
+
+        print('Get Report Results:', s.recv(1024).decode())
+    except (ConnectionRefusedError, socket.gaierror):
+        print ('Connection failed')
+    finally:
+        s.close()
+
 
 
         
@@ -111,6 +128,7 @@ testMakeAccount()
 testLogin()
 testRunAnalysis('/Users/quanah/Desktop/test.jpg') # Only works on my local machine (obviously)
 testGetReportList()
+testGetReport()
 
 
 

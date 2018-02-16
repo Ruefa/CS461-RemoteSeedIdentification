@@ -41,5 +41,6 @@ def getReportList(username):
 
 @db_session
 def getReport(username, report):
-    return select(x for x in Account[username].reports if x.id == report)
+    #TODO Use get or something here, this is bad
+    return select(x.results for x in Report if x.owner == Account[username] and x.id == report)[:]
 

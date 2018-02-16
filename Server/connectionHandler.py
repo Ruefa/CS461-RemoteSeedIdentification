@@ -54,8 +54,7 @@ def getReportList(user):
 
 # Get the report stored in the data base with id 'report' under username 'user'
 def getReport(user, report):
-    #TODO DB
-    return b'Test Report'
+    return db.getReport(user, int.from_bytes(report, 'big'))[0]
 
 def handleConn(conn):
     msgType = conn.recv(1)
@@ -86,6 +85,7 @@ def handleConn(conn):
     elif msgType == b'd': # Request list of reports for certain username
         user = checkLogin(readData(conn))
         if user:
+            #TODO send report ids instead of results?
             data = b'|'.join(getReportList(user))
             sendData(conn, data)
         else:
@@ -94,6 +94,7 @@ def handleConn(conn):
         data = readData(conn)
         credentials, data = data.split(b'|', maxsplit=1)
         user = checkLogin(credentials)
+        #TODO Error checking (does report exist?)
         if user:
             report = getReport(user, data)
         else:
