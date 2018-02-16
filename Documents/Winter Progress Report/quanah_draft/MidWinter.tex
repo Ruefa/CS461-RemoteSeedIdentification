@@ -1,0 +1,153 @@
+\documentclass[onecolumn, draftclsnofoot,10pt, compsoc]{IEEEtran}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{setspace}
+
+\usepackage{geometry}
+\geometry{textheight=9.5in, textwidth=7in}
+
+% 1. Fill in these details
+\def \CapstoneTeamName{		Remote Seed}
+\def \CapstoneTeamNumber{		12}
+\def \GroupMemberOne{			Quanah Green}
+\def \GroupMemberTwo{			Alex Reufa}
+\def \GroupMemberThree{			Ethan Talka}
+\def \CapstoneProjectName{		Remote Seed Identification}
+\def \CapstoneSponsorCompany{	OSU Seed Lab}
+\def \CapstoneSponsorPerson{		Dan Curry}
+
+% 2. Uncomment the appropriate line below so that the document type works
+\def \DocType{		%Problem Statement
+				%Requirements Document
+				%Technology Review
+				%Design Document
+				Progress Report
+				}
+			
+\newcommand{\NameSigPair}[1]{\par
+\makebox[2.75in][r]{#1} \hfil 	\makebox[3.25in]{\makebox[2.25in]{\hrulefill} \hfill		\makebox[.75in]{\hrulefill}}
+\par\vspace{-12pt} \textit{\tiny\noindent
+\makebox[2.75in]{} \hfil		\makebox[3.25in]{\makebox[2.25in][r]{Signature} \hfill	\makebox[.75in][r]{Date}}}}
+% 3. If the document is not to be signed, uncomment the RENEWcommand below
+\renewcommand{\NameSigPair}[1]{#1}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\begin{titlepage}
+    \pagenumbering{gobble}
+    \begin{singlespace}
+    	\includegraphics[height=4cm]{coe_v_spot1}
+        \hfill 
+        % 4. If you have a logo, use this includegraphics command to put it on the coversheet.
+        %\includegraphics[height=4cm]{CompanyLogo}   
+        \par\vspace{.2in}
+        \centering
+        \scshape{
+            \huge CS Capstone \DocType \par
+            {\large\today}\par
+            \vspace{.5in}
+            \textbf{\Huge\CapstoneProjectName}\par
+            \vfill
+            {\large Prepared for}\par
+            \Huge \CapstoneSponsorCompany\par
+            \vspace{5pt}
+            {\Large\NameSigPair{\CapstoneSponsorPerson}\par}
+            {\large Prepared by }\par
+            Group\CapstoneTeamNumber\par
+            % 5. comment out the line below this one if you do not wish to name your team
+            \CapstoneTeamName\par 
+            \vspace{5pt}
+            {\Large
+                \NameSigPair{\GroupMemberOne}\par
+                \NameSigPair{\GroupMemberTwo}\par
+                \NameSigPair{\GroupMemberThree}\par
+            }
+            \vspace{20pt}
+        }
+        \begin{abstract}
+
+        \end{abstract}     
+    \end{singlespace}
+\end{titlepage}
+\newpage
+\pagenumbering{arabic}
+\tableofcontents
+% 7. uncomment this (if applicable). Consider adding a page break.
+%\listoffigures
+%\listoftables
+\clearpage
+
+% 8. now you write!
+
+\section{Intro --- Quanah Green}
+My responsibilities for this project consist of creating a server to act as an intermediary between our mobile app and the Jetson TX2 where the image analyses will be run.
+This server needs to allow the effective transmission of data and commands from the app to the analysis code.
+It also needs to maintain a database of user accounts and past reports.
+Finally, it needs to securely manage user account and validate login attempts.
+
+\section{The Server}
+The server is implemented as a TCP socket server in Python 3 using Python's native socket library.
+The server will run locally on the same Jetson TX2 unit as the analysis code.
+While a dedicated server is in most ways a better solution, having the server running on the same hardware as the analysis code is simpler and means that we only need one machine dedicated to the project, thereby reducing costs.
+As currently implemented it handles a single connection at a time, queueing additional requests until the current connection is closed.
+Queueing connection requests is the default method of dealing with concurrent requests.
+While perfect in its elegant simplicity for early pre-releases, we would like to be able to actually serve multiple requests concurrently.
+With that in mind I plan to switch to a multi-threaded model, which will -- at the cost of some processing power -- reduce wait times, especially as the system becomes more heavily used.
+
+I have also begun to consider what we can do security-wise to protect the system and its users.
+Initially my thoughts were that not much security would be necessary, as seed analyses aren't exactly sensitive information.
+Thinking about it more, however, I realized that that is not a fair attitude towards our users' privacy.
+Furthermore, we will be sending usernames and passwords over network connections, which, considering many people use the same passwords everywhere, must be made secure.
+So far I haven't taken any steps to accomplish this, but I've begun to do some reasearch.
+It seems that the best solution is going to be to wrap the sockets using TLS encryption (a library for which is included natively with Python).
+I still need to do some more research to determine if this is the best option, and if so how to best set it up for reasonable security.
+
+The server code is also, currently, pretty optimistic. If and when things go wrong they won't be handled very gracefully.
+A lot of error checking still needs to be implemented.
+
+\section{The Server Protocol}
+The server protocol specifies what format incoming and outgoing messages should take.
+I have identified five different types of server request that should be able to support our basic use cases:
+\begin{itemize}
+    \item Create new account
+    \item Login to existing account
+    \item Request a new analysis and generate a report
+    \item Get a list of past reports for a user
+    \item Get a specific report
+\end{itemize}
+
+These request types are distinguished from each other by prepending a single byte code to the message that indicates what sort of request the message is.
+Each request includes a username and password to ensure that the sender has the proper qualifications to request data.
+My initial thought was that the client app could keep track of if the user is logged in, but then I realized that that would make the system completely unsecured to messages not sent by our app.
+Usernames and passwords can be of arbitrary length, as they are delimited from each other and from other information in the request.
+
+This protocol is in no way set in stone at this stage, but it is a good start, that will allow us to get core functionality working.
+I'm pretty confident that those five request types are perfectly sufficient for most of what we need.
+If we want to add more advanced functionality like searching for reports by certain attributes, there are 250 more values available to the byte that indicates message types, and adding new types is fairly straightforward.
+
+Each of these request types is currently handled by the server, though we haven't linked the server code to the analysis code yet, so report generation and fetching is using dummy data.
+
+There is still work to be done to finalize the formatting of each command as well.
+We have yet to determine what exactly a report will look like, and which datum it will include, so the exact specifications for those commands are still undefined -- aside for what I am using for testing purposes.
+I also want to figure out a way to keep track of logged in users on the server and eliminate the need to send usernames and passwords with every message.
+
+\section{The Database}
+The database is an SQLite database that will be hosted on a hard-drive connected to the SATA port on the Jetson TX2.
+It is managed in Python using the PonyORM library.
+The database itself is quite simple, storing only user account information and analysis results.
+The current state of the database code allows data corresponding to each type of server message to be inserted or retrieved from the database as appropriate.
+
+As previously mentioned, report format is still up in the air, so we are again using dummy data in the database when it comes to reports, but the framework is there once we figure out the reports themselves.
+Overall I'm pretty happy with the database management system as it stands, though I need to add more error checking.
+I also would like to encrypt passwords in the database.
+Currently they are stored as plaintext, which -- as I understand it -- leaves them vulnerable to attack.
+I have done a little research into accepted solutions to that issue, but I need to continue that research further before implementing a solution.
+
+\section{Next Steps}
+The next step is to get the Jetson up and running and start testing on the actual hardware instead of on my local machine, where I have done all testing and development up to this point.
+Once the Jetson is up and running we also need to get some of the analysis code on there so that I can link it up with the server code.
+After that, I will help Alex get the Client side of the network communications working, at which point we should have a fully functional system, even if it is a little rough around the edges.
+Once we have that I will turn my attention back towards the error checking and security concerns I mentioned earlier for the database and server.
+
+\end{document}
+
