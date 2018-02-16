@@ -1,4 +1,6 @@
 import socket
+import db
+from pony import orm
 
 # Reads a stream of data from the connection and returns it all as a bytes object
 def readData(conn, chunkSize = 4096):
@@ -14,6 +16,12 @@ def readData(conn, chunkSize = 4096):
 def sendData(conn, data):
     #TODO May be more robust to use send in a loop? Investigate further
     conn.sendall(data)
+
+# Makes a new login
+# Returns True on success, else False
+def makeLogin(credentials):
+    username, password = credentials.split(b'@')
+    return db.makeLogin(username, password)
 
 # Takes credentials in the format username@password and returns 
 # a the username if they are correct or None if not
@@ -49,12 +57,17 @@ def handleConn(conn):
     # ASCII letters alphabetically from 'a' are used to indicate message type.
     # Using ASCII is convenient for pythons representation of received data, 
     # and I can't think of meaningful single character codes for every action
-    if msgType == b'a': # Login Info
+    if msgType == b'a': # Make Login
+        if makeLogin(readData(conn)):
+            conn.send(bytes([1])) # Valid login
+        else:
+            conn.send(bytes([0])) # Invalid login
+    elif msgType == b'b': # Login Info
         if checkLogin(readData(conn)):
             conn.send(bytes([1])) # Valid login
         else:
             conn.send(bytes([0])) # Invalid login
-    elif msgType == b'b': # Request new analysis
+    elif msgType == b'c': # Request new analysis
         data = readData(conn)
         credentials, data = data.split(b'|')
         user = checkLogin(credentials)
@@ -64,14 +77,14 @@ def handleConn(conn):
         else:
             conn.send(bytes([0])) # Invalid login
         sendData(conn, report)
-    elif msgType == b'c': # Request list of reports for certain username
+    elif msgType == b'd': # Request list of reports for certain username
         user = checkLogin(readData(conn))
         if user:
             data = b'|'.join(getReportList(user))
             conn.sendData(conn, data)
         else:
             conn.send(bytes([0])) # Invalid login
-    elif msgType == b'd': # Request a specific report
+    elif msgType == b'e': # Request a specific report
         data = readData(conn)
         credentials, data = data.split(b'|')
         user = checkLogin(credentials)
