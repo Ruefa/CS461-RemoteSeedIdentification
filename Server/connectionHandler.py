@@ -28,16 +28,25 @@ def makeLogin(credentials):
 def checkLogin(credentials):
     username, password = credentials.split(b'@')
     if db.checkLogin(username, password):
-        return 'user'
+        return username
     else:
         return None
 
 def runAnalysis(img, user):
     #TODO Link in with Ethans work
     #     Generate and return results
-    #     Store them in DB
-    return b'Analysis run (this is a placeholder)'
+    
+    # Temp code to write image to local directory, showing that 
+    # it was received
+    f = open('ReceivedImg.jpg', 'wb')
+    f.write(img)
+    
 
+    results = b'Report Results Placeholder'
+    db.addReport(user, results)
+    
+    return results
+    
 def getReportList(user):
     #TODO More database stuff
     #TODO Figure out a format for this. Could just use delimiters or
@@ -67,14 +76,14 @@ def handleConn(conn):
             conn.send(bytes([0])) # Invalid login
     elif msgType == b'c': # Request new analysis
         data = readData(conn)
-        credentials, data = data.split(b'|')
+        credentials, data = data.split(b'|', maxsplit=1)
         user = checkLogin(credentials)
         if user:
             #TODO Add some error checking here
             report = runAnalysis(data, user)
+            sendData(conn, report)
         else:
             conn.send(bytes([0])) # Invalid login
-        sendData(conn, report)
     elif msgType == b'd': # Request list of reports for certain username
         user = checkLogin(readData(conn))
         if user:
@@ -84,7 +93,7 @@ def handleConn(conn):
             conn.send(bytes([0])) # Invalid login
     elif msgType == b'e': # Request a specific report
         data = readData(conn)
-        credentials, data = data.split(b'|')
+        credentials, data = data.split(b'|', maxsplit=1)
         user = checkLogin(credentials)
         if user:
             report = getReport(user, data)

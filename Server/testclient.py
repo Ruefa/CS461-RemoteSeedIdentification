@@ -64,8 +64,33 @@ def testLogin():
     finally:
         s.close()
 
+def testRunAnalysis(path):
+    f = open(path, 'rb')
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect(('localhost', port))
+
+        msg = b'cUserName@Password|'
+
+        s.sendall(msg)
+        
+        buf = f.read(4096)
+        while buf:
+            s.sendall(buf)
+            buf = f.read(4096)
+
+        s.shutdown(socket.SHUT_WR)
+
+        print(s.recv(1024).decode())
+    except (ConnectionRefusedError, socket.gaierror):
+        print ('Connection failed')
+    finally:
+        s.close()
+
 
         
 testMakeAccount()
 testLogin()
+testRunAnalysis('/Users/quanah/Desktop/test.jpg') # Only works on my local machine (obviously)
+
 
