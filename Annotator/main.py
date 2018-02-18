@@ -12,6 +12,12 @@ MIN_AREA = 500
 # The application
 app = None
 
+# Defaults for the dataset builder
+DEFAULT_SLICE_DIM = 300
+DEFAULT_TRAIN_SIZE = 0.85
+DEFAULT_TEST_SIZE = 0.1
+DEFAULT_VAL_SIZE = 0.05
+
 class MainWindow(Frame):
 
     # Directory of the dataset
@@ -99,6 +105,11 @@ class MainWindow(Frame):
         self.fileMenu.add_command(label="Exit", command=self.quit)
         self.menubar.add_cascade(label="File", menu=self.fileMenu)
 
+        # Create tool menu and add to menu bar
+        self.toolMenu = tk.Menu(self.menubar,tearoff=0)
+        self.toolMenu.add_command(label="Build dataset...", command=self.create_builder_window)
+        self.menubar.add_cascade(label="Tools", menu=self.toolMenu)
+
         # Create help menu and add to menu bar
         self.helpMenu = tk.Menu(self.menubar, tearoff=0)
         self.helpMenu.add_command(label="How to use...", command=self.quit)
@@ -107,29 +118,29 @@ class MainWindow(Frame):
 
         self.focus_set()
 
-    def create_window(self):
+    def create_class_window(self):
 
-        self.t = tk.Toplevel(self)
+        self.class_window = tk.Toplevel(self)
 
         # Stores the value of the new class to be added
         self.new_class = tk.StringVar()
 
         # Create title
-        self.t.wm_title("New class")
+        self.class_window.wm_title("New class")
 
         # Add label
-        tk.Label(self.t, text="Enter a new class: ", pady=10).grid(row=0)
+        tk.Label(self.class_window, text="Enter a new class: ", pady=10).grid(row=0)
 
         # Add entry
-        entry = tk.Entry(self.t, textvariable=self.new_class)
+        entry = tk.Entry(self.class_window, textvariable=self.new_class)
         entry.grid(row=0, column=1)
 
         # Add button
-        tk.Button(self.t, text="OK",command=self.add_class).grid(row=0, column=2, padx=10)
+        tk.Button(self.class_window, text="OK",command=self.add_class).grid(row=0, column=2, padx=10)
 
         x = self.master.winfo_rootx()
         y = self.master.winfo_rooty()
-        self.t.geometry("350x40+%d+%d" % (x, y))
+        self.class_window.geometry("350x40+%d+%d" % (x, y))
 
     def save_annotation(self, event):
 
@@ -196,7 +207,69 @@ class MainWindow(Frame):
         print(item)
         if item == "Add a new class...":
 
-            self.create_window()
+            self.create_class_window()
+
+    def create_builder_window(self):
+
+        self.builder_window = tk.Toplevel(self)
+
+        # Create title
+        self.builder_window.wm_title("Build dataset")
+
+        # Create variables for dataset builder
+        self.raw_images_path = tk.StringVar()
+        self.slice_dim = tk.StringVar()
+        self.train_size = tk.StringVar()
+        self.test_size = tk.StringVar()
+        self.val_size = tk.StringVar()
+
+        self.raw_images_path.set("Select a path...")
+        self.slice_dim.set(str(DEFAULT_SLICE_DIM))
+        self.train_size.set(str(DEFAULT_TRAIN_SIZE))
+        self.test_size.set(str(DEFAULT_TEST_SIZE))
+        self.val_size.set(str(DEFAULT_VAL_SIZE))
+
+        # Add labels
+        tk.Label(self.builder_window, text="Slice pixel dimension", pady=10, padx=10).grid(row=0, stick=W)
+        tk.Label(self.builder_window, text="Training set size:", pady=10, padx=10).grid(row=1, stick=W)
+        tk.Label(self.builder_window, text="Testing set size:", pady=10, padx=10).grid(row=2, stick=W)
+        tk.Label(self.builder_window, text="Validation set size:", pady=10, padx=10).grid(row=3, stick=W)
+        tk.Label(self.builder_window, text="Raw image path", pady=10, padx=10).grid(row=4, stick=W)
+
+        # Add entries
+        raw_images_path_entry = tk.Entry(self.builder_window, textvariable=self.raw_images_path, justify=tk.CENTER)
+        slice_dim_entry = tk.Entry(self.builder_window, textvariable=self.slice_dim, justify=tk.CENTER)
+        train_size_entry = tk.Entry(self.builder_window, textvariable=self.train_size, justify=tk.CENTER)
+        test_size_entry = tk.Entry(self.builder_window, textvariable=self.test_size, justify=tk.CENTER)
+        val_size_entry = tk.Entry(self.builder_window, textvariable=self.val_size, justify=tk.CENTER)
+
+        # Bind click event for selecting dataset
+        raw_images_path_entry.bind("<1>", self.select_raw_images_path)
+
+        slice_dim_entry.grid(row=0, column=1, sticky=W)
+        train_size_entry.grid(row=1, column=1, sticky=W)
+        test_size_entry.grid(row=2, column=1, sticky=W)
+        val_size_entry.grid(row=3, column=1, sticky=W)
+        raw_images_path_entry.grid(row=4, column=1, sticky=W)
+
+        # Add button
+        tk.Button(self.builder_window, text="OK", command=self.build_dataset).grid(row=5, column=1, sticky=E)
+
+        x = self.master.winfo_rootx()
+        y = self.master.winfo_rooty()
+        self.builder_window.geometry("330x220+%d+%d" % (x, y))
+
+    def select_raw_images_path(self, event):
+
+        # Get the directory of the raw dataset
+        self.raw_images_path.set(filedialog.askdirectory(initialdir="/", title='Please select a directory'))
+
+        # Bring builder window back to the front
+        self.builder_window.lift()
+
+    def build_dataset(self):
+
+        print("Building dataset...")
 
     def refresh_class_dropdown(self):
 
