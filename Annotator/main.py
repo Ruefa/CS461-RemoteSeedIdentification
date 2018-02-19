@@ -4,7 +4,12 @@ from tkinter.ttk import Frame, Button, Label, Style
 from PIL import Image, ImageTk
 import cv2
 import os
+import shutil
 import xml.etree.cElementTree as et
+import random
+from datetime import datetime
+import math
+import ntpath
 
 # Minimum area required to draw a bounding box
 MIN_AREA = 500
@@ -72,9 +77,9 @@ class MainWindow(Frame):
         self.bind('s', self.save_annotation)
 
         # Create image canvas
-        self.canvas = tk.Canvas(self, width=512, height=512, background='white')
+        self.canvas = tk.Canvas(self, width=300, height=300, background='white')
         self.canvas.grid(row=0, column=0, columnspan=2, rowspan=4,
-                  pady=10, padx=10, sticky=N)
+                  pady=10, padx=10, sticky=tk.NW)
         self.image_on_canvas = self.canvas.create_image(0, 0, anchor=tk.NW, image=None)
 
         # Create canvas mouse handlers for rectangles
@@ -269,7 +274,23 @@ class MainWindow(Frame):
 
     def build_dataset(self):
 
-        print("Building dataset...")
+        # Remove the previous data set
+        if os.path.exists("SeedDatasetVOC"):
+            shutil.rmtree("SeedDatasetVOC")
+
+        # Create the data set folder tree
+        os.makedirs("SeedDatasetVOC")
+        os.makedirs("SeedDatasetVOC/Annotations")
+        os.makedirs("SeedDatasetVOC/ImageSets")
+        os.makedirs("SeedDatasetVOC/JPEGImages")
+
+        # Create and partition the data set
+        self.partition_raw_dataset_images(self.raw_images_path.get()+"/", "SeedDatasetVOC/", [int(self.slice_dim.get()), int(self.slice_dim.get()), 3])
+
+        # Load the dataset into the annotator
+        self.load_dataset("SeedDatasetVOC/")
+
+        self.builder_window.destroy()
 
     def refresh_class_dropdown(self):
 
@@ -286,7 +307,7 @@ class MainWindow(Frame):
 
         self.seed_classes.insert(0, self.new_class.get())
         self.refresh_class_dropdown()
-        self.t.destroy()
+        self.class_window.destroy()
 
     def startRect(self, event):
 
@@ -398,9 +419,13 @@ class MainWindow(Frame):
         self.canvas.update()
         self.load_annotation()
 
-    def load_dataset(self):
+    def load_dataset(self, dir=None):
 
-        self.dataset_dir = filedialog.askdirectory(initialdir="/", title='Please select a directory')
+        if dir == None:
+            self.dataset_dir = filedialog.askdirectory(initialdir="/", title='Please select a directory')
+        else:
+            self.dataset_dir = dir
+
         self.dataset_filenames = [x[2] for x in os.walk(self.dataset_dir + "/JPEGImages/")][0]
 
         self.load_sample(self.dataset_dir+"/JPEGImages/"+self.dataset_filenames[self.current_sample])
@@ -421,6 +446,80 @@ class MainWindow(Frame):
             self.bounding_boxes.clear()
             self.load_sample(self.dataset_dir + "/JPEGImages/"+self.dataset_filenames[self.current_sample])
 
+    def partition_image(self, image, shape):
+
+        # Step half the shape dimension to avoid losing seeds on the edges
+        partitions_x = math.floor(image.shape[0] / shape[0]) * 2
+        partitions_y = math.floor(image.shape[1] / shape[1]) * 2
+
+        image_set = []
+
+        for x in range(partitions_x):
+            for y in range(partitions_y):
+
+                start_x = int(x * (shape[0] / 2))
+                start_y = int(y * (shape[1] / 2))
+                end_x = start_x + shape[0]
+                end_y = start_y + shape[1]
+
+                image_set.append(image[start_x:end_x, start_y:end_y, :])
+
+        return image_set
+
+    def partition_raw_dataset_images(self, raw_images_dir, dataset_dir, shape):
+
+        train_images = []
+        test_images = []
+        val_images = []
+
+        # Get the file names of the processed data
+        filenames = [x[2] for x in os.walk(raw_images_dir)][0]
+
+        # Add full path into file names
+        filenames = [raw_images_dir + x for x in filenames]
+
+        # Determine the size of each of the three sets
+        num_train_elements = math.floor(len(filenames) * float(self.train_size.get()))
+        num_test_elements = math.floor(len(filenames) * float(self.test_size.get()))
+        num_val_elements = math.floor(len(filenames) * float(self.val_size.get()))
+
+        # Randomly pick elements of the master set for each sub set
+        self.pick_random_elements(filenames, train_images, num_train_elements)
+        self.pick_random_elements(filenames, test_images, num_test_elements)
+        self.pick_random_elements(filenames, val_images, num_val_elements)
+
+        sets = [train_images, test_images, val_images]
+
+        # Partion images and create VOC images set files
+        for set in sets:
+
+            for filename in set:
+
+                partitions = self.partition_image(cv2.imread(filename), shape)
+
+                image_count = 0
+
+                for image in partitions:
+
+                    cv2.imwrite(dataset_dir+"JPEGImages/"+ntpath.basename(filename).split(".",1)[0]+"_"+str(image_count)+".png", image)
+
+                    image_count += 1
+
+    def pick_random_elements(self, data_list, output_list, num_elements):
+
+        # Seed the rand number generator
+        random.seed(datetime.now())
+
+        for element in range(0, num_elements):
+
+            #Randomly pick an element to add to the set
+            random_element = random.randint(0, len(data_list)-1)
+
+            output_list.append(data_list[random_element])
+
+            #Remove the element from our data set so it can't be picked again
+            data_list.pop(random_element)
+
 def main():
 
 
@@ -433,7 +532,7 @@ def main():
     #im = Image.fromarray(img)
     #imgtk = ImageTk.PhotoImage(image=im)
 
-    root.geometry("700x545+300+300")
+    root.geometry("500x330+300+300")
 
     app = MainWindow()
 
