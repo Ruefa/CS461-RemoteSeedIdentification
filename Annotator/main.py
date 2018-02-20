@@ -1,3 +1,4 @@
+
 import tkinter as tk
 from tkinter import Tk, Text, BOTH, W, N, E, S, filedialog
 from tkinter.ttk import Frame, Button, Label, Style
@@ -10,6 +11,19 @@ import random
 from datetime import datetime
 import math
 import ntpath
+import sys
+
+# Add the classifier to the include files
+sys.path.append("../Classifier/")
+
+import torch
+from ssd import build_ssd
+import torch.nn as nn
+import torch.backends.cudnn as cudnn
+from torch.autograd import Variable
+import torch.utils.data as data
+import torchvision.transforms as transforms
+from torch.utils.serialization import load_lua
 
 # Minimum area required to draw a bounding box
 MIN_AREA = 500
@@ -111,7 +125,7 @@ class MainWindow(Frame):
         # Create file menu and add to menu bar
         self.fileMenu = tk.Menu(self.menubar, tearoff=0)
         self.fileMenu.add_command(label="Load dataset directory...", command=self.load_dataset)
-        self.fileMenu.add_command(label="Load classifier...", command=self.quit)
+        self.fileMenu.add_command(label="Load classifier...", command=self.load_classifier)
         self.fileMenu.add_separator()
         self.fileMenu.add_command(label="Exit", command=self.quit)
         self.menubar.add_cascade(label="File", menu=self.fileMenu)
@@ -444,6 +458,15 @@ class MainWindow(Frame):
 
         self.load_sample(self.dataset_dir+"/JPEGImages/"+self.dataset_filenames[self.current_sample])
 
+    def load_classifier(self):
+
+        # Let the user choose the weights file
+        self.classifier_weights_file = filedialog.askopenfile(initialdir="/", title="Select weight file", filetypes=[("Torch Model","*.pth")])
+
+        # Create the SSD and load its weights
+        self.net = build_ssd('test', 300, 3)
+        self.net.load_weights(self.classifier_weights_file.name)
+
     def next_sample(self, event):
 
         if self.current_sample < len(self.dataset_filenames):
@@ -536,21 +559,17 @@ class MainWindow(Frame):
 
 def main():
 
+    # Use CUDA if available
+    if torch.cuda.is_available():
+        torch.set_default_tensor_type('torch.cuda.FloatTensor')
 
     root = Tk()
     root.focus_set()
 
-    #img = cv2.imread("/home/ethan/Documents/deeplearning/ssd/pytorch/VOCdevkit/VOC2007/JPEGImages/IMG_1205_1.png")
-    #img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-
-    #im = Image.fromarray(img)
-    #imgtk = ImageTk.PhotoImage(image=im)
 
     root.geometry("500x330+300+300")
 
     app = MainWindow()
-
-    #app.canvas.itemconfig(app.image_on_canvas, image=imgtk)
 
     root.mainloop()
 
