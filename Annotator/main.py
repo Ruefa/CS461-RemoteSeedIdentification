@@ -58,18 +58,24 @@ class MainWindow(Frame):
         self.classDropdown.config(width=15)
         self.classDropdown.grid(row=2, column=3, pady=5, sticky=W)
 
-        self.class_select_label = tk.Label(self,text="Select a class: ")
-        self.class_select_label.grid(row=1, column=3, pady=(15,0),stick=W)
+        self.class_select_label = tk.Label(self,text="Select a class: ", font='Helvetica 7 bold')
+        self.class_select_label.grid(row=1, column=3, pady=(15, 0), sticky=W)
 
-        self.autosave = tk.BooleanVar(self.master)
-        self.autosave_radio  = tk.Radiobutton(self, text="Autosave",
-                        variable=self.autosave, value=False)
-        self.autosave_radio.grid(row=3, column=3, sticky=tk.NW)
+        self.autoann_label = tk.Label(self, text="Auto-annotation options:", font='Helvetica 7 bold')
+        self.autoann_label.grid(row=3, column=3, pady=10, sticky=tk.NW)
+
+        self.gen_bbox_button = tk.Button(self, text="Generate bounding boxes", command=self.gen_dataset_bboxes)
+        self.gen_bbox_button.grid(row=3, column=3, sticky=tk.NW, pady=90)
+
+        self.filter_empty = tk.BooleanVar(self.master)
+        self.filter_empty_radio  = tk.Radiobutton(self, text="Discard empty samples",
+                        variable=self.filter_empty, value=False)
+        self.filter_empty_radio.grid(row=3, column=3, sticky=tk.NW, pady=40)
 
         self.homogeneous = tk.BooleanVar(self.master)
         self.homogeneous_radio = tk.Radiobutton(self, text="Homogeneous sample",
                                              variable=self.homogeneous, value=False)
-        self.homogeneous_radio.grid(row=3, column=3, sticky=tk.NW,pady=20)
+        self.homogeneous_radio.grid(row=3, column=3, sticky=tk.NW, pady=60)
 
         # Bind arrow key events
         self.bind('<Right>', self.next_sample)
@@ -122,6 +128,10 @@ class MainWindow(Frame):
         self.menubar.add_cascade(label="Help", menu=self.helpMenu)
 
         self.focus_set()
+
+    def gen_dataset_bboxes(self):
+
+        print("YOOO")
 
     def create_class_window(self):
 
@@ -210,6 +220,7 @@ class MainWindow(Frame):
     def dropdown_callback(self, item):
 
         print(item)
+
         if item == "Add a new class...":
 
             self.create_class_window()
@@ -297,11 +308,14 @@ class MainWindow(Frame):
         self.current_class.set(self.seed_classes[0])
 
         # Reset var and delete all old options
-        self.classDropdown['menu'].delete(0, 'end')
+        #self.classDropdown['menu'].delete(0, 'end')
 
         # Insert list of new options (tk._setit hooks them up to var)
-        for c in self.seed_classes:
-            self.classDropdown['menu'].add_command(label=c, command=tk._setit(self.current_class, c))
+        label = self.seed_classes[0]
+
+        print(label)
+
+        self.classDropdown['menu'].add_command(label=label, command=tk._setit(self.current_class, label))
 
     def add_class(self):
 
