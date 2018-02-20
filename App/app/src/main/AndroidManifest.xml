@@ -21,13 +21,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait" />
-
-        <activity android:name=".ResultsController"
-            android:parentActivityName=".MainActivity"/>
+        <activity
+            android:name=".ResultsController"
+            android:parentActivityName=".MainActivity" />
+        <activity android:name=".RegisterController"></activity>
     </application>
 
 </manifest>
