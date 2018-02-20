@@ -12,6 +12,7 @@ from datetime import datetime
 import math
 import ntpath
 import sys
+import numpy as np
 
 # Add the classifier to the include files
 sys.path.append("../Classifier/")
@@ -145,7 +146,50 @@ class MainWindow(Frame):
 
     def gen_dataset_bboxes(self):
 
-        print("YOOO")
+        for img_file in self.dataset_filenames:
+
+            # Load the image
+            image = cv2.imread(self.dataset_dir+"/JPEGImages/"+img_file)
+
+            # Convert to rgb
+            rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+            # Prepare image
+            x = cv2.resize(rgb_image, (300, 300)).astype(np.float32)
+            x -= (104.0, 117.0, 123.0)
+            x = torch.from_numpy(x).permute(2, 0, 1)
+            x = Variable(x.unsqueeze(0))
+
+            if torch.cuda.is_available():
+                x = x.cuda()
+
+            # Evaluate network on image
+            y = self.net(x)
+
+            self.bounding_boxes.clear()
+
+            # Record the bounding boxes
+            scale = torch.Tensor([rgb_image.shape[1::-1], rgb_image.shape[1::-1]])
+            for i in range(y.data.size(1)):
+
+                j = 0
+                while y.data[0, i, j, 0] >= 0.6:
+
+                    pt = (y.data[0, i, j, 1:] * scale).cpu().numpy()
+                    self.bounding_boxes.append([None, pt[0], pt[1], pt[2], pt[3]])
+                    j += 1
+
+            # Save the bounding boxes in xml format
+            self.save_annotation()
+            self.current_sample += 1
+
+            print("Image " + img_file + " processed")
+
+        self.bounding_boxes.clear()
+
+        # Re-load the dataset
+        self.load_dataset()
+
 
     def create_class_window(self):
 
@@ -171,7 +215,7 @@ class MainWindow(Frame):
         y = self.master.winfo_rooty()
         self.class_window.geometry("350x40+%d+%d" % (x, y))
 
-    def save_annotation(self, event):
+    def save_annotation(self, event=None):
 
         annotation = et.Element("annotation")
 
@@ -453,6 +497,8 @@ class MainWindow(Frame):
             self.dataset_dir = filedialog.askdirectory(initialdir="/", title='Please select a directory')
         else:
             self.dataset_dir = dir
+
+        self.current_sample = 0
 
         self.dataset_filenames = [x[2] for x in os.walk(self.dataset_dir + "/JPEGImages/")][0]
 
