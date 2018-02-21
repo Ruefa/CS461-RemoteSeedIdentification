@@ -1,16 +1,42 @@
+
 import tkinter as tk
 from tkinter import Tk, Text, BOTH, W, N, E, S, filedialog
 from tkinter.ttk import Frame, Button, Label, Style
 from PIL import Image, ImageTk
 import cv2
 import os
+import shutil
 import xml.etree.cElementTree as et
+import random
+from datetime import datetime
+import math
+import ntpath
+import sys
+import numpy as np
+
+# Add the classifier to the include files
+sys.path.append("../Classifier/")
+
+import torch
+from ssd import build_ssd
+import torch.nn as nn
+import torch.backends.cudnn as cudnn
+from torch.autograd import Variable
+import torch.utils.data as data
+import torchvision.transforms as transforms
+from torch.utils.serialization import load_lua
 
 # Minimum area required to draw a bounding box
 MIN_AREA = 500
 
 # The application
 app = None
+
+# Defaults for the dataset builder
+DEFAULT_SLICE_DIM = 300
+DEFAULT_TRAIN_SIZE = 0.85
+DEFAULT_TEST_SIZE = 0.1
+DEFAULT_VAL_SIZE = 0.05
 
 class MainWindow(Frame):
 
@@ -47,18 +73,24 @@ class MainWindow(Frame):
         self.classDropdown.config(width=15)
         self.classDropdown.grid(row=2, column=3, pady=5, sticky=W)
 
-        self.class_select_label = tk.Label(self,text="Select a class: ")
-        self.class_select_label.grid(row=1, column=3, pady=(15,0),stick=W)
+        self.class_select_label = tk.Label(self,text="Select a class: ", font='Helvetica 7 bold')
+        self.class_select_label.grid(row=1, column=3, pady=(15, 0), sticky=W)
 
-        self.autosave = tk.BooleanVar(self.master)
-        self.autosave_radio  = tk.Radiobutton(self, text="Autosave",
-                        variable=self.autosave, value=False)
-        self.autosave_radio.grid(row=3, column=3, sticky=tk.NW)
+        self.autoann_label = tk.Label(self, text="Auto-annotation options:", font='Helvetica 7 bold')
+        self.autoann_label.grid(row=3, column=3, pady=10, sticky=tk.NW)
+
+        self.gen_bbox_button = tk.Button(self, text="Generate bounding boxes", command=self.gen_dataset_bboxes)
+        self.gen_bbox_button.grid(row=3, column=3, sticky=tk.NW, pady=90)
+
+        self.filter_empty = tk.BooleanVar(self.master)
+        self.filter_empty_radio  = tk.Radiobutton(self, text="Discard empty samples",
+                        variable=self.filter_empty, value=False)
+        self.filter_empty_radio.grid(row=3, column=3, sticky=tk.NW, pady=40)
 
         self.homogeneous = tk.BooleanVar(self.master)
         self.homogeneous_radio = tk.Radiobutton(self, text="Homogeneous sample",
                                              variable=self.homogeneous, value=False)
-        self.homogeneous_radio.grid(row=3, column=3, sticky=tk.NW,pady=20)
+        self.homogeneous_radio.grid(row=3, column=3, sticky=tk.NW, pady=60)
 
         # Bind arrow key events
         self.bind('<Right>', self.next_sample)
@@ -66,9 +98,9 @@ class MainWindow(Frame):
         self.bind('s', self.save_annotation)
 
         # Create image canvas
-        self.canvas = tk.Canvas(self, width=512, height=512, background='white')
+        self.canvas = tk.Canvas(self, width=300, height=300, background='white')
         self.canvas.grid(row=0, column=0, columnspan=2, rowspan=4,
-                  pady=10, padx=10, sticky=N)
+                  pady=10, padx=10, sticky=tk.NW)
         self.image_on_canvas = self.canvas.create_image(0, 0, anchor=tk.NW, image=None)
 
         # Create canvas mouse handlers for rectangles
@@ -94,10 +126,15 @@ class MainWindow(Frame):
         # Create file menu and add to menu bar
         self.fileMenu = tk.Menu(self.menubar, tearoff=0)
         self.fileMenu.add_command(label="Load dataset directory...", command=self.load_dataset)
-        self.fileMenu.add_command(label="Load classifier...", command=self.quit)
+        self.fileMenu.add_command(label="Load classifier...", command=self.load_classifier)
         self.fileMenu.add_separator()
         self.fileMenu.add_command(label="Exit", command=self.quit)
         self.menubar.add_cascade(label="File", menu=self.fileMenu)
+
+        # Create tool menu and add to menu bar
+        self.toolMenu = tk.Menu(self.menubar,tearoff=0)
+        self.toolMenu.add_command(label="Build dataset...", command=self.create_builder_window)
+        self.menubar.add_cascade(label="Tools", menu=self.toolMenu)
 
         # Create help menu and add to menu bar
         self.helpMenu = tk.Menu(self.menubar, tearoff=0)
@@ -107,31 +144,78 @@ class MainWindow(Frame):
 
         self.focus_set()
 
-    def create_window(self):
+    def gen_dataset_bboxes(self):
 
-        self.t = tk.Toplevel(self)
+        for img_file in self.dataset_filenames:
+
+            # Load the image
+            image = cv2.imread(self.dataset_dir+"/JPEGImages/"+img_file)
+
+            # Convert to rgb
+            rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+            # Prepare image
+            x = cv2.resize(rgb_image, (300, 300)).astype(np.float32)
+            x -= (104.0, 117.0, 123.0)
+            x = torch.from_numpy(x).permute(2, 0, 1)
+            x = Variable(x.unsqueeze(0))
+
+            if torch.cuda.is_available():
+                x = x.cuda()
+
+            # Evaluate network on image
+            y = self.net(x)
+
+            self.bounding_boxes.clear()
+
+            # Record the bounding boxes
+            scale = torch.Tensor([rgb_image.shape[1::-1], rgb_image.shape[1::-1]])
+            for i in range(y.data.size(1)):
+
+                j = 0
+                while y.data[0, i, j, 0] >= 0.6:
+
+                    pt = (y.data[0, i, j, 1:] * scale).cpu().numpy()
+                    self.bounding_boxes.append([None, pt[0], pt[1], pt[2], pt[3]])
+                    j += 1
+
+            # Save the bounding boxes in xml format
+            self.save_annotation()
+            self.current_sample += 1
+
+            print("Image " + img_file + " processed")
+
+        self.bounding_boxes.clear()
+
+        # Re-load the dataset
+        self.load_dataset()
+
+
+    def create_class_window(self):
+
+        self.class_window = tk.Toplevel(self)
 
         # Stores the value of the new class to be added
         self.new_class = tk.StringVar()
 
         # Create title
-        self.t.wm_title("New class")
+        self.class_window.wm_title("New class")
 
         # Add label
-        tk.Label(self.t, text="Enter a new class: ", pady=10).grid(row=0)
+        tk.Label(self.class_window, text="Enter a new class: ", pady=10).grid(row=0)
 
         # Add entry
-        entry = tk.Entry(self.t, textvariable=self.new_class)
+        entry = tk.Entry(self.class_window, textvariable=self.new_class)
         entry.grid(row=0, column=1)
 
         # Add button
-        tk.Button(self.t, text="OK",command=self.add_class).grid(row=0, column=2, padx=10)
+        tk.Button(self.class_window, text="OK",command=self.add_class).grid(row=0, column=2, padx=10)
 
         x = self.master.winfo_rootx()
         y = self.master.winfo_rooty()
-        self.t.geometry("350x40+%d+%d" % (x, y))
+        self.class_window.geometry("350x40+%d+%d" % (x, y))
 
-    def save_annotation(self, event):
+    def save_annotation(self, event=None):
 
         annotation = et.Element("annotation")
 
@@ -194,26 +278,108 @@ class MainWindow(Frame):
     def dropdown_callback(self, item):
 
         print(item)
+
         if item == "Add a new class...":
 
-            self.create_window()
+            self.create_class_window()
+
+    def create_builder_window(self):
+
+        self.builder_window = tk.Toplevel(self)
+
+        # Create title
+        self.builder_window.wm_title("Build dataset")
+
+        # Create variables for dataset builder
+        self.raw_images_path = tk.StringVar()
+        self.slice_dim = tk.StringVar()
+        self.train_size = tk.StringVar()
+        self.test_size = tk.StringVar()
+        self.val_size = tk.StringVar()
+
+        self.raw_images_path.set("Select a path...")
+        self.slice_dim.set(str(DEFAULT_SLICE_DIM))
+        self.train_size.set(str(DEFAULT_TRAIN_SIZE))
+        self.test_size.set(str(DEFAULT_TEST_SIZE))
+        self.val_size.set(str(DEFAULT_VAL_SIZE))
+
+        # Add labels
+        tk.Label(self.builder_window, text="Slice pixel dimension", pady=10, padx=10).grid(row=0, stick=W)
+        tk.Label(self.builder_window, text="Training set size:", pady=10, padx=10).grid(row=1, stick=W)
+        tk.Label(self.builder_window, text="Testing set size:", pady=10, padx=10).grid(row=2, stick=W)
+        tk.Label(self.builder_window, text="Validation set size:", pady=10, padx=10).grid(row=3, stick=W)
+        tk.Label(self.builder_window, text="Raw image path", pady=10, padx=10).grid(row=4, stick=W)
+
+        # Add entries
+        raw_images_path_entry = tk.Entry(self.builder_window, textvariable=self.raw_images_path, justify=tk.CENTER)
+        slice_dim_entry = tk.Entry(self.builder_window, textvariable=self.slice_dim, justify=tk.CENTER)
+        train_size_entry = tk.Entry(self.builder_window, textvariable=self.train_size, justify=tk.CENTER)
+        test_size_entry = tk.Entry(self.builder_window, textvariable=self.test_size, justify=tk.CENTER)
+        val_size_entry = tk.Entry(self.builder_window, textvariable=self.val_size, justify=tk.CENTER)
+
+        # Bind click event for selecting dataset
+        raw_images_path_entry.bind("<1>", self.select_raw_images_path)
+
+        slice_dim_entry.grid(row=0, column=1, sticky=W)
+        train_size_entry.grid(row=1, column=1, sticky=W)
+        test_size_entry.grid(row=2, column=1, sticky=W)
+        val_size_entry.grid(row=3, column=1, sticky=W)
+        raw_images_path_entry.grid(row=4, column=1, sticky=W)
+
+        # Add button
+        tk.Button(self.builder_window, text="OK", command=self.build_dataset).grid(row=5, column=1, sticky=E)
+
+        x = self.master.winfo_rootx()
+        y = self.master.winfo_rooty()
+        self.builder_window.geometry("330x220+%d+%d" % (x, y))
+
+    def select_raw_images_path(self, event):
+
+        # Get the directory of the raw dataset
+        self.raw_images_path.set(filedialog.askdirectory(initialdir="/", title='Please select a directory'))
+
+        # Bring builder window back to the front
+        self.builder_window.lift()
+
+    def build_dataset(self):
+
+        # Remove the previous data set
+        if os.path.exists("SeedDatasetVOC"):
+            shutil.rmtree("SeedDatasetVOC")
+
+        # Create the data set folder tree
+        os.makedirs("SeedDatasetVOC")
+        os.makedirs("SeedDatasetVOC/Annotations")
+        os.makedirs("SeedDatasetVOC/ImageSets")
+        os.makedirs("SeedDatasetVOC/JPEGImages")
+
+        # Create and partition the data set
+        self.partition_raw_dataset_images(self.raw_images_path.get()+"/", "SeedDatasetVOC/", [int(self.slice_dim.get()), int(self.slice_dim.get()), 3])
+
+        # Load the dataset into the annotator
+        self.load_dataset("SeedDatasetVOC/")
+
+        self.builder_window.destroy()
 
     def refresh_class_dropdown(self):
 
         self.current_class.set(self.seed_classes[0])
 
         # Reset var and delete all old options
-        self.classDropdown['menu'].delete(0, 'end')
+        #self.classDropdown['menu'].delete(0, 'end')
 
         # Insert list of new options (tk._setit hooks them up to var)
-        for c in self.seed_classes:
-            self.classDropdown['menu'].add_command(label=c, command=tk._setit(self.current_class, c))
+        label = self.seed_classes[0]
+
+        print(label)
+
+        self.classDropdown['menu'].add_command(label=label, command=tk._setit(self.current_class, label))
 
     def add_class(self):
 
         self.seed_classes.insert(0, self.new_class.get())
         self.refresh_class_dropdown()
-        self.t.destroy()
+        self.class_window.destroy()
 
     def startRect(self, event):
 
@@ -325,12 +491,27 @@ class MainWindow(Frame):
         self.canvas.update()
         self.load_annotation()
 
-    def load_dataset(self):
+    def load_dataset(self, dir=None):
 
-        self.dataset_dir = filedialog.askdirectory(initialdir="/", title='Please select a directory')
+        if dir == None:
+            self.dataset_dir = filedialog.askdirectory(initialdir="/", title='Please select a directory')
+        else:
+            self.dataset_dir = dir
+
+        self.current_sample = 0
+
         self.dataset_filenames = [x[2] for x in os.walk(self.dataset_dir + "/JPEGImages/")][0]
 
         self.load_sample(self.dataset_dir+"/JPEGImages/"+self.dataset_filenames[self.current_sample])
+
+    def load_classifier(self):
+
+        # Let the user choose the weights file
+        self.classifier_weights_file = filedialog.askopenfile(initialdir="/", title="Select weight file", filetypes=[("Torch Model","*.pth")])
+
+        # Create the SSD and load its weights
+        self.net = build_ssd('test', 300, 3)
+        self.net.load_weights(self.classifier_weights_file.name)
 
     def next_sample(self, event):
 
@@ -348,23 +529,93 @@ class MainWindow(Frame):
             self.bounding_boxes.clear()
             self.load_sample(self.dataset_dir + "/JPEGImages/"+self.dataset_filenames[self.current_sample])
 
+    def partition_image(self, image, shape):
+
+        # Step half the shape dimension to avoid losing seeds on the edges
+        partitions_x = math.floor(image.shape[0] / shape[0]) * 2
+        partitions_y = math.floor(image.shape[1] / shape[1]) * 2
+
+        image_set = []
+
+        for x in range(partitions_x):
+            for y in range(partitions_y):
+
+                start_x = int(x * (shape[0] / 2))
+                start_y = int(y * (shape[1] / 2))
+                end_x = start_x + shape[0]
+                end_y = start_y + shape[1]
+
+                image_set.append(image[start_x:end_x, start_y:end_y, :])
+
+        return image_set
+
+    def partition_raw_dataset_images(self, raw_images_dir, dataset_dir, shape):
+
+        train_images = []
+        test_images = []
+        val_images = []
+
+        # Get the file names of the processed data
+        filenames = [x[2] for x in os.walk(raw_images_dir)][0]
+
+        # Add full path into file names
+        filenames = [raw_images_dir + x for x in filenames]
+
+        # Determine the size of each of the three sets
+        num_train_elements = math.floor(len(filenames) * float(self.train_size.get()))
+        num_test_elements = math.floor(len(filenames) * float(self.test_size.get()))
+        num_val_elements = math.floor(len(filenames) * float(self.val_size.get()))
+
+        # Randomly pick elements of the master set for each sub set
+        self.pick_random_elements(filenames, train_images, num_train_elements)
+        self.pick_random_elements(filenames, test_images, num_test_elements)
+        self.pick_random_elements(filenames, val_images, num_val_elements)
+
+        sets = [train_images, test_images, val_images]
+
+        # Partion images and create VOC images set files
+        for set in sets:
+
+            for filename in set:
+
+                partitions = self.partition_image(cv2.imread(filename), shape)
+
+                image_count = 0
+
+                for image in partitions:
+
+                    cv2.imwrite(dataset_dir+"JPEGImages/"+ntpath.basename(filename).split(".",1)[0]+"_"+str(image_count)+".png", image)
+
+                    image_count += 1
+
+    def pick_random_elements(self, data_list, output_list, num_elements):
+
+        # Seed the rand number generator
+        random.seed(datetime.now())
+
+        for element in range(0, num_elements):
+
+            #Randomly pick an element to add to the set
+            random_element = random.randint(0, len(data_list)-1)
+
+            output_list.append(data_list[random_element])
+
+            #Remove the element from our data set so it can't be picked again
+            data_list.pop(random_element)
+
 def main():
 
+    # Use CUDA if available
+    if torch.cuda.is_available():
+        torch.set_default_tensor_type('torch.cuda.FloatTensor')
 
     root = Tk()
     root.focus_set()
 
-    #img = cv2.imread("/home/ethan/Documents/deeplearning/ssd/pytorch/VOCdevkit/VOC2007/JPEGImages/IMG_1205_1.png")
-    #img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-    #im = Image.fromarray(img)
-    #imgtk = ImageTk.PhotoImage(image=im)
-
-    root.geometry("700x545+300+300")
+    root.geometry("500x330+300+300")
 
     app = MainWindow()
-
-    #app.canvas.itemconfig(app.image_on_canvas, image=imgtk)
 
     root.mainloop()
 
