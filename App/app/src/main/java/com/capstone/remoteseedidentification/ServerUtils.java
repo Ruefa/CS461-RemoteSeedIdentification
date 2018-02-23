@@ -1,3 +1,5 @@
+package com.capstone.remoteseedidentification;
+
 import android.util.Log;
 
 import java.io.BufferedReader;
