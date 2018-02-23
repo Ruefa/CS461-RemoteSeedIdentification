@@ -29,13 +29,14 @@ port = 5777
 #     s.close()
 
 
+token = b''
 
-def testMakeAccount():
+def testMakeAccount(username, password):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect(('localhost', port))
         
-        msg = b'aUserName@Password'
+        msg = b'a' + username + b'@' + password
 
         s.sendall(msg)
 
@@ -47,31 +48,34 @@ def testMakeAccount():
     finally:
         s.close()
 
-def testLogin():
+def testLogin(username, password):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect(('localhost', port))
         
-        msg = b'bUserName@Password'
-
+        msg = b'b' + username + b'@' + password
+        
         s.sendall(msg)
 
         s.shutdown(socket.SHUT_WR)
 
-        print('Login Result:', s.recv(1024).hex())
+        global token
+        token = s.recv(1024)
+
+        print('Login Result:', token.hex())
     except (ConnectionRefusedError, socket.gaierror):
         print ('Connection failed')
     finally:
         s.close()
 
-def testRunAnalysis(path):
+def testRunAnalysis(username, path, t=token):
     f = open(path, 'rb')
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect(('localhost', port))
 
-        msg = b'cUserName@Password|'
-
+        msg = b'c' + t + b'|'
+        
         s.sendall(msg)
         
         buf = f.read(4096)
@@ -87,13 +91,13 @@ def testRunAnalysis(path):
     finally:
         s.close()
 
-def testGetReportList():
+def testGetReportList(username, t=token):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect(('localhost', port))
         
-        msg = b'dUserName@Password'
-
+        msg = b'd' + t
+        
         s.sendall(msg)
 
         s.shutdown(socket.SHUT_WR)
@@ -104,12 +108,12 @@ def testGetReportList():
     finally:
         s.close()
 
-def testGetReport():
+def testGetReport(username, reportID, t=token):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect(('localhost', port))
         
-        msg = b'eUserName@Password|' + (1).to_bytes(4, 'big')
+        msg = b'e' + t + b'|' + reportID.to_bytes(4, 'big')
 
         s.sendall(msg)
 
@@ -121,14 +125,34 @@ def testGetReport():
     finally:
         s.close()
 
-
-
+def testLogout(username, t=token):
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect(('localhost', port))
         
-testMakeAccount()
-testLogin()
-testRunAnalysis('/Users/quanah/Desktop/test.jpg') # Only works on my local machine (obviously)
-testGetReportList()
-testGetReport()
+        msg = b'z' + t
+        
+        s.sendall(msg)
+
+        s.shutdown(socket.SHUT_WR)
+
+        print('Logged Out')
+    except (ConnectionRefusedError, socket.gaierror):
+        print ('Connection failed')
+    finally:
+        s.close()
+
+
+
+if __name__ == "__main__":
+    testMakeAccount(b'UserName', b'Password')
+    testLogin(b'UserName', b'Password')
+    testRunAnalysis(b'UserName', b'/Users/quanah/Desktop/test.jpg', token) # Only works on my local machine (obviously)
+    testGetReportList(b'UserName', token)
+    testGetReport(b'UserName', 1, token)
+    testLogout(b'UserName', token)
+    testGetReportList(b'UserName', token)
+
 
 
 

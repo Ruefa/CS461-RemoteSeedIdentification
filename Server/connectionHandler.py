@@ -1,6 +1,8 @@
 import socket
 import db
+
 from pony import orm
+from sessionHandler import newLoginSession, checkToken, deleteLoginSession
 
 # Reads a stream of data from the connection and returns it all as a bytes object
 def readData(conn, chunkSize = 4096):
@@ -19,18 +21,23 @@ def sendData(conn, data):
 
 # Makes a new login
 # Returns True on success, else False
-def makeLogin(credentials):
+def newAccount(credentials):
     username, password = credentials.split(b'@')
-    return db.makeLogin(username, password)
+    return db.newAccount(username, password)
 
-# Takes credentials in the format username@password and returns 
-# a the username if they are correct or None if not
-def checkLogin(credentials):
+# Takes credentials in the format username@password.
+# Returns a login session token if credentials are valid, otherwise None
+def login(credentials):
     username, password = credentials.split(b'@')
-    if db.checkLogin(username, password):
+    return db.login(username, password)
+
+# Returns the username of the logged in user, or None if invalid token or username
+def checkAuth(auth):
+    username = auth[:-db.tokenLen]
+    token = auth[-db.tokenLen:]
+    if db.checkToken(username, token):
         return username
-    else:
-        return None
+    return None
 
 def runAnalysis(img, user):
     #TODO Link in with Ethans work
@@ -63,19 +70,20 @@ def handleConn(conn):
     # Using ASCII is convenient for pythons representation of received data, 
     # and I can't think of meaningful single character codes for every action
     if msgType == b'a': # Make Login
-        if makeLogin(readData(conn)):
+        if newAccount(readData(conn)):
             conn.send(bytes([1])) # Valid login
         else:
             conn.send(bytes([0])) # Invalid login
     elif msgType == b'b': # Login Info
-        if checkLogin(readData(conn)):
-            conn.send(bytes([1])) # Valid login
+        auth = login(readData(conn))
+        if auth:
+            conn.send(auth) # Valid login
         else:
             conn.send(bytes([0])) # Invalid login
     elif msgType == b'c': # Request new analysis
         data = readData(conn)
-        credentials, data = data.split(b'|', maxsplit=1)
-        user = checkLogin(credentials)
+        auth, data = data.split(b'|', maxsplit=1)
+        user = checkAuth(auth)
         if user:
             #TODO Add some error checking here
             report = runAnalysis(data, user)
@@ -83,7 +91,7 @@ def handleConn(conn):
         else:
             conn.send(bytes([0])) # Invalid login
     elif msgType == b'd': # Request list of reports for certain username
-        user = checkLogin(readData(conn))
+        user = checkAuth(readData(conn))
         if user:
             #TODO send report ids instead of results?
             data = b'|'.join(getReportList(user))
@@ -92,13 +100,15 @@ def handleConn(conn):
             conn.send(bytes([0])) # Invalid login
     elif msgType == b'e': # Request a specific report
         data = readData(conn)
-        credentials, data = data.split(b'|', maxsplit=1)
-        user = checkLogin(credentials)
+        auth, data = data.split(b'|', maxsplit=1)
+        user = checkAuth(auth)
         #TODO Error checking (does report exist?)
         if user:
             report = getReport(user, data)
+            sendData(conn, report)
         else:
             conn.send(bytes([0])) # Invalid login
-        sendData(conn, report)
+    elif msgType == b'z': # Logout
+        db.logout(checkAuth(readData(conn)))
 
     conn.close()

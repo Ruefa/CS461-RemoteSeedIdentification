@@ -1,12 +1,15 @@
-from passHash import hashPassword, checkPassword
+import os
 
+from passHash import hashPassword, checkPassword
 from pony.orm import *
 
 db = Database()
+tokenLen = 16
 
 class Account(db.Entity):
     username = PrimaryKey(bytes)
     password = Required(bytes)
+    sessionToken = Optional(bytes)
     reports = Set('Report')
 
 class Report(db.Entity):
@@ -20,7 +23,7 @@ set_sql_debug(True)
 
 
 @db_session
-def makeLogin(username, password):
+def newAccount(username, password):
     # Check if username is available
     if Account.exists(username=username):
         return False
@@ -30,13 +33,26 @@ def makeLogin(username, password):
     return True
 
 @db_session
-def checkLogin(username, password):
+def login(username, password):
     account = Account.get(username=username)
-    if account:
-        return checkPassword(password, account.password)
+    if account and checkPassword(password, account.password): # Username and Password are correct
+        token = os.urandom(tokenLen)
+        account.sessionToken = token
+        return username + token
+    return None
+
+@db_session
+def checkToken(username, token):
+
+    #TODO Exception handling
+    if token == Account[username].sessionToken:
+        return True
     return False
 
-
+@db_session
+def logout(username):
+    #TODO Exception handling
+    Account[username].sessionToken = None
 
 @db_session
 def addReport(username, results):
