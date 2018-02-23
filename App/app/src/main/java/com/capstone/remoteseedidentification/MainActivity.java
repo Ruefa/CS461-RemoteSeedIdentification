@@ -35,6 +35,9 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    final static int RESULT_LOAD_IMAGE = 1;
+    final static int CAMERA_PERMISSION_REQUEST = 50;
+
     private Camera mCamera;
     private CameraView mCameraView;
     private ArrayList<String> mNavData;
@@ -47,9 +50,6 @@ public class MainActivity extends AppCompatActivity {
 
     //image data
     private byte[] mByteImage;
-
-    final static int RESULT_LOAD_IMAGE = 1;
-    final static int CAMERA_PERMISSION_REQUEST = 50;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
