@@ -1,3 +1,5 @@
+from passHash import hashPassword, checkPassword
+
 from pony.orm import *
 
 db = Database()
@@ -14,6 +16,8 @@ class Report(db.Entity):
 db.bind(provider='sqlite', filename=':memory:')
 db.generate_mapping(create_tables=True)
 
+set_sql_debug(True)
+
 
 @db_session
 def makeLogin(username, password):
@@ -21,15 +25,18 @@ def makeLogin(username, password):
     if Account.exists(username=username):
         return False
 
-    #TODO Probably shouldn't store pword as plaintxt
-   
-   # If it is, make account
-    Account(username=username, password=password)
+    # If it is, make account
+    Account(username=username, password=hashPassword(password))
     return True
 
 @db_session
 def checkLogin(username, password):
-    return Account.exists(username=username, password=password)
+    account = Account.get(username=username)
+    if account:
+        return checkPassword(password, account.password)
+    return False
+
+
 
 @db_session
 def addReport(username, results):

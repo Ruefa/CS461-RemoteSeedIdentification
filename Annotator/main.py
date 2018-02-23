@@ -1,3 +1,4 @@
+
 import tkinter as tk
 from tkinter import Tk, Text, BOTH, W, N, E, S, filedialog
 from tkinter.ttk import Frame, Button, Label, Style
@@ -10,6 +11,20 @@ import random
 from datetime import datetime
 import math
 import ntpath
+import sys
+import numpy as np
+
+# Add the classifier to the include files
+sys.path.append("../Classifier/")
+
+import torch
+from ssd import build_ssd
+import torch.nn as nn
+import torch.backends.cudnn as cudnn
+from torch.autograd import Variable
+import torch.utils.data as data
+import torchvision.transforms as transforms
+from torch.utils.serialization import load_lua
 
 # Minimum area required to draw a bounding box
 MIN_AREA = 500
@@ -111,7 +126,7 @@ class MainWindow(Frame):
         # Create file menu and add to menu bar
         self.fileMenu = tk.Menu(self.menubar, tearoff=0)
         self.fileMenu.add_command(label="Load dataset directory...", command=self.load_dataset)
-        self.fileMenu.add_command(label="Load classifier...", command=self.quit)
+        self.fileMenu.add_command(label="Load classifier...", command=self.load_classifier)
         self.fileMenu.add_separator()
         self.fileMenu.add_command(label="Exit", command=self.quit)
         self.menubar.add_cascade(label="File", menu=self.fileMenu)
@@ -131,7 +146,50 @@ class MainWindow(Frame):
 
     def gen_dataset_bboxes(self):
 
-        print("YOOO")
+        for img_file in self.dataset_filenames:
+
+            # Load the image
+            image = cv2.imread(self.dataset_dir+"/JPEGImages/"+img_file)
+
+            # Convert to rgb
+            rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+            # Prepare image
+            x = cv2.resize(rgb_image, (300, 300)).astype(np.float32)
+            x -= (104.0, 117.0, 123.0)
+            x = torch.from_numpy(x).permute(2, 0, 1)
+            x = Variable(x.unsqueeze(0))
+
+            if torch.cuda.is_available():
+                x = x.cuda()
+
+            # Evaluate network on image
+            y = self.net(x)
+
+            self.bounding_boxes.clear()
+
+            # Record the bounding boxes
+            scale = torch.Tensor([rgb_image.shape[1::-1], rgb_image.shape[1::-1]])
+            for i in range(y.data.size(1)):
+
+                j = 0
+                while y.data[0, i, j, 0] >= 0.6:
+
+                    pt = (y.data[0, i, j, 1:] * scale).cpu().numpy()
+                    self.bounding_boxes.append([None, pt[0], pt[1], pt[2], pt[3]])
+                    j += 1
+
+            # Save the bounding boxes in xml format
+            self.save_annotation()
+            self.current_sample += 1
+
+            print("Image " + img_file + " processed")
+
+        self.bounding_boxes.clear()
+
+        # Re-load the dataset
+        self.load_dataset()
+
 
     def create_class_window(self):
 
@@ -157,7 +215,7 @@ class MainWindow(Frame):
         y = self.master.winfo_rooty()
         self.class_window.geometry("350x40+%d+%d" % (x, y))
 
-    def save_annotation(self, event):
+    def save_annotation(self, event=None):
 
         annotation = et.Element("annotation")
 
@@ -440,9 +498,20 @@ class MainWindow(Frame):
         else:
             self.dataset_dir = dir
 
+        self.current_sample = 0
+
         self.dataset_filenames = [x[2] for x in os.walk(self.dataset_dir + "/JPEGImages/")][0]
 
         self.load_sample(self.dataset_dir+"/JPEGImages/"+self.dataset_filenames[self.current_sample])
+
+    def load_classifier(self):
+
+        # Let the user choose the weights file
+        self.classifier_weights_file = filedialog.askopenfile(initialdir="/", title="Select weight file", filetypes=[("Torch Model","*.pth")])
+
+        # Create the SSD and load its weights
+        self.net = build_ssd('test', 300, 3)
+        self.net.load_weights(self.classifier_weights_file.name)
 
     def next_sample(self, event):
 
@@ -536,21 +605,17 @@ class MainWindow(Frame):
 
 def main():
 
+    # Use CUDA if available
+    if torch.cuda.is_available():
+        torch.set_default_tensor_type('torch.cuda.FloatTensor')
 
     root = Tk()
     root.focus_set()
 
-    #img = cv2.imread("/home/ethan/Documents/deeplearning/ssd/pytorch/VOCdevkit/VOC2007/JPEGImages/IMG_1205_1.png")
-    #img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-
-    #im = Image.fromarray(img)
-    #imgtk = ImageTk.PhotoImage(image=im)
 
     root.geometry("500x330+300+300")
 
     app = MainWindow()
-
-    #app.canvas.itemconfig(app.image_on_canvas, image=imgtk)
 
     root.mainloop()
 
