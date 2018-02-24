@@ -31,8 +31,4 @@ public class ServerAsyncTask extends AsyncTask<String, String, ServerUtils> {
         mServer.openSocket();
         return null;
     }
-
-    public void sendMessage(String message){
-        mServer.sendMessage(message);
-    }
 }
