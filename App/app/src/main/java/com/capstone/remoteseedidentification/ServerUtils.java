@@ -46,6 +46,7 @@ public class ServerUtils {
 
                 //create BufferedReader from socket input stream
                 mInBuffer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                sendMessage("Successfully connected");
 
                 //loop endlessly waiting for input data
                 //stopSocket() sets mRun to false and ends the loop
