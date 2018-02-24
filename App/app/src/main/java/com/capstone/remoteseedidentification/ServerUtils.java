@@ -73,6 +73,17 @@ public class ServerUtils {
         mRun = false;
     }
 
+    public void sendMessage(String message){
+        Log.d("Server: ", "starting sendMessage");
+        if(mOutBuffer != null && !mOutBuffer.checkError()){
+            mOutBuffer.println(message);
+            mOutBuffer.flush();
+            Log.d("Server: ", "sent message" + message);
+        }else {
+            Log.d("Server: ", "mOutBuffer is null");
+        }
+    }
+
     //interface to handle data received from socket
     public interface MessageCallback {
 
