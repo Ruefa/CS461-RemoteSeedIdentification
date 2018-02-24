@@ -1,5 +1,6 @@
 package com.capstone.remoteseedidentification;
 
+import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -12,12 +13,13 @@ public class ServerAsyncTask extends AsyncTask<String, String, ServerUtils> {
     private ServerUtils mServer;
 
     //constructor currently takes no args
-    public ServerAsyncTask(){}
+    //public ServerAsyncTask(){}
 
     @Override
     protected ServerUtils doInBackground(String... strings) {
 
         try{
+            Log.d("Server: ", "about to begin");
             mServer = new ServerUtils(new ServerUtils.MessageCallback() {
                 @Override
                 public void callbackMessageReceiver(String message) {
@@ -29,5 +31,9 @@ public class ServerAsyncTask extends AsyncTask<String, String, ServerUtils> {
         }
         mServer.openSocket();
         return null;
+    }
+
+    public void sendMessage(String message){
+        mServer.sendMessage(message);
     }
 }
