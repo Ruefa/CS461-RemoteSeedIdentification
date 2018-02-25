@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="BookmarkManager">
+    <bookmark url="file://$PROJECT_DIR$/main.py" line="103" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="a9c2420a-02b3-4000-b660-ea1c5d6d2b61" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -14,8 +17,8 @@
       <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1046">
-              <caret line="105" column="53" lean-forward="true" selection-start-line="105" selection-start-column="53" selection-end-line="105" selection-end-column="53" />
+            <state relative-caret-position="561">
+              <caret line="262" column="51" lean-forward="true" selection-start-line="262" selection-start-column="51" selection-end-line="262" selection-end-column="51" />
               <folding>
                 <element signature="e#1#21#0" expanded="true" />
               </folding>
@@ -58,6 +61,10 @@
       <find>yoo</find>
       <find>pth</find>
       <find>.pth</find>
+      <find>save</find>
+      <find>canvas</find>
+      <find>load_sample</find>
+      <find>delete_s</find>
     </findStrings>
   </component>
   <component name="IdeDocumentHistory">
@@ -243,11 +250,11 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main.py</url>
-          <line>542</line>
+          <line>571</line>
           <option name="timeStamp" value="11" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="14" />
+      <option name="time" value="16" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -531,8 +538,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1046">
-          <caret line="105" column="53" lean-forward="true" selection-start-line="105" selection-start-column="53" selection-end-line="105" selection-end-column="53" />
+        <state relative-caret-position="561">
+          <caret line="262" column="51" lean-forward="true" selection-start-line="262" selection-start-column="51" selection-end-line="262" selection-end-column="51" />
           <folding>
             <element signature="e#1#21#0" expanded="true" />
           </folding>

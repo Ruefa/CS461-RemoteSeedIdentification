@@ -96,12 +96,13 @@ class MainWindow(Frame):
         self.bind('<Right>', self.next_sample)
         self.bind('<Left>', self.prev_sample)
         self.bind('s', self.save_annotation)
+        self.bind('d', self.delete_sample)
 
         # Create image canvas
         self.canvas = tk.Canvas(self, width=300, height=300, background='white')
         self.canvas.grid(row=0, column=0, columnspan=2, rowspan=4,
                   pady=10, padx=10, sticky=tk.NW)
-        self.image_on_canvas = self.canvas.create_image(0, 0, anchor=tk.NW, image=None)
+        self.image_on_canvas = self.canvas.create_image(0, 0, image=None)
 
         # Create canvas mouse handlers for rectangles
         self.canvas.bind("<Button-1>", self.startRect)
@@ -243,6 +244,33 @@ class MainWindow(Frame):
 
         tree = et.ElementTree(annotation)
         tree.write(self.dataset_dir+"/Annotations/"+self.dataset_filenames[self.current_sample].split(".")[0]+".xml")
+
+    def delete_sample(self, event=None):
+
+        if len(self.dataset_filenames) > 0:
+
+            image_file = self.dataset_dir+"/JPEGImages/"+self.dataset_filenames[self.current_sample]
+            annotation_file = self.dataset_dir+"/Annotations/"+self.dataset_filenames[self.current_sample].split(".")[0]+".xml"
+
+            if os.path.isfile(image_file):
+
+                os.remove(image_file)
+                self.dataset_filenames.pop(self.current_sample)
+
+                if self.current_sample == len(self.dataset_filenames):
+                    self.current_sample -= 1
+
+                if len(self.dataset_filenames) > 0:
+                    self.load_sample(self.dataset_dir+"/JPEGImages/"+self.dataset_filenames[self.current_sample])
+                else:
+                    # self.image_on_canvas = self.canvas.create_image(0, 0, anchor=tk.NW, image=imgtk)
+                    self.image_on_canvas = self.canvas.create_image(1, 1, anchor=tk.NW, image=None)
+                    self.canvas.image = None
+                    self.canvas.update()
+
+            if os.path.isfile(annotation_file):
+                os.remove(annotation_file)
+
 
     def load_annotation(self):
 
@@ -485,7 +513,7 @@ class MainWindow(Frame):
         imgtk2 = ImageTk.PhotoImage(image=im2)
 
         #self.image_on_canvas = self.canvas.create_image(0, 0, anchor=tk.NW, image=imgtk)
-        self.image_on_canvas = self.canvas.create_image(0, 0, anchor=tk.NW, image=imgtk2)
+        self.image_on_canvas = self.canvas.create_image(1, 1, anchor=tk.NW, image=imgtk2)
         self.canvas.image = imgtk2
 
         self.canvas.update()
@@ -502,7 +530,8 @@ class MainWindow(Frame):
 
         self.dataset_filenames = [x[2] for x in os.walk(self.dataset_dir + "/JPEGImages/")][0]
 
-        self.load_sample(self.dataset_dir+"/JPEGImages/"+self.dataset_filenames[self.current_sample])
+        if len(self.dataset_filenames) > 0:
+            self.load_sample(self.dataset_dir+"/JPEGImages/"+self.dataset_filenames[self.current_sample])
 
     def load_classifier(self):
 
@@ -515,7 +544,7 @@ class MainWindow(Frame):
 
     def next_sample(self, event):
 
-        if self.current_sample < len(self.dataset_filenames):
+        if self.current_sample < len(self.dataset_filenames)-1:
 
             self.current_sample += 1
             self.bounding_boxes.clear()
@@ -613,7 +642,8 @@ def main():
     root.focus_set()
 
 
-    root.geometry("500x330+300+300")
+
+    root.geometry("525x330+300+300")
 
     app = MainWindow()
 
