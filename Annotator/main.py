@@ -82,15 +82,15 @@ class MainWindow(Frame):
         self.gen_bbox_button = tk.Button(self, text="Generate bounding boxes", command=self.gen_dataset_bboxes)
         self.gen_bbox_button.grid(row=3, column=3, sticky=tk.NW, pady=90)
 
-        self.filter_empty = tk.BooleanVar(self.master)
-        self.filter_empty_radio  = tk.Radiobutton(self, text="Discard empty samples",
-                        variable=self.filter_empty, value=False)
-        self.filter_empty_radio.grid(row=3, column=3, sticky=tk.NW, pady=40)
+        self.filter_empty = tk.IntVar(self.master)
+        self.filter_empty_check  = tk.Checkbutton(self, text="Discard empty samples",
+                                    variable=self.filter_empty)
+        self.filter_empty_check.grid(row=3, column=3, sticky=tk.NW, pady=40)
 
-        self.homogeneous = tk.BooleanVar(self.master)
-        self.homogeneous_radio = tk.Radiobutton(self, text="Homogeneous sample",
-                                             variable=self.homogeneous, value=False)
-        self.homogeneous_radio.grid(row=3, column=3, sticky=tk.NW, pady=60)
+        self.homogeneous = tk.IntVar(self.master)
+        self.homogeneous_check = tk.Checkbutton(self, text="Homogeneous sample",
+                                    variable=self.homogeneous)
+        self.homogeneous_check.grid(row=3, column=3, sticky=tk.NW, pady=60)
 
         # Bind arrow key events
         self.bind('<Right>', self.next_sample)
