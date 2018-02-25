@@ -1,0 +1,1 @@
+<annotation><size><width>300</width><height>282</height><depth>3</depth></size><segmented>0</segmented><object><bndbox><xmin>126.395645</xmin><ymin>152.58131</ymin><xmax>307.73398</xmax><ymax>271.0605</ymax></bndbox><name>Add a new class...</name><pose>Unspecified</pose><truncated>0</truncated><difficult>0</difficult></object></annotation>

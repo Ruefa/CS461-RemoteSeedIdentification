@@ -147,6 +147,8 @@ class MainWindow(Frame):
 
     def gen_dataset_bboxes(self):
 
+        delete_queue = []
+
         for img_file in self.dataset_filenames:
 
             # Load the image
@@ -169,16 +171,25 @@ class MainWindow(Frame):
 
             self.bounding_boxes.clear()
 
+            bbox_count = 0
+
             # Record the bounding boxes
             scale = torch.Tensor([rgb_image.shape[1::-1], rgb_image.shape[1::-1]])
             for i in range(y.data.size(1)):
 
                 j = 0
-                while y.data[0, i, j, 0] >= 0.6:
+                while y.data[0, i, j, 0] >= 0.75:
 
+                    bbox_count += 1
                     pt = (y.data[0, i, j, 1:] * scale).cpu().numpy()
                     self.bounding_boxes.append([None, pt[0], pt[1], pt[2], pt[3]])
                     j += 1
+
+            print(bbox_count)
+
+            # Remove image if no bouding boxes are detected/if option is enabled
+            if bbox_count == 0 and self.filter_empty.get():
+                delete_queue.append(self.dataset_filenames[self.current_sample])
 
             # Save the bounding boxes in xml format
             self.save_annotation()
@@ -188,8 +199,12 @@ class MainWindow(Frame):
 
         self.bounding_boxes.clear()
 
+        # Remove any empty samples
+        for sample in delete_queue:
+            self.delete_sample(file=sample)
+
         # Re-load the dataset
-        self.load_dataset()
+        self.load_dataset(self.dataset_dir)
 
 
     def create_class_window(self):
@@ -245,12 +260,18 @@ class MainWindow(Frame):
         tree = et.ElementTree(annotation)
         tree.write(self.dataset_dir+"/Annotations/"+self.dataset_filenames[self.current_sample].split(".")[0]+".xml")
 
-    def delete_sample(self, event=None):
+    def delete_sample(self, event=None, file=None):
 
         if len(self.dataset_filenames) > 0:
 
-            image_file = self.dataset_dir+"/JPEGImages/"+self.dataset_filenames[self.current_sample]
-            annotation_file = self.dataset_dir+"/Annotations/"+self.dataset_filenames[self.current_sample].split(".")[0]+".xml"
+            if file is None:
+                image_file = self.dataset_dir+"/JPEGImages/"+self.dataset_filenames[self.current_sample]
+                annotation_file = self.dataset_dir+"/Annotations/"+self.dataset_filenames[self.current_sample].split(".")[0]+".xml"
+
+            else:
+                image_file = self.dataset_dir + "/JPEGImages/" + file
+                annotation_file = self.dataset_dir + "/Annotations/" + file.split(".")[0] + ".xml"
+                self.current_sample = self.dataset_filenames.index(file)
 
             if os.path.isfile(image_file):
 
@@ -385,7 +406,7 @@ class MainWindow(Frame):
         self.partition_raw_dataset_images(self.raw_images_path.get()+"/", "SeedDatasetVOC/", [int(self.slice_dim.get()), int(self.slice_dim.get()), 3])
 
         # Load the dataset into the annotator
-        self.load_dataset("SeedDatasetVOC/")
+        self.load_dataset("SeedDatasetVOC/", dir=self.dataset_dir)
 
         self.builder_window.destroy()
 

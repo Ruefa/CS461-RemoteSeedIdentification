@@ -17,8 +17,8 @@
       <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="561">
-              <caret line="262" column="51" lean-forward="true" selection-start-line="262" selection-start-column="51" selection-end-line="262" selection-end-column="51" />
+            <state relative-caret-position="592">
+              <caret line="273" column="72" lean-forward="false" selection-start-line="273" selection-start-column="72" selection-end-line="273" selection-end-column="72" />
               <folding>
                 <element signature="e#1#21#0" expanded="true" />
               </folding>
@@ -65,6 +65,11 @@
       <find>canvas</find>
       <find>load_sample</find>
       <find>delete_s</find>
+      <find>bboxes</find>
+      <find>build</find>
+      <find>generate</find>
+      <find>gen_</find>
+      <find>delete_sample</find>
     </findStrings>
   </component>
   <component name="IdeDocumentHistory">
@@ -250,7 +255,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main.py</url>
-          <line>571</line>
+          <line>592</line>
           <option name="timeStamp" value="11" />
         </line-breakpoint>
       </breakpoints>
@@ -538,8 +543,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="561">
-          <caret line="262" column="51" lean-forward="true" selection-start-line="262" selection-start-column="51" selection-end-line="262" selection-end-column="51" />
+        <state relative-caret-position="592">
+          <caret line="273" column="72" lean-forward="false" selection-start-line="273" selection-start-column="72" selection-end-line="273" selection-end-column="72" />
           <folding>
             <element signature="e#1#21#0" expanded="true" />
           </folding>
