@@ -406,7 +406,7 @@ class MainWindow(Frame):
         self.partition_raw_dataset_images(self.raw_images_path.get()+"/", "SeedDatasetVOC/", [int(self.slice_dim.get()), int(self.slice_dim.get()), 3])
 
         # Load the dataset into the annotator
-        self.load_dataset("SeedDatasetVOC/", dir=self.dataset_dir)
+        self.load_dataset("SeedDatasetVOC/")
 
         self.builder_window.destroy()
 
@@ -567,6 +567,9 @@ class MainWindow(Frame):
 
         if self.current_sample < len(self.dataset_filenames)-1:
 
+            for bbox in self.bounding_boxes:
+                self.canvas.delete(bbox[0][0])
+
             self.current_sample += 1
             self.bounding_boxes.clear()
             self.load_sample(self.dataset_dir+"/JPEGImages/"+self.dataset_filenames[self.current_sample])
@@ -574,6 +577,9 @@ class MainWindow(Frame):
     def prev_sample(self, event):
 
         if self.current_sample > 0:
+
+            for bbox in self.bounding_boxes:
+                self.canvas.delete(bbox[0][0])
 
             self.current_sample -= 1
             self.bounding_boxes.clear()
@@ -660,11 +666,11 @@ def main():
         torch.set_default_tensor_type('torch.cuda.FloatTensor')
 
     root = Tk()
+
+    root.resizable(width=False, height=False)
     root.focus_set()
 
-
-
-    root.geometry("525x330+300+300")
+    root.geometry("515x330+300+300")
 
     app = MainWindow()
 
