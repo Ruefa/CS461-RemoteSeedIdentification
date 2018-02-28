@@ -25,8 +25,11 @@ public class LoginController extends AppCompatActivity {
         boolean loginSuccess = true;
 
         //open socket with server
-        ServerAsyncTask socketTask = new ServerAsyncTask();
-        socketTask.execute("");
+        /*ServerAsyncTask socketTask = new ServerAsyncTask();
+        socketTask.execute("");*/
+
+        Intent intent = new Intent(this, SocketService.class);
+        startService(intent);
 
 
         if(loginSuccess) {
