@@ -79,7 +79,7 @@ public class ServerUtils {
         if(mOutBuffer != null && !mOutBuffer.checkError()){
             mOutBuffer.println(message);
             mOutBuffer.flush();
-            Log.d("Server: ", "sent message" + message);
+            Log.d("Server: ", "sent message: " + message);
         }else {
             Log.d("Server: ", "mOutBuffer is null");
         }

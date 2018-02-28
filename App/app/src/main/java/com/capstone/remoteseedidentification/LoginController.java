@@ -1,15 +1,25 @@
 package com.capstone.remoteseedidentification;
 
 import android.Manifest;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 public class LoginController extends AppCompatActivity {
+
+    SocketService mService;
+    boolean mBound = false;
+    Intent intent;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,12 +38,17 @@ public class LoginController extends AppCompatActivity {
         /*ServerAsyncTask socketTask = new ServerAsyncTask();
         socketTask.execute("");*/
 
-        Intent intent = new Intent(this, SocketService.class);
+        intent = new Intent(this, SocketService.class);
         startService(intent);
-
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        if (!mBound) {
+            Log.d("LoginController", "mService null");
+        }else{
+            Log.d("LoginController", "mService not null");
+        }
 
         if(loginSuccess) {
-            goMain();
+            //goMain();
         }
     }
 
@@ -42,4 +57,24 @@ public class LoginController extends AppCompatActivity {
 
         startActivity(intent);
     }
+
+    //maybe move?
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            SocketService.SocketBinder binder = (SocketService.SocketBinder) service;
+            mService = binder.getService();
+            //mBinder = binder;
+            Log.d("LoginController", "mService bound");
+            //mService.openSocket();
+            mBound = true;
+            try {Thread.sleep(3000);} catch (InterruptedException e){}
+            
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Log.d("LoginController", "mService disconnected");
+        }
+    };
 }
