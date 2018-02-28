@@ -29,6 +29,8 @@
             android:name=".ResultsController"
             android:parentActivityName=".MainActivity" />
         <activity android:name=".RegisterController"></activity>
+
+        <service android:name="SocketService"/>
     </application>
 
 </manifest>
