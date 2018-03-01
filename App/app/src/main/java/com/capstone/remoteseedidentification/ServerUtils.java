@@ -1,5 +1,9 @@
 package com.capstone.remoteseedidentification;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -18,6 +22,9 @@ public class ServerUtils {
 
     private static final String SERVER_IP = "192.168.0.144";
     private static final int SERVER_PORT = 5777;
+    private static final String TAG = "ServerUtils";
+
+    public static final String SEND_MESSAGE = "socket.service.intent.action.SEND_MESSAGE";
 
     private PrintWriter mOutBuffer;
     private BufferedReader mInBuffer;
@@ -25,7 +32,14 @@ public class ServerUtils {
     private MessageCallback mMessageCallback;
     private boolean mRun;
 
-    public ServerUtils(MessageCallback listener){
+    public String testString = null;
+
+    public ServerUtils(MessageCallback listener, Context context){
+        BroadcastReceiver receiver = new MessageReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(SEND_MESSAGE);
+        context.registerReceiver(receiver, intentFilter);
+
         mMessageCallback = listener;
     }
 
@@ -56,6 +70,11 @@ public class ServerUtils {
                         mMessageCallback.callbackMessageReceiver(incomingMessage);
                     }
                     incomingMessage = null;
+
+                    if(testString != null){
+                        sendMessage(testString);
+                        testString = null;
+                    }
                 }
             } catch (Exception e){
                 e.printStackTrace();
@@ -89,5 +108,14 @@ public class ServerUtils {
     public interface MessageCallback {
 
         public void callbackMessageReceiver(String message);
+    }
+
+    public class MessageReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "receiver activated message");
+            testString = "broadcast test";
+        }
     }
 }

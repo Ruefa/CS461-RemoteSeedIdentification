@@ -18,8 +18,6 @@ public class LoginController extends AppCompatActivity {
 
     SocketService mService;
     boolean mBound = false;
-    Intent intent;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,18 +36,25 @@ public class LoginController extends AppCompatActivity {
         /*ServerAsyncTask socketTask = new ServerAsyncTask();
         socketTask.execute("");*/
 
-        intent = new Intent(this, SocketService.class);
+        Intent intent = new Intent(this, SocketService.class);
         startService(intent);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+
+        /*bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         if (!mBound) {
             Log.d("LoginController", "mService null");
         }else{
             Log.d("LoginController", "mService not null");
-        }
+        }*/
 
         if(loginSuccess) {
             //goMain();
         }
+    }
+
+    public void broadCastTest(View v){
+        Intent broadCastIntent = new Intent();
+        broadCastIntent.setAction(ServerUtils.SEND_MESSAGE);
+        sendBroadcast(broadCastIntent);
     }
 
     private void goMain(){

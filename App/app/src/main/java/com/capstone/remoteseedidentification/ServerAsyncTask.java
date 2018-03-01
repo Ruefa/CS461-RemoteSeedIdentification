@@ -17,7 +17,7 @@ public class ServerAsyncTask extends AsyncTask<String, String, ServerUtils> {
     @Override
     protected ServerUtils doInBackground(String... strings) {
 
-        try{
+        /*try{
             Log.d("Server: ", "about to begin");
             mServer = new ServerUtils(new ServerUtils.MessageCallback() {
                 @Override
@@ -28,7 +28,7 @@ public class ServerAsyncTask extends AsyncTask<String, String, ServerUtils> {
         } catch (NullPointerException e){
             e.printStackTrace();
         }
-        mServer.openSocket();
+        mServer.openSocket();*/
         return null;
     }
 }
