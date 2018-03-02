@@ -11,6 +11,7 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> mNavData;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerView;
+    private ActionBarDrawerToggle mDrawerToggle;
 
     //testing image capture
     private ImageButton mCaptureButton;
@@ -113,6 +115,14 @@ public class MainActivity extends AppCompatActivity {
         mDrawerView.setAdapter(new ArrayAdapter<>(this, R.layout.nav_text_view, mNavData));
 
         mDrawerView.setOnItemClickListener(new DrawerItemClickListener());
+
+        //enable hamburger button for navigation drawer
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+                R.string.drawer_open, R.string.drawer_close);
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener{

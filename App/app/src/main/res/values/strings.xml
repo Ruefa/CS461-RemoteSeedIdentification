@@ -5,6 +5,8 @@
     <string name="nav_login">Login</string>
     <string name="nav_gallery">Image from gallery</string>
     <string name="nav_results">Results</string>
+    <string name="drawer_open">Open drawer</string>
+    <string name="drawer_close">Close drawer</string>
 
     <string name="button_snap">Take a picture!</string>
 </resources>
