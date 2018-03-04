@@ -13,6 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 
 public class LoginController extends AppCompatActivity {
 
@@ -31,10 +33,19 @@ public class LoginController extends AppCompatActivity {
 
     public void doLogin(View v){
         boolean loginSuccess = true;
+        EditText tvUser, tvPass;
+        final String message;
+
+        tvUser = findViewById(R.id.edit_username);
+        tvPass = findViewById(R.id.edit_pass);
+
+        message = "b" + tvUser.getText() + "@" + tvPass.getText();
+
+        findViewById(R.id.pb_login).setVisibility(View.VISIBLE);
 
         //open socket with server
         ServerAsyncTask socketTask = new ServerAsyncTask(mCallback);
-        socketTask.execute("b42");
+        socketTask.execute(message);
 
         /*Intent intent = new Intent(this, SocketService.class);
         startService(intent);*/
@@ -87,6 +98,9 @@ public class LoginController extends AppCompatActivity {
         @Override
         public void callbackMessageReceiver(String message) {
             Log.d("Server message: ", message);
+
+            findViewById(R.id.pb_login).setVisibility(View.INVISIBLE);
+
             if(message.equals("01")){
                 goMain();
             }
