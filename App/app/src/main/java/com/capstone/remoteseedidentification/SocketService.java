@@ -42,7 +42,7 @@ public class SocketService extends IntentService {
                 public void callbackMessageReceiver(String message) {
                     Log.d("Server message: ", message);
                 }
-            }, this);
+            }, this, null);
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
