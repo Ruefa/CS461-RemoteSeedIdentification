@@ -32,13 +32,19 @@ public class ServerUtils {
     private MessageCallback mMessageCallback;
     private boolean mRun;
 
-    public String testString = null;
+    private String mInitMessage = "Successfully connected";
 
-    public ServerUtils(MessageCallback listener, Context context){
-        BroadcastReceiver receiver = new MessageReceiver();
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(SEND_MESSAGE);
-        context.registerReceiver(receiver, intentFilter);
+    public ServerUtils(MessageCallback listener, Context context, String message){
+        if(context != null) {
+            BroadcastReceiver receiver = new MessageReceiver();
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(SEND_MESSAGE);
+            context.registerReceiver(receiver, intentFilter);
+        }
+
+        if(message != null){
+            mInitMessage = message;
+        }
 
         mMessageCallback = listener;
     }
@@ -60,7 +66,7 @@ public class ServerUtils {
 
                 //create BufferedReader from socket input stream
                 mInBuffer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                sendMessage("Successfully connected");
+                sendMessage(mInitMessage);
 
                 //loop endlessly waiting for input data
                 //stopSocket() sets mRun to false and ends the loop
@@ -68,13 +74,9 @@ public class ServerUtils {
                     incomingMessage = mInBuffer.readLine();
                     if(incomingMessage != null && mMessageCallback != null){
                         mMessageCallback.callbackMessageReceiver(incomingMessage);
+                        return; //temporarilly not using a socket server
                     }
                     incomingMessage = null;
-
-                    if(testString != null){
-                        sendMessage(testString);
-                        testString = null;
-                    }
                 }
             } catch (Exception e){
                 e.printStackTrace();
@@ -115,7 +117,7 @@ public class ServerUtils {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "receiver activated message");
-            testString = "broadcast test";
+            //testString = "broadcast test";
         }
     }
 }
