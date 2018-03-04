@@ -10,25 +10,25 @@ import android.util.Log;
 public class ServerAsyncTask extends AsyncTask<String, String, ServerUtils> {
 
     private ServerUtils mServer;
+    private ServerUtils.MessageCallback mCallback;
 
     //constructor currently takes no args
-    //public ServerAsyncTask(){}
+    public ServerAsyncTask(ServerUtils.MessageCallback callback){
+        super();
+
+        mCallback = callback;
+    }
 
     @Override
     protected ServerUtils doInBackground(String... strings) {
 
-        /*try{
+        try{
             Log.d("Server: ", "about to begin");
-            mServer = new ServerUtils(new ServerUtils.MessageCallback() {
-                @Override
-                public void callbackMessageReceiver(String message) {
-                    Log.d("Server message: ", message);
-                }
-            });
+            mServer = new ServerUtils(mCallback, null, strings[0]);
         } catch (NullPointerException e){
             e.printStackTrace();
         }
-        mServer.openSocket();*/
+        mServer.openSocket();
         return null;
     }
 }
