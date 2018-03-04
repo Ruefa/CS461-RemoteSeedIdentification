@@ -33,11 +33,11 @@ public class LoginController extends AppCompatActivity {
         boolean loginSuccess = true;
 
         //open socket with server
-        /*ServerAsyncTask socketTask = new ServerAsyncTask();
-        socketTask.execute("");*/
+        ServerAsyncTask socketTask = new ServerAsyncTask(mCallback);
+        socketTask.execute("b42");
 
-        Intent intent = new Intent(this, SocketService.class);
-        startService(intent);
+        /*Intent intent = new Intent(this, SocketService.class);
+        startService(intent);*/
 
         /*bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         if (!mBound) {
@@ -80,6 +80,16 @@ public class LoginController extends AppCompatActivity {
         @Override
         public void onServiceDisconnected(ComponentName name) {
             Log.d("LoginController", "mService disconnected");
+        }
+    };
+
+    private ServerUtils.MessageCallback mCallback = new ServerUtils.MessageCallback() {
+        @Override
+        public void callbackMessageReceiver(String message) {
+            Log.d("Server message: ", message);
+            if(message.equals("01")){
+                goMain();
+            }
         }
     };
 }
