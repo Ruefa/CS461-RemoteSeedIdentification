@@ -29,12 +29,4 @@
         android:text="Login"
         app:layout_constraintTop_toBottomOf="@+id/R.id.edit_pass" />
 
-    <Button
-        android:id="@+id/button_broadcast"
-        android:onClick="broadCastTest"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="broadcast"
-        app:layout_constraintTop_toBottomOf="@+id/button_login" />
-
 </android.support.constraint.ConstraintLayout>
