@@ -36,4 +36,14 @@
         android:visibility="invisible"
         app:layout_constraintTop_toBottomOf="@id/button_login"/>
 
+    <TextView
+        android:id="@+id/tv_login_error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textColor="@color/red"
+        android:textAlignment="center"
+        android:visibility="invisible"
+        app:layout_constraintTop_toBottomOf="@id/button_login"/>
+
 </android.support.constraint.ConstraintLayout>
