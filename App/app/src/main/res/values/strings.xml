@@ -9,4 +9,7 @@
     <string name="drawer_close">Close drawer</string>
 
     <string name="button_snap">Take a picture!</string>
+
+    <!-- Login activity -->
+    <string name="login_error_empty">Please enter a username and password</string>
 </resources>

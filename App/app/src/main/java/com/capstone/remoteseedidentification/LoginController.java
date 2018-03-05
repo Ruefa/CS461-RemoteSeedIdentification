@@ -54,7 +54,7 @@ public class LoginController extends AppCompatActivity {
             ServerAsyncTask socketTask = new ServerAsyncTask(mCallback);
             socketTask.execute(message);
         }else{
-            tvError.setText("Please enter a username and password");
+            tvError.setText(R.string.login_error_empty);
             tvError.setVisibility(View.VISIBLE);
         }
 
