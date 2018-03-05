@@ -683,6 +683,11 @@ class MainWindow(Frame):
             val_file.write(name+"\n")
             trainval_file.write(name + "\n")
 
+        train_file.close()
+        val_file.close()
+        test_file.close()
+        trainval_file.close()
+
     def pick_random_elements(self, data_list, output_list, num_elements):
 
         # Seed the rand number generator
