@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class LoginController extends AppCompatActivity {
@@ -33,19 +34,29 @@ public class LoginController extends AppCompatActivity {
 
     public void doLogin(View v){
         boolean loginSuccess = true;
-        EditText tvUser, tvPass;
+        EditText etUser, etPass;
+        TextView tvError;
         final String message;
 
-        tvUser = findViewById(R.id.edit_username);
-        tvPass = findViewById(R.id.edit_pass);
+        etUser = findViewById(R.id.edit_username);
+        etPass = findViewById(R.id.edit_pass);
+        tvError = findViewById(R.id.tv_login_error);
 
-        message = "b" + tvUser.getText() + "@" + tvPass.getText();
+        tvError.setVisibility(View.INVISIBLE);
 
-        findViewById(R.id.pb_login).setVisibility(View.VISIBLE);
+        //Log.d("errorTest", )
+        if(!etUser.getText().toString().equals("Username") && !etPass.toString().equals("Password")) {
+            message = "b" + etUser.getText() + "@" + etPass.getText();
 
-        //open socket with server
-        ServerAsyncTask socketTask = new ServerAsyncTask(mCallback);
-        socketTask.execute(message);
+            findViewById(R.id.pb_login).setVisibility(View.VISIBLE);
+
+            //open socket with server
+            ServerAsyncTask socketTask = new ServerAsyncTask(mCallback);
+            socketTask.execute(message);
+        }else{
+            tvError.setText("Please enter a username and password");
+            tvError.setVisibility(View.VISIBLE);
+        }
 
         /*Intent intent = new Intent(this, SocketService.class);
         startService(intent);*/
@@ -99,10 +110,10 @@ public class LoginController extends AppCompatActivity {
         public void callbackMessageReceiver(String message) {
             Log.d("Server message: ", message);
 
-            findViewById(R.id.pb_login).setVisibility(View.INVISIBLE);
-
             if(message.equals("01")){
                 goMain();
+            }else{
+                findViewById(R.id.pb_login).setVisibility(View.INVISIBLE);
             }
         }
     };
