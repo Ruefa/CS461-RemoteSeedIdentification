@@ -23,10 +23,22 @@
 
     <Button
         android:id="@+id/button_login"
-        android:onClick="doLogin"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:onClick="doLogin"
         android:text="Login"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/button_register"
+        app:layout_constraintTop_toBottomOf="@+id/edit_pass" />
+
+    <Button
+        android:id="@+id/button_register"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="doRegister"
+        android:text="Create an account"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/button_login"
         app:layout_constraintTop_toBottomOf="@+id/edit_pass" />
 
     <ProgressBar
