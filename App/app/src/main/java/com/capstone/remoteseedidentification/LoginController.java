@@ -119,6 +119,7 @@ public class LoginController extends AppCompatActivity {
     };
 
     public void doRegister(View v){
-
+        Intent intent = new Intent(this, RegisterController.class);
+        startActivity(intent);
     }
 }
