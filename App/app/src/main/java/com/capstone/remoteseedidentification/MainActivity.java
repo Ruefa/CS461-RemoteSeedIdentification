@@ -36,6 +36,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final static String TAG = "MainActivity";
+
     final static int RESULT_LOAD_IMAGE = 1;
     final static int CAMERA_PERMISSION_REQUEST = 50;
 
@@ -241,6 +243,7 @@ public class MainActivity extends AppCompatActivity {
 
         switch(v.getId()){
             case R.id.button_conf_accept:
+                sendImage();
                 toast = Toast.makeText(this, "Image Sent", Toast.LENGTH_LONG);
                 break;
 
@@ -263,4 +266,16 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button_conf_accept).setVisibility(View.GONE);
         findViewById(R.id.button_conf_deny).setVisibility(View.GONE);
     }
+
+    private void sendImage(){
+        ServerAsyncTask asyncTask = new ServerAsyncTask(mCallback);
+        //asyncTask.execute("c" + mByteImage.toString()); needs work
+    }
+
+    ServerUtils.MessageCallback mCallback = new ServerUtils.MessageCallback() {
+        @Override
+        public void callbackMessageReceiver(String message) {
+            Log.d(TAG, message);
+        }
+    };
 }
