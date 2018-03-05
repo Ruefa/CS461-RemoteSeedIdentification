@@ -45,7 +45,7 @@ public class LoginController extends AppCompatActivity {
         tvError.setVisibility(View.INVISIBLE);
 
         //Log.d("errorTest", )
-        if(!etUser.getText().toString().equals("Username") && !etPass.toString().equals("Password")) {
+        if(!etUser.getText().toString().equals("Username") && !etPass.getText().toString().equals("Password")) {
             message = "b" + etUser.getText() + "@" + etPass.getText();
 
             findViewById(R.id.pb_login).setVisibility(View.VISIBLE);
