@@ -400,6 +400,7 @@ class MainWindow(Frame):
         os.makedirs("SeedDatasetVOC")
         os.makedirs("SeedDatasetVOC/Annotations")
         os.makedirs("SeedDatasetVOC/ImageSets")
+        os.makedirs("SeedDatasetVOC/ImageSets/Main")
         os.makedirs("SeedDatasetVOC/JPEGImages")
 
         # Create and partition the data set
@@ -610,6 +611,7 @@ class MainWindow(Frame):
         train_images = []
         test_images = []
         val_images = []
+        slice_names = []
 
         # Get the file names of the processed data
         filenames = [x[2] for x in os.walk(raw_images_dir)][0]
@@ -627,7 +629,11 @@ class MainWindow(Frame):
         self.pick_random_elements(filenames, test_images, num_test_elements)
         self.pick_random_elements(filenames, val_images, num_val_elements)
 
+        slice_names = [[], [], []]
+
         sets = [train_images, test_images, val_images]
+
+        set_count = 0
 
         # Partion images and create VOC images set files
         for set in sets:
@@ -640,9 +646,42 @@ class MainWindow(Frame):
 
                 for image in partitions:
 
-                    cv2.imwrite(dataset_dir+"JPEGImages/"+ntpath.basename(filename).split(".",1)[0]+"_"+str(image_count)+".png", image)
+                    # Get the name of the image to be saved
+                    name = ntpath.basename(filename).split(".",1)[0]+"_"+str(image_count)
+
+                    # Add the name to the slice list
+                    slice_names[set_count].append(name)
+
+                    # Write the image
+                    cv2.imwrite(dataset_dir+"JPEGImages/"+name+".png", image)
 
                     image_count += 1
+
+            set_count += 1
+
+        # Create the imageset files
+        self.gen_voc_imagesets(dataset_dir,slice_names)
+
+    def gen_voc_imagesets(self, dataset_dir, slice_names):
+
+        # Create the imageset files
+        train_file = open(dataset_dir+"ImageSets/Main/train.txt", "w")
+        val_file = open(dataset_dir + "ImageSets/Main/val.txt", "w")
+        test_file = open(dataset_dir + "ImageSets/Main/test.txt", "w")
+        trainval_file = open(dataset_dir + "ImageSets/Main/trainval.txt", "w")
+
+        # Write the names to the image set files
+        for name in slice_names[0]:
+
+            train_file.write(name+"\n")
+            trainval_file.write(name + "\n")
+
+        for name in slice_names[1]:
+            test_file.write(name+"\n")
+
+        for name in slice_names[2]:
+            val_file.write(name+"\n")
+            trainval_file.write(name + "\n")
 
     def pick_random_elements(self, data_list, output_list, num_elements):
 
