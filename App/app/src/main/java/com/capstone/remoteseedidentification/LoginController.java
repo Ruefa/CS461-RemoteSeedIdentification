@@ -117,4 +117,8 @@ public class LoginController extends AppCompatActivity {
             }
         }
     };
+
+    public void doRegister(View v){
+
+    }
 }
