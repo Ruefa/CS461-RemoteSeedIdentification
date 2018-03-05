@@ -26,7 +26,7 @@
         android:onClick="doRegister"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Login"
+        android:text="Register"
         app:layout_constraintTop_toBottomOf="@+id/R.id.edit_pass" />
 
 </android.support.constraint.ConstraintLayout>
