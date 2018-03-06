@@ -337,6 +337,15 @@ class MainWindow(Frame):
                             # Append box to bounding boxes
                             self.bounding_boxes.append([self.rectid, xmin, ymin, xmax, ymax])
 
+                        elif gchild.tag == "name":
+
+                            name = child.find("name").text
+
+                            if name not in self.seed_classes:
+
+                                self.seed_classes.insert(0, name)
+                                self.refresh_class_dropdown()
+
 
     def dropdown_callback(self, item):
 
@@ -434,8 +443,6 @@ class MainWindow(Frame):
 
         # Insert list of new options (tk._setit hooks them up to var)
         label = self.seed_classes[0]
-
-        print(label)
 
         self.classDropdown['menu'].add_command(label=label, command=tk._setit(self.current_class, label))
 
@@ -629,16 +636,16 @@ class MainWindow(Frame):
     def partition_image(self, image, shape):
 
         # Step half the shape dimension to avoid losing seeds on the edges
-        partitions_x = math.floor(image.shape[0] / shape[0]) * 2
-        partitions_y = math.floor(image.shape[1] / shape[1]) * 2
+        partitions_x = math.floor(image.shape[0] / shape[0]) * 3
+        partitions_y = math.floor(image.shape[1] / shape[1]) * 3
 
         image_set = []
 
         for x in range(partitions_x):
             for y in range(partitions_y):
 
-                start_x = int(x * (shape[0] / 2))
-                start_y = int(y * (shape[1] / 2))
+                start_x = int(x * (shape[0] / 3))
+                start_y = int(y * (shape[1] / 3))
                 end_x = start_x + shape[0]
                 end_y = start_y + shape[1]
 
