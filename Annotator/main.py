@@ -119,6 +119,7 @@ class MainWindow(Frame):
         self.drawing = False
         self.bounding_boxes = []
         self.object_offset = 0
+        self.imagesets = [[], [], []]
 
         # Create menu bar
         self.menubar = tk.Menu(self.master)
@@ -265,7 +266,8 @@ class MainWindow(Frame):
         if len(self.dataset_filenames) > 0:
 
             if file is None:
-                image_file = self.dataset_dir+"/JPEGImages/"+self.dataset_filenames[self.current_sample]
+                file = self.dataset_filenames[self.current_sample]
+                image_file = self.dataset_dir+"/JPEGImages/"+file
                 annotation_file = self.dataset_dir+"/Annotations/"+self.dataset_filenames[self.current_sample].split(".")[0]+".xml"
 
             else:
@@ -277,6 +279,7 @@ class MainWindow(Frame):
 
                 os.remove(image_file)
                 self.dataset_filenames.pop(self.current_sample)
+                self.remove_from_imagesets(file)
 
                 if self.current_sample == len(self.dataset_filenames):
                     self.current_sample -= 1
@@ -292,6 +295,17 @@ class MainWindow(Frame):
             if os.path.isfile(annotation_file):
                 os.remove(annotation_file)
 
+    def remove_from_imagesets(self, image_name):
+
+        name = image_name.split(".")[0]
+        set_count = 0
+
+        while set_count < 3:
+            if name in self.imagesets[set_count]:
+                self.imagesets[set_count].remove(name)
+            set_count += 1
+
+        self.write_voc_imagesets(self.dataset_dir)
 
     def load_annotation(self):
 
@@ -541,6 +555,28 @@ class MainWindow(Frame):
         self.canvas.update()
         self.load_annotation()
 
+    def load_imagesets(self):
+
+        # Reset imagesets
+        self.imagesets = [[], [], [], []]
+
+        # Open imageset files
+        train_file = open(self.dataset_dir + "/ImageSets/Main/train.txt", "r")
+        val_file = open(self.dataset_dir + "/ImageSets/Main/val.txt", "r")
+        test_file = open(self.dataset_dir + "/ImageSets/Main/test.txt", "r")
+        trainval_file = open(self.dataset_dir + "/ImageSets/Main/trainval.txt", "r")
+
+        files = [train_file, val_file, test_file, trainval_file]
+
+        set_count = 0
+
+        for file in files:
+            for line in file.readlines():
+                self.imagesets[set_count].append(line.rstrip('\n'))
+
+            set_count += 1
+
+
     def load_dataset(self, dir=None):
 
         if dir == None:
@@ -551,6 +587,8 @@ class MainWindow(Frame):
         self.current_sample = 0
 
         self.dataset_filenames = [x[2] for x in os.walk(self.dataset_dir + "/JPEGImages/")][0]
+
+        self.load_imagesets()
 
         if len(self.dataset_filenames) > 0:
             self.load_sample(self.dataset_dir+"/JPEGImages/"+self.dataset_filenames[self.current_sample])
@@ -629,8 +667,6 @@ class MainWindow(Frame):
         self.pick_random_elements(filenames, test_images, num_test_elements)
         self.pick_random_elements(filenames, val_images, num_val_elements)
 
-        slice_names = [[], [], []]
-
         sets = [train_images, test_images, val_images]
 
         set_count = 0
@@ -650,7 +686,7 @@ class MainWindow(Frame):
                     name = ntpath.basename(filename).split(".",1)[0]+"_"+str(image_count)
 
                     # Add the name to the slice list
-                    slice_names[set_count].append(name)
+                    self.imagesets[set_count].append(name)
 
                     # Write the image
                     cv2.imwrite(dataset_dir+"JPEGImages/"+name+".png", image)
@@ -660,26 +696,26 @@ class MainWindow(Frame):
             set_count += 1
 
         # Create the imageset files
-        self.gen_voc_imagesets(dataset_dir,slice_names)
+        self.write_voc_imagesets(dataset_dir)
 
-    def gen_voc_imagesets(self, dataset_dir, slice_names):
+    def write_voc_imagesets(self, dataset_dir):
 
         # Create the imageset files
-        train_file = open(dataset_dir+"ImageSets/Main/train.txt", "w")
-        val_file = open(dataset_dir + "ImageSets/Main/val.txt", "w")
-        test_file = open(dataset_dir + "ImageSets/Main/test.txt", "w")
-        trainval_file = open(dataset_dir + "ImageSets/Main/trainval.txt", "w")
+        train_file = open(dataset_dir+"/ImageSets/Main/train.txt", "w")
+        val_file = open(dataset_dir + "/ImageSets/Main/val.txt", "w")
+        test_file = open(dataset_dir + "/ImageSets/Main/test.txt", "w")
+        trainval_file = open(dataset_dir + "/ImageSets/Main/trainval.txt", "w")
 
         # Write the names to the image set files
-        for name in slice_names[0]:
+        for name in self.imagesets[0]:
 
             train_file.write(name+"\n")
             trainval_file.write(name + "\n")
 
-        for name in slice_names[1]:
+        for name in self.imagesets[1]:
             test_file.write(name+"\n")
 
-        for name in slice_names[2]:
+        for name in self.imagesets[2]:
             val_file.write(name+"\n")
             trainval_file.write(name + "\n")
 
