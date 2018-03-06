@@ -96,7 +96,7 @@ class MainWindow(Frame):
         self.bind('<Right>', self.next_sample)
         self.bind('<Left>', self.prev_sample)
         self.bind('s', self.save_annotation)
-        self.bind('d', self.delete_sample)
+        self.bind('<Delete>', self.delete_sample)
 
         # Create image canvas
         self.canvas = tk.Canvas(self, width=300, height=300, background='white')
@@ -537,6 +537,7 @@ class MainWindow(Frame):
 
             if self.mouse_over(mx, my, bbox[1:5]):
                 self.canvas.delete(bbox[0][0])
+                self.bounding_boxes.remove(bbox)
 
     def load_sample(self, filename):
 
@@ -609,6 +610,7 @@ class MainWindow(Frame):
             for bbox in self.bounding_boxes:
                 self.canvas.delete(bbox[0][0])
 
+            self.save_annotation()
             self.current_sample += 1
             self.bounding_boxes.clear()
             self.load_sample(self.dataset_dir+"/JPEGImages/"+self.dataset_filenames[self.current_sample])
