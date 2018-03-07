@@ -10,14 +10,14 @@
         android:id="@+id/edit_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Username"/>
+        android:hint="Username" />
 
     <EditText
         android:id="@+id/edit_pass"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Password"
+        android:hint="Password"
         app:layout_constraintTop_toBottomOf="@+id/edit_username"
         tools:layout_editor_absoluteX="0dp" />
 
