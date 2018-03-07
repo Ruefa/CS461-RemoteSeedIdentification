@@ -12,4 +12,7 @@
 
     <!-- Login activity -->
     <string name="login_error_empty">Please enter a username and password</string>
+
+    <!-- Register activity -->
+    <string name="register_error_mismatch">Passwords do not match</string>
 </resources>
