@@ -10,7 +10,7 @@
 
     <style name="LoginTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/transparent</item>
-        <item name="android:background">@color/soft_green</item>
+        <item name="android:background">@color/soft_blue</item>
         <item name="editTextStyle">@style/bordered_edit_text</item>
     </style>
 
@@ -26,5 +26,6 @@
     <color name="black">#000000</color>
     <color name="grey">#D2D2D2</color>
     <color name="dark_grey">#939393</color>
+    <color name="soft_blue">#90D4E7</color>
 
 </resources>
