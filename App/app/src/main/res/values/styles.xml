@@ -8,6 +8,13 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="LoginTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/transparent</item>
+        <item name="android:background">@color/soft_green</item>
+    </style>
+
     <color name="red">#FF0000</color>
+    <color name="soft_green">#90C048</color>
+    <color name="transparent">#00000000</color>
 
 </resources>
