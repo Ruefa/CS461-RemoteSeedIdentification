@@ -5,3 +5,5 @@ Classifier/data
 Classifier/ssd300_120000
 Annotator/SeedDatasetVOC
 Annotator/raw_images
+App/test_server/
+Data/

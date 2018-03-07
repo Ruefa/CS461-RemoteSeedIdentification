@@ -5,6 +5,21 @@
     <string name="nav_login">Login</string>
     <string name="nav_gallery">Image from gallery</string>
     <string name="nav_results">Results</string>
+    <string name="drawer_open">Open drawer</string>
+    <string name="drawer_close">Close drawer</string>
 
     <string name="button_snap">Take a picture!</string>
+
+    <!-- Login activity -->
+    <string name="login_hint_username">Email</string>
+    <string name="login_hint_password">Password</string>
+    <string name="login_error_empty">Please enter a username and password</string>
+    <string name="login_button_login">Login</string>
+    <string name="login_button_register">Create An Account</string>
+    <!-- Register activity -->
+    <string name="register_hint_username">Email</string>
+    <string name="register_hint_password">Password</string>
+    <string name="register_hint_confirm">Confirm Password</string>
+    <string name="register_error_mismatch">Passwords do not match</string>
+    <string name="register_button_register">Register</string>
 </resources>

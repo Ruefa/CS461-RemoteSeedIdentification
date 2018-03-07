@@ -11,6 +11,7 @@ import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,11 +36,17 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final static String TAG = "MainActivity";
+
+    final static int RESULT_LOAD_IMAGE = 1;
+    final static int CAMERA_PERMISSION_REQUEST = 50;
+
     private Camera mCamera;
     private CameraView mCameraView;
     private ArrayList<String> mNavData;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerView;
+    private ActionBarDrawerToggle mDrawerToggle;
 
     //testing image capture
     private ImageButton mCaptureButton;
@@ -47,9 +54,6 @@ public class MainActivity extends AppCompatActivity {
 
     //image data
     private byte[] mByteImage;
-
-    final static int RESULT_LOAD_IMAGE = 1;
-    final static int CAMERA_PERMISSION_REQUEST = 50;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +117,14 @@ public class MainActivity extends AppCompatActivity {
         mDrawerView.setAdapter(new ArrayAdapter<>(this, R.layout.nav_text_view, mNavData));
 
         mDrawerView.setOnItemClickListener(new DrawerItemClickListener());
+
+        //enable hamburger button for navigation drawer
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+                R.string.drawer_open, R.string.drawer_close);
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener{
@@ -231,6 +243,7 @@ public class MainActivity extends AppCompatActivity {
 
         switch(v.getId()){
             case R.id.button_conf_accept:
+                sendImage();
                 toast = Toast.makeText(this, "Image Sent", Toast.LENGTH_LONG);
                 break;
 
@@ -253,4 +266,16 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button_conf_accept).setVisibility(View.GONE);
         findViewById(R.id.button_conf_deny).setVisibility(View.GONE);
     }
+
+    private void sendImage(){
+        ServerAsyncTask asyncTask = new ServerAsyncTask(mCallback);
+        //asyncTask.execute("c" + mByteImage.toString()); needs work
+    }
+
+    ServerUtils.MessageCallback mCallback = new ServerUtils.MessageCallback() {
+        @Override
+        public void callbackMessageReceiver(String message) {
+            Log.d(TAG, message);
+        }
+    };
 }

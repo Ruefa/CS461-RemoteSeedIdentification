@@ -7,26 +7,55 @@
     tools:context="com.capstone.remoteseedidentification.RegisterController">
 
     <EditText
-        android:id="@+id/edit_username"
+        android:id="@+id/et_register_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Email"/>
+        android:hint="@string/register_hint_username"
+        android:layout_marginLeft="25dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginEnd="25dp"/>
 
     <EditText
-        android:id="@+id/R.id.edit_pass"
+        android:id="@+id/et_register_pass"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Password"
-        app:layout_constraintTop_toBottomOf="@+id/edit_username"
-        tools:layout_editor_absoluteX="0dp" />
+        android:hint="@string/register_hint_password"
+        app:layout_constraintTop_toBottomOf="@+id/et_register_username"
+        android:layout_marginLeft="25dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginEnd="25dp"/>
 
-    <Button
-        android:id="@+id/button_login"
-        android:onClick="doRegister"
+    <EditText
+        android:id="@+id/et_register_pass_confirm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Login"
-        app:layout_constraintTop_toBottomOf="@+id/R.id.edit_pass" />
+        android:layout_marginTop="8dp"
+        android:hint="@string/register_hint_confirm"
+        app:layout_constraintTop_toBottomOf="@id/et_register_pass"
+        android:layout_marginLeft="25dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginEnd="25dp"/>
+
+    <Button
+        android:id="@+id/button_register"
+        android:onClick="doRegister"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/register_button_register"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_register_pass_confirm" />
+
+    <TextView
+        android:id="@+id/tv_register_error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:layout_constraintTop_toBottomOf="@+id/button_register"
+        android:textAlignment="center"/>
 
 </android.support.constraint.ConstraintLayout>

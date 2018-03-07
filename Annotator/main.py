@@ -82,26 +82,27 @@ class MainWindow(Frame):
         self.gen_bbox_button = tk.Button(self, text="Generate bounding boxes", command=self.gen_dataset_bboxes)
         self.gen_bbox_button.grid(row=3, column=3, sticky=tk.NW, pady=90)
 
-        self.filter_empty = tk.BooleanVar(self.master)
-        self.filter_empty_radio  = tk.Radiobutton(self, text="Discard empty samples",
-                        variable=self.filter_empty, value=False)
-        self.filter_empty_radio.grid(row=3, column=3, sticky=tk.NW, pady=40)
+        self.filter_empty = tk.IntVar(self.master)
+        self.filter_empty_check  = tk.Checkbutton(self, text="Discard empty samples",
+                                    variable=self.filter_empty)
+        self.filter_empty_check.grid(row=3, column=3, sticky=tk.NW, pady=40)
 
-        self.homogeneous = tk.BooleanVar(self.master)
-        self.homogeneous_radio = tk.Radiobutton(self, text="Homogeneous sample",
-                                             variable=self.homogeneous, value=False)
-        self.homogeneous_radio.grid(row=3, column=3, sticky=tk.NW, pady=60)
+        self.homogeneous = tk.IntVar(self.master)
+        self.homogeneous_check = tk.Checkbutton(self, text="Homogeneous sample",
+                                    variable=self.homogeneous)
+        self.homogeneous_check.grid(row=3, column=3, sticky=tk.NW, pady=60)
 
         # Bind arrow key events
         self.bind('<Right>', self.next_sample)
         self.bind('<Left>', self.prev_sample)
         self.bind('s', self.save_annotation)
+        self.bind('<Delete>', self.delete_sample)
 
         # Create image canvas
         self.canvas = tk.Canvas(self, width=300, height=300, background='white')
         self.canvas.grid(row=0, column=0, columnspan=2, rowspan=4,
                   pady=10, padx=10, sticky=tk.NW)
-        self.image_on_canvas = self.canvas.create_image(0, 0, anchor=tk.NW, image=None)
+        self.image_on_canvas = self.canvas.create_image(0, 0, image=None)
 
         # Create canvas mouse handlers for rectangles
         self.canvas.bind("<Button-1>", self.startRect)
@@ -118,6 +119,7 @@ class MainWindow(Frame):
         self.drawing = False
         self.bounding_boxes = []
         self.object_offset = 0
+        self.imagesets = [[], [], []]
 
         # Create menu bar
         self.menubar = tk.Menu(self.master)
@@ -146,6 +148,8 @@ class MainWindow(Frame):
 
     def gen_dataset_bboxes(self):
 
+        delete_queue = []
+
         for img_file in self.dataset_filenames:
 
             # Load the image
@@ -168,16 +172,25 @@ class MainWindow(Frame):
 
             self.bounding_boxes.clear()
 
+            bbox_count = 0
+
             # Record the bounding boxes
             scale = torch.Tensor([rgb_image.shape[1::-1], rgb_image.shape[1::-1]])
             for i in range(y.data.size(1)):
 
                 j = 0
-                while y.data[0, i, j, 0] >= 0.6:
+                while y.data[0, i, j, 0] >= 0.75:
 
+                    bbox_count += 1
                     pt = (y.data[0, i, j, 1:] * scale).cpu().numpy()
                     self.bounding_boxes.append([None, pt[0], pt[1], pt[2], pt[3]])
                     j += 1
+
+            print(bbox_count)
+
+            # Remove image if no bouding boxes are detected/if option is enabled
+            if bbox_count == 0 and self.filter_empty.get():
+                delete_queue.append(self.dataset_filenames[self.current_sample])
 
             # Save the bounding boxes in xml format
             self.save_annotation()
@@ -187,8 +200,12 @@ class MainWindow(Frame):
 
         self.bounding_boxes.clear()
 
+        # Remove any empty samples
+        for sample in delete_queue:
+            self.delete_sample(file=sample)
+
         # Re-load the dataset
-        self.load_dataset()
+        self.load_dataset(self.dataset_dir)
 
 
     def create_class_window(self):
@@ -244,6 +261,52 @@ class MainWindow(Frame):
         tree = et.ElementTree(annotation)
         tree.write(self.dataset_dir+"/Annotations/"+self.dataset_filenames[self.current_sample].split(".")[0]+".xml")
 
+    def delete_sample(self, event=None, file=None):
+
+        if len(self.dataset_filenames) > 0:
+
+            if file is None:
+                file = self.dataset_filenames[self.current_sample]
+                image_file = self.dataset_dir+"/JPEGImages/"+file
+                annotation_file = self.dataset_dir+"/Annotations/"+self.dataset_filenames[self.current_sample].split(".")[0]+".xml"
+
+            else:
+                image_file = self.dataset_dir + "/JPEGImages/" + file
+                annotation_file = self.dataset_dir + "/Annotations/" + file.split(".")[0] + ".xml"
+                self.current_sample = self.dataset_filenames.index(file)
+
+            if os.path.isfile(image_file):
+
+                os.remove(image_file)
+                self.dataset_filenames.pop(self.current_sample)
+                self.remove_from_imagesets(file)
+
+                if self.current_sample == len(self.dataset_filenames):
+                    self.current_sample -= 1
+
+                if len(self.dataset_filenames) > 0:
+                    self.load_sample(self.dataset_dir+"/JPEGImages/"+self.dataset_filenames[self.current_sample])
+                else:
+                    # self.image_on_canvas = self.canvas.create_image(0, 0, anchor=tk.NW, image=imgtk)
+                    self.image_on_canvas = self.canvas.create_image(1, 1, anchor=tk.NW, image=None)
+                    self.canvas.image = None
+                    self.canvas.update()
+
+            if os.path.isfile(annotation_file):
+                os.remove(annotation_file)
+
+    def remove_from_imagesets(self, image_name):
+
+        name = image_name.split(".")[0]
+        set_count = 0
+
+        while set_count < 3:
+            if name in self.imagesets[set_count]:
+                self.imagesets[set_count].remove(name)
+            set_count += 1
+
+        self.write_voc_imagesets(self.dataset_dir)
+
     def load_annotation(self):
 
         path = self.dataset_dir+"/Annotations/"+self.dataset_filenames[self.current_sample].split(".")[0]+".xml"
@@ -273,6 +336,15 @@ class MainWindow(Frame):
 
                             # Append box to bounding boxes
                             self.bounding_boxes.append([self.rectid, xmin, ymin, xmax, ymax])
+
+                        elif gchild.tag == "name":
+
+                            name = child.find("name").text
+
+                            if name not in self.seed_classes:
+
+                                self.seed_classes.insert(0, name)
+                                self.refresh_class_dropdown()
 
 
     def dropdown_callback(self, item):
@@ -351,6 +423,7 @@ class MainWindow(Frame):
         os.makedirs("SeedDatasetVOC")
         os.makedirs("SeedDatasetVOC/Annotations")
         os.makedirs("SeedDatasetVOC/ImageSets")
+        os.makedirs("SeedDatasetVOC/ImageSets/Main")
         os.makedirs("SeedDatasetVOC/JPEGImages")
 
         # Create and partition the data set
@@ -370,8 +443,6 @@ class MainWindow(Frame):
 
         # Insert list of new options (tk._setit hooks them up to var)
         label = self.seed_classes[0]
-
-        print(label)
 
         self.classDropdown['menu'].add_command(label=label, command=tk._setit(self.current_class, label))
 
@@ -473,6 +544,7 @@ class MainWindow(Frame):
 
             if self.mouse_over(mx, my, bbox[1:5]):
                 self.canvas.delete(bbox[0][0])
+                self.bounding_boxes.remove(bbox)
 
     def load_sample(self, filename):
 
@@ -485,11 +557,33 @@ class MainWindow(Frame):
         imgtk2 = ImageTk.PhotoImage(image=im2)
 
         #self.image_on_canvas = self.canvas.create_image(0, 0, anchor=tk.NW, image=imgtk)
-        self.image_on_canvas = self.canvas.create_image(0, 0, anchor=tk.NW, image=imgtk2)
+        self.image_on_canvas = self.canvas.create_image(1, 1, anchor=tk.NW, image=imgtk2)
         self.canvas.image = imgtk2
 
         self.canvas.update()
         self.load_annotation()
+
+    def load_imagesets(self):
+
+        # Reset imagesets
+        self.imagesets = [[], [], [], []]
+
+        # Open imageset files
+        train_file = open(self.dataset_dir + "/ImageSets/Main/train.txt", "r")
+        val_file = open(self.dataset_dir + "/ImageSets/Main/val.txt", "r")
+        test_file = open(self.dataset_dir + "/ImageSets/Main/test.txt", "r")
+        trainval_file = open(self.dataset_dir + "/ImageSets/Main/trainval.txt", "r")
+
+        files = [train_file, val_file, test_file, trainval_file]
+
+        set_count = 0
+
+        for file in files:
+            for line in file.readlines():
+                self.imagesets[set_count].append(line.rstrip('\n'))
+
+            set_count += 1
+
 
     def load_dataset(self, dir=None):
 
@@ -502,7 +596,10 @@ class MainWindow(Frame):
 
         self.dataset_filenames = [x[2] for x in os.walk(self.dataset_dir + "/JPEGImages/")][0]
 
-        self.load_sample(self.dataset_dir+"/JPEGImages/"+self.dataset_filenames[self.current_sample])
+        self.load_imagesets()
+
+        if len(self.dataset_filenames) > 0:
+            self.load_sample(self.dataset_dir+"/JPEGImages/"+self.dataset_filenames[self.current_sample])
 
     def load_classifier(self):
 
@@ -515,8 +612,12 @@ class MainWindow(Frame):
 
     def next_sample(self, event):
 
-        if self.current_sample < len(self.dataset_filenames):
+        if self.current_sample < len(self.dataset_filenames)-1:
 
+            for bbox in self.bounding_boxes:
+                self.canvas.delete(bbox[0][0])
+
+            self.save_annotation()
             self.current_sample += 1
             self.bounding_boxes.clear()
             self.load_sample(self.dataset_dir+"/JPEGImages/"+self.dataset_filenames[self.current_sample])
@@ -525,6 +626,9 @@ class MainWindow(Frame):
 
         if self.current_sample > 0:
 
+            for bbox in self.bounding_boxes:
+                self.canvas.delete(bbox[0][0])
+
             self.current_sample -= 1
             self.bounding_boxes.clear()
             self.load_sample(self.dataset_dir + "/JPEGImages/"+self.dataset_filenames[self.current_sample])
@@ -532,16 +636,16 @@ class MainWindow(Frame):
     def partition_image(self, image, shape):
 
         # Step half the shape dimension to avoid losing seeds on the edges
-        partitions_x = math.floor(image.shape[0] / shape[0]) * 2
-        partitions_y = math.floor(image.shape[1] / shape[1]) * 2
+        partitions_x = math.floor(image.shape[0] / shape[0]) * 3
+        partitions_y = math.floor(image.shape[1] / shape[1]) * 3
 
         image_set = []
 
         for x in range(partitions_x):
             for y in range(partitions_y):
 
-                start_x = int(x * (shape[0] / 2))
-                start_y = int(y * (shape[1] / 2))
+                start_x = int(x * (shape[0] / 3))
+                start_y = int(y * (shape[1] / 3))
                 end_x = start_x + shape[0]
                 end_y = start_y + shape[1]
 
@@ -554,6 +658,7 @@ class MainWindow(Frame):
         train_images = []
         test_images = []
         val_images = []
+        slice_names = []
 
         # Get the file names of the processed data
         filenames = [x[2] for x in os.walk(raw_images_dir)][0]
@@ -573,6 +678,8 @@ class MainWindow(Frame):
 
         sets = [train_images, test_images, val_images]
 
+        set_count = 0
+
         # Partion images and create VOC images set files
         for set in sets:
 
@@ -584,9 +691,47 @@ class MainWindow(Frame):
 
                 for image in partitions:
 
-                    cv2.imwrite(dataset_dir+"JPEGImages/"+ntpath.basename(filename).split(".",1)[0]+"_"+str(image_count)+".png", image)
+                    # Get the name of the image to be saved
+                    name = ntpath.basename(filename).split(".",1)[0]+"_"+str(image_count)
+
+                    # Add the name to the slice list
+                    self.imagesets[set_count].append(name)
+
+                    # Write the image
+                    cv2.imwrite(dataset_dir+"JPEGImages/"+name+".png", image)
 
                     image_count += 1
+
+            set_count += 1
+
+        # Create the imageset files
+        self.write_voc_imagesets(dataset_dir)
+
+    def write_voc_imagesets(self, dataset_dir):
+
+        # Create the imageset files
+        train_file = open(dataset_dir+"/ImageSets/Main/train.txt", "w")
+        val_file = open(dataset_dir + "/ImageSets/Main/val.txt", "w")
+        test_file = open(dataset_dir + "/ImageSets/Main/test.txt", "w")
+        trainval_file = open(dataset_dir + "/ImageSets/Main/trainval.txt", "w")
+
+        # Write the names to the image set files
+        for name in self.imagesets[0]:
+
+            train_file.write(name+"\n")
+            trainval_file.write(name + "\n")
+
+        for name in self.imagesets[1]:
+            test_file.write(name+"\n")
+
+        for name in self.imagesets[2]:
+            val_file.write(name+"\n")
+            trainval_file.write(name + "\n")
+
+        train_file.close()
+        val_file.close()
+        test_file.close()
+        trainval_file.close()
 
     def pick_random_elements(self, data_list, output_list, num_elements):
 
@@ -610,10 +755,11 @@ def main():
         torch.set_default_tensor_type('torch.cuda.FloatTensor')
 
     root = Tk()
+
+    root.resizable(width=False, height=False)
     root.focus_set()
 
-
-    root.geometry("500x330+300+300")
+    root.geometry("515x330+300+300")
 
     app = MainWindow()
 

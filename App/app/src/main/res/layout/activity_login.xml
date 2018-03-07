@@ -10,23 +10,59 @@
         android:id="@+id/edit_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Username"/>
+        android:hint="@string/login_hint_username"
+        android:layout_marginLeft="25dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginEnd="25dp"/>
 
     <EditText
-        android:id="@+id/R.id.edit_pass"
+        android:id="@+id/edit_pass"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Password"
-        app:layout_constraintTop_toBottomOf="@+id/edit_username"
-        tools:layout_editor_absoluteX="0dp" />
+        android:hint="@string/login_hint_password"
+        android:layout_marginLeft="25dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginEnd="25dp"
+        app:layout_constraintTop_toBottomOf="@+id/edit_username" />
 
     <Button
         android:id="@+id/button_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:onClick="doLogin"
+        android:text="@string/login_button_login"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/button_register"
+        app:layout_constraintTop_toBottomOf="@+id/edit_pass" />
+
+    <Button
+        android:id="@+id/button_register"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="doRegister"
+        android:text="@string/login_button_register"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/button_login"
+        app:layout_constraintTop_toBottomOf="@+id/edit_pass" />
+
+    <ProgressBar
+        android:id="@+id/pb_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Login"
-        app:layout_constraintTop_toBottomOf="@+id/R.id.edit_pass" />
+        android:visibility="invisible"
+        app:layout_constraintTop_toBottomOf="@id/button_login"/>
+
+    <TextView
+        android:id="@+id/tv_login_error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textColor="@color/red"
+        android:textAlignment="center"
+        android:visibility="invisible"
+        app:layout_constraintTop_toBottomOf="@id/button_login"/>
 
 </android.support.constraint.ConstraintLayout>

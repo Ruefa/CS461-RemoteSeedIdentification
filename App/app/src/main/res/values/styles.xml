@@ -8,4 +8,24 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="LoginTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/transparent</item>
+        <item name="android:background">@color/soft_blue</item>
+        <item name="editTextStyle">@style/bordered_edit_text</item>
+    </style>
+
+    <style name="bordered_edit_text">
+        <item name="android:background">@drawable/edit_text_border</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <color name="red">#FF0000</color>
+    <color name="soft_green">#90C048</color>
+    <color name="transparent">#00000000</color>
+    <color name="black">#000000</color>
+    <color name="grey">#D2D2D2</color>
+    <color name="dark_grey">#939393</color>
+    <color name="soft_blue">#90D4E7</color>
+
 </resources>

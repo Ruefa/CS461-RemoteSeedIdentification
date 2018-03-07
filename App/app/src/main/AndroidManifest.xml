@@ -3,6 +3,7 @@
     package="com.capstone.remoteseedidentification">
 
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -14,7 +15,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LoginController">
+        <activity android:name=".LoginController"
+            android:theme="@style/LoginTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,7 +29,18 @@
         <activity
             android:name=".ResultsController"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".RegisterController"></activity>
+        <activity android:name=".RegisterController"
+            android:theme="@style/LoginTheme"
+            android:parentActivityName=".LoginController"/>
+
+        <service android:name="SocketService"/>
+
+        <!--
+        <receiver android:name=".ServerUtils$MessageReceiver" android:exported="false">
+            <intent-filter>
+                <action android:name="socket.service.intent.action.SEND_MESSAGE"/>
+            </intent-filter>
+        </receiver> -->
     </application>
 
 </manifest>
