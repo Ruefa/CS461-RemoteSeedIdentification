@@ -36,7 +36,7 @@ public class LoginController extends AppCompatActivity {
 
         ActionBar actionBar = getSupportActionBar();
         //action bar transparent
-        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#00000000")));
+        //actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#00000000")));
         //unsure what this does
         //actionBar.setStackedBackgroundDrawable(new ColorDrawable(Color.parseColor("#550000ff")));
     }
@@ -54,7 +54,7 @@ public class LoginController extends AppCompatActivity {
         tvError.setVisibility(View.INVISIBLE);
 
         //Log.d("errorTest", )
-        if(!etUser.getText().toString().equals("Username") && !etPass.getText().toString().equals("Password")) {
+        if(!etUser.getText().toString().equals("") && !etPass.getText().toString().equals("")) {
             message = "b" + etUser.getText() + "@" + etPass.getText();
 
             findViewById(R.id.pb_login).setVisibility(View.VISIBLE);
