@@ -10,14 +10,14 @@
         android:id="@+id/et_register_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Email"/>
+        android:hint="Email"/>
 
     <EditText
         android:id="@+id/et_register_pass"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Password"
+        android:hint="Password"
         app:layout_constraintTop_toBottomOf="@+id/et_register_username"
         tools:layout_editor_absoluteX="0dp" />
 
@@ -25,7 +25,7 @@
         android:id="@+id/et_register_pass_confirm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Confirm Password"
+        android:hint="Confirm Password"
         app:layout_constraintTop_toBottomOf="@id/et_register_pass"/>
 
     <Button
