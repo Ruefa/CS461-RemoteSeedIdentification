@@ -33,7 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="doLogin"
-        android:text="Login"
+        android:text="@string/login_button_login"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintRight_toLeftOf="@id/button_register"
         app:layout_constraintTop_toBottomOf="@+id/edit_pass" />
@@ -43,7 +43,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="doRegister"
-        android:text="Create an account"
+        android:text="@string/login_button_register"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toRightOf="@id/button_login"
         app:layout_constraintTop_toBottomOf="@+id/edit_pass" />
