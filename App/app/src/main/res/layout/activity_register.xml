@@ -10,7 +10,11 @@
         android:id="@+id/et_register_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Email"/>
+        android:hint="Email"
+        android:layout_marginLeft="25dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginEnd="25dp"/>
 
     <EditText
         android:id="@+id/et_register_pass"
@@ -19,14 +23,23 @@
         android:layout_marginTop="8dp"
         android:hint="Password"
         app:layout_constraintTop_toBottomOf="@+id/et_register_username"
-        tools:layout_editor_absoluteX="0dp" />
+        tools:layout_editor_absoluteX="0dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginEnd="25dp"/>
 
     <EditText
         android:id="@+id/et_register_pass_confirm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:hint="Confirm Password"
-        app:layout_constraintTop_toBottomOf="@id/et_register_pass"/>
+        app:layout_constraintTop_toBottomOf="@id/et_register_pass"
+        android:layout_marginLeft="25dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginEnd="25dp"/>
 
     <Button
         android:id="@+id/button_register"
