@@ -2,7 +2,6 @@ import socket
 import db
 
 from pony import orm
-from sessionHandler import newLoginSession, checkToken, deleteLoginSession
 
 # Reads a stream of data from the connection and returns it all as a bytes object
 def readData(conn, chunkSize = 4096):
