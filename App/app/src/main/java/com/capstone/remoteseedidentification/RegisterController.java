@@ -30,7 +30,9 @@ public class RegisterController extends AppCompatActivity {
 
         tvError.setVisibility(View.INVISIBLE);
 
-        if(etPass.getText().toString().equals(etPassConfirm.getText().toString())) {
+        if(etPass.getText().toString().equals(etPassConfirm.getText().toString())
+                && !etUser.getText().toString().equals("")
+                && !etPass.getText().toString().equals("")) {
             message = "a" + etUser.getText().toString() + "@" + etPass.getText().toString();
 
             ServerAsyncTask asyncTask = new ServerAsyncTask(mCallback);
