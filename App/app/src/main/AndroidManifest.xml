@@ -30,6 +30,7 @@
             android:name=".ResultsController"
             android:parentActivityName=".MainActivity" />
         <activity android:name=".RegisterController"
+            android:theme="@style/LoginTheme"
             android:parentActivityName=".LoginController"/>
 
         <service android:name="SocketService"/>
