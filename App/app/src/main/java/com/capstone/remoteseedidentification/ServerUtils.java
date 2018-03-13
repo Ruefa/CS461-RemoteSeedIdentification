@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 import static java.lang.Thread.sleep;
@@ -28,6 +29,7 @@ public class ServerUtils {
     private static final String TAG = "ServerUtils";
 
     public static final String SEND_MESSAGE = "socket.service.intent.action.SEND_MESSAGE";
+    public static final String LOGIN_ACCEPT = "01";
 
     private PrintWriter mOutBuffer;
     private BufferedReader mInBuffer;
@@ -54,13 +56,19 @@ public class ServerUtils {
         mMessageCallback = listener;
     }
 
-    public void openSocket() {
+    public boolean openSocket() {
         String incomingMessage;
 
         try {
             InetAddress serverAddr = InetAddress.getByName(SERVER_IP);
 
-            mSocket = new Socket(serverAddr, SERVER_PORT);
+            //mSocket = new Socket(serverAddr, SERVER_PORT);
+            mSocket = new Socket();
+            mSocket.connect(new InetSocketAddress(SERVER_IP, SERVER_PORT), 10000);
+            mSocket.setKeepAlive(true);
+            //mSocket.setSoTimeout(5000); //5 second timeout
+
+            Log.d(TAG, "socket open");
 
             try{
                 //setup out buffer with socket
@@ -84,6 +92,7 @@ public class ServerUtils {
                 }*/
             } catch (Exception e){
                 e.printStackTrace();
+                return false;
             //empty output buffers and close socket
             } /*finally {
                 //mOutBuffer.flush();
@@ -92,9 +101,11 @@ public class ServerUtils {
             }*/
         } catch (Exception e){
             e.printStackTrace();
+            return false;
         }
 
         mRun = true;
+        return true;
     }
 
     public void stopSocket(){
