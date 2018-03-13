@@ -24,7 +24,7 @@ public class ServerAsyncTask extends AsyncTask<String, String, ServerUtils> {
 
         try{
             Log.d("Server: ", "about to begin");
-            mServer = new ServerUtils(mCallback, null, strings[0]);
+            //mServer = new ServerUtils(mCallback, null, strings[0]);
         } catch (NullPointerException e){
             e.printStackTrace();
         }
