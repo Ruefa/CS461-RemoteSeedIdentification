@@ -33,26 +33,35 @@ public class SocketService extends Service {
     private ServiceHandler mServiceHandler;
     private Context mContext;
 
+    public final static String BROADCAST_KEY = "message";
+    public final static String BROADCAST_FAILURE = "failure";
+
     private final class ServiceHandler extends Handler {
         public ServiceHandler(Looper looper){
             super(looper);
         }
 
         public void handleMessage(Message message){
+            boolean socketSuccess = false;
+
             Log.d(TAG, "handling message");
 
             mServer.mInitMessage = (String) message.obj;
             if(!mServer.mRun) {
                 Log.d(TAG, "open socket");
-                mServer.openSocket();
+                socketSuccess =  mServer.openSocket();
             }
 
-            mServer.sendMessage((String) message.obj);
-
-            String incomingMessage = mServer.receiveMessage();
-
             Intent intent = new Intent(LoginController.BROADCAST_ACTION);
-            intent.putExtra("message", incomingMessage);
+            if(socketSuccess || mServer.mRun) {
+                mServer.sendMessage((String) message.obj);
+
+                String incomingMessage = mServer.receiveMessage();
+
+                intent.putExtra(BROADCAST_KEY, incomingMessage);
+            }else{
+                intent.putExtra(BROADCAST_KEY, BROADCAST_FAILURE);
+            }
             LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
 
             stopSelf(message.arg1);
