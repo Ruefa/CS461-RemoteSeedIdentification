@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
 
 public class LoginController extends AppCompatActivity {
@@ -28,6 +29,8 @@ public class LoginController extends AppCompatActivity {
 
     SocketService mService;
     boolean mBound = false;
+
+    private TextView mTVError;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,19 +57,19 @@ public class LoginController extends AppCompatActivity {
         //actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#00000000")));
         //unsure what this does
         //actionBar.setStackedBackgroundDrawable(new ColorDrawable(Color.parseColor("#550000ff")));
+
+        mTVError = findViewById(R.id.tv_login_error);
     }
 
     public void doLogin(View v){
         boolean loginSuccess = true;
         EditText etUser, etPass;
-        TextView tvError;
         final String message;
 
         etUser = findViewById(R.id.edit_username);
         etPass = findViewById(R.id.edit_pass);
-        tvError = findViewById(R.id.tv_login_error);
 
-        tvError.setVisibility(View.INVISIBLE);
+        mTVError.setVisibility(View.INVISIBLE);
 
         if(!etUser.getText().toString().equals("") && !etPass.getText().toString().equals("")) {
             message = "b" + etUser.getText() + "@" + etPass.getText();
@@ -84,8 +87,8 @@ public class LoginController extends AppCompatActivity {
 
             startService(intent);
         }else{
-            tvError.setText(R.string.login_error_empty);
-            tvError.setVisibility(View.VISIBLE);
+            mTVError.setText(R.string.login_error_empty);
+            mTVError.setVisibility(View.VISIBLE);
         }
 
 
@@ -102,6 +105,7 @@ public class LoginController extends AppCompatActivity {
     }
 
     //established connection between SocketService and LoginController
+    //binding keeps service alive which keeps the socket alive
     //called by onBind in SocketService
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
@@ -125,8 +129,18 @@ public class LoginController extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             findViewById(R.id.pb_login).setVisibility(View.INVISIBLE);
-            if(intent.getStringExtra("message").equals("01")){
-                goMain();
+            String response = intent.getStringExtra(SocketService.BROADCAST_KEY);
+            switch(response){
+                case ServerUtils.LOGIN_ACCEPT:
+                    goMain();
+                    break;
+                case SocketService.BROADCAST_FAILURE:
+                    mTVError.setText(getText(R.string.login_error_server_connection));
+                    mTVError.setVisibility(View.VISIBLE);
+                    break;
+                default:
+                    mTVError.setText("An unknown error occurred");
+                    mTVError.setVisibility(View.VISIBLE);
             }
         }
     };
