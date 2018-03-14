@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -15,6 +16,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -114,19 +116,21 @@ public class MainActivity extends AppCompatActivity {
         mDrawerLayout = findViewById(R.id.drawer_layout);
         mDrawerView = findViewById(R.id.navigation_list_view);
 
-        mDrawerView.setAdapter(new ArrayAdapter<>(this, R.layout.nav_text_view, mNavData));
-
-        mDrawerView.setOnItemClickListener(new DrawerItemClickListener());
-
         //enable hamburger button for navigation drawer
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
+        mDrawerView.setAdapter(new ArrayAdapter<>(this, R.layout.nav_text_view, mNavData));
+
+        mDrawerView.setOnItemClickListener(new DrawerItemClickListener());
+
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 R.string.drawer_open, R.string.drawer_close);
         mDrawerLayout.addDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
     }
 
+    //onClick listener for navigation drawer items
     private class DrawerItemClickListener implements ListView.OnItemClickListener{
 
         @Override
@@ -135,6 +139,8 @@ public class MainActivity extends AppCompatActivity {
 
             if(viewText.equals(getResources().getString(R.string.nav_gallery))) {
                 getImageFromGallery();
+                mDrawerLayout.closeDrawers();
+                mDrawerToggle.syncState();
             }
             else if(viewText.equals(getResources().getString(R.string.nav_results))){
                 goResults();
@@ -278,4 +284,12 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, message);
         }
     };
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(mDrawerToggle.onOptionsItemSelected(item)){
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
