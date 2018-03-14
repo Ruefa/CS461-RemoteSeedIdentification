@@ -17,10 +17,11 @@
     <!-- Login activity -->
     <string name="login_hint_username">Email</string>
     <string name="login_hint_password">Password</string>
-    <string name="login_error_empty">Please enter a username and password</string>
     <string name="login_button_login">Login</string>
     <string name="login_button_register">Create An Account</string>
+    <string name="login_error_empty">Please enter a username and password</string>
     <string name="login_error_server_connection">Error connecting with server</string>
+    <string name="login_error_unknown">An unknown error occurred</string>
     <!-- Register activity -->
     <string name="register_hint_username">Email</string>
     <string name="register_hint_password">Password</string>
