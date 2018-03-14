@@ -107,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //sets up navigation drawer
     private void initNavigation(){
         mNavData = new ArrayList<>();
         mNavData.add(getResources().getString(R.string.nav_gallery));
