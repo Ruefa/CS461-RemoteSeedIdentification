@@ -1,21 +1,31 @@
-import socket
+import socket, ssl
 from connectionHandler import handleConn
 
-def serverInit():
-    host = ''
-    port = 5777 # arbitrary choice
+useSsl = True
 
+def serverInit(host, port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind((host, port))
     s.listen(5)
     return s
 
 def serverLoop():
-    s = serverInit()
+    s = serverInit('', 5777)
 
     while True:
         conn, addr = s.accept()
         handleConn(conn)
+
+def sslServerLoop():
+    s = serverInit('', 5777)
+
+    context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+    context.load_cert_chain('cert.pem')
+
+    while True:
+        conn, addr = s.accept()
+        sslConn = context.wrap_socket(conn, server_side=True)
+        handleConn(sslConn)
 
         
 #def handleConn(conn):
@@ -32,5 +42,7 @@ def serverLoop():
 #
 #    conn.close()
 
-
-serverLoop()
+if useSsl:
+    sslServerLoop()
+else:
+    serverLoop()
