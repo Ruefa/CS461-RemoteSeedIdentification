@@ -34,14 +34,13 @@ public class ServerUtils {
     private PrintWriter mOutBuffer;
     private BufferedReader mInBuffer;
 
-    private MessageCallback mMessageCallback;
     public boolean mRun;
 
     public String mInitMessage = "Successfully connected";
 
     private Socket mSocket;
 
-    public ServerUtils(MessageCallback listener, /*Context context,*/ String message){
+    public ServerUtils(String message){
         //if(context != null) {
             BroadcastReceiver receiver = new MessageReceiver();
             IntentFilter intentFilter = new IntentFilter();
@@ -52,8 +51,6 @@ public class ServerUtils {
         if(message != null){
             mInitMessage = message;
         }
-
-        mMessageCallback = listener;
     }
 
     public boolean openSocket() {
@@ -85,7 +82,6 @@ public class ServerUtils {
                     Log.d(TAG, "waiting for input");
                     incomingMessage = mInBuffer.readLine();
                     if(incomingMessage != null && mMessageCallback != null){
-                        mMessageCallback.callbackMessageReceiver(incomingMessage);
                         return; //temporarilly not using a socket server
                     }
                     incomingMessage = null;
@@ -129,7 +125,7 @@ public class ServerUtils {
         try {
             while (true) {
                 incomingMessage = mInBuffer.readLine();
-                if (incomingMessage != null && mMessageCallback != null) {
+                if (incomingMessage != null) {
                     return incomingMessage;
                 }
                 incomingMessage = null;
