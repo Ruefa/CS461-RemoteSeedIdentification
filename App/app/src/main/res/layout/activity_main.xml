@@ -81,7 +81,8 @@
             android:layout_height="wrap_content"
             android:theme="@style/NavDrawerListTheme"
             android:layout_gravity="bottom"
-            android:text="@string/nav_logout"/>
+            android:text="@string/nav_logout"
+            android:onClick="doLogout"/> <!-- may want to change onClick later -->
     </android.support.design.widget.NavigationView>
 
 
