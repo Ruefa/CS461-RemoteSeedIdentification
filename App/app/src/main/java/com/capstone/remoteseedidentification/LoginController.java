@@ -139,7 +139,7 @@ public class LoginController extends AppCompatActivity {
                     mTVError.setVisibility(View.VISIBLE);
                     break;
                 default:
-                    mTVError.setText("An unknown error occurred");
+                    mTVError.setText(getString(R.string.login_error_unknown));
                     mTVError.setVisibility(View.VISIBLE);
             }
         }
