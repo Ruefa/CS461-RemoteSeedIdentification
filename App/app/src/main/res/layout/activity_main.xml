@@ -68,12 +68,13 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:paddingTop="56dp"
         android:theme="@style/NavDrawerTheme">
 
         <ListView
             android:id="@+id/navigation_list_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"/>
 
         <TextView
             android:id="@+id/nav_drawer_logout"
