@@ -3,15 +3,27 @@ import db
 
 from pony import orm
 
-# Reads a stream of data from the connection and returns it all as a bytes object
-def readData(conn, chunkSize = 4096):
-    chunks = []
-    #TODO Look in to using recv_into instead of creating an array of bytes objects
-    chunk = conn.recv(chunkSize)
-    while chunk:
-        chunks.append(chunk)
-        chunk = conn.recv(chunkSize)
-    return b''.join(chunks)
+# Read the first 4 bytes from the connection to determine message size, then read
+# the entire message.
+def readMsg(conn, chunkSize = 4096):
+    # Read the message length first
+    sizeBytes = conn.recv(4)
+    if not sizeBytes: # Connection closed
+        return None
+
+    while len(sizeBytes) < 4:
+        sizeBytes += conn.recv(4 - len(sizeBytes))
+
+    remaining = int.from_bytes(sizeBytes, byteorder='big')
+    buf = bytearray()
+
+    # Get data from the connection until the entire message is read
+    while remaining:
+        chunk = conn.recv(min(chunkSize, remaining))
+        remaining -= len(chunk)
+        buf += chunk
+
+    return buf
 
 # Sends a bytes object over the connection
 def sendData(conn, data):
@@ -63,51 +75,53 @@ def getReport(user, report):
     return db.getReport(user, int.from_bytes(report, 'big'))[0]
 
 def handleConn(conn):
-    msgType = conn.recv(1)
+    msg = readMsg(conn)
+    while (msg):
+        msgType, msg = msg[0], bytes(msg[1:])
 
-    # ASCII letters alphabetically from 'a' are used to indicate message type.
-    # Using ASCII is convenient for pythons representation of received data, 
-    # and I can't think of meaningful single character codes for every action
-    if msgType == b'a': # Make Login
-        if newAccount(readData(conn)):
-            conn.send(bytes([1])) # Valid login
-        else:
-            conn.send(bytes([0])) # Invalid login
-    elif msgType == b'b': # Login Info
-        auth = login(readData(conn))
-        if auth:
-            conn.send(auth) # Valid login
-        else:
-            conn.send(bytes([0])) # Invalid login
-    elif msgType == b'c': # Request new analysis
-        data = readData(conn)
-        auth, data = data.split(b'|', maxsplit=1)
-        user = checkAuth(auth)
-        if user:
-            #TODO Add some error checking here
-            report = runAnalysis(data, user)
-            sendData(conn, report)
-        else:
-            conn.send(bytes([0])) # Invalid login
-    elif msgType == b'd': # Request list of reports for certain username
-        user = checkAuth(readData(conn))
-        if user:
-            #TODO send report ids instead of results?
-            data = b'|'.join(getReportList(user))
-            sendData(conn, data)
-        else:
-            conn.send(bytes([0])) # Invalid login
-    elif msgType == b'e': # Request a specific report
-        data = readData(conn)
-        auth, data = data.split(b'|', maxsplit=1)
-        user = checkAuth(auth)
-        #TODO Error checking (does report exist?)
-        if user:
-            report = getReport(user, data)
-            sendData(conn, report)
-        else:
-            conn.send(bytes([0])) # Invalid login
-    elif msgType == b'z': # Logout
-        db.logout(checkAuth(readData(conn)))
+        # ASCII letters alphabetically from 'a' are used to indicate message type.
+        # Using ASCII is convenient for pythons representation of received data, 
+        # and I can't think of meaningful single character codes for every action
+        if msgType == 97: # Make Login
+            if newAccount(msg):
+                conn.send(bytes([1])) # Valid login
+            else:
+                conn.send(bytes([0])) # Invalid login
+        elif msgType == 98: # Login Info
+            auth = login(msg)
+            if auth:
+                conn.send(auth) # Valid login
+            else:
+                conn.send(bytes([0])) # Invalid login
+        elif msgType == 99: # Request new analysis
+            auth, data = msg.split(b'|', maxsplit=1)
+            user = checkAuth(auth)
+            if user:
+                #TODO Add some error checking here
+                report = runAnalysis(data, user)
+                sendData(conn, report)
+            else:
+                conn.send(bytes([0])) # Invalid login
+        elif msgType == 100: # Request list of reports for certain username
+            user = checkAuth(msg)
+            if user:
+                #TODO send report ids instead of results?
+                data = b'|'.join(getReportList(user))
+                sendData(conn, data)
+            else:
+                conn.send(bytes([0])) # Invalid login
+        elif msgType == 101: # Request a specific report
+            auth, data = msg.split(b'|', maxsplit=1)
+            user = checkAuth(auth)
+            #TODO Error checking (does report exist?)
+            if user:
+                report = getReport(user, data)
+                sendData(conn, report)
+            else:
+                conn.send(bytes([0])) # Invalid login
+        elif msgType == 122: # Logout
+            db.logout(checkAuth(msg))
+
+        msg = readMsg(conn)
 
     conn.close()

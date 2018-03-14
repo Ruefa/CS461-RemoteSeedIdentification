@@ -1,4 +1,4 @@
-import socket
+import socket, ssl
 import sys
 
 # These are not extensive unit tests, just preliminary testing
@@ -6,27 +6,10 @@ import sys
 # This code is awful and will be replaced with real tests eventually
 
 port = 5777
+address = 'localhost'
 
-# f = open(sys.argv[1], 'rb')
-
-
-# try:
-#     s.connect(('localhost', port))
-#     
-#     buf = f.read(4096)
-#     while buf:
-#         s.sendall(buf)
-#         buf = f.read(4096)
-# 
-#     print("File Sent")
-# 
-#     s.shutdown(socket.SHUT_WR)
-# 
-#     print(s.recv(1024).decode())
-# except (ConnectionRefusedError, socket.gaierror):
-#     print ('Connection failed')
-# finally:
-#     s.close()
+useSsl = True
+context = ssl.create_default_context(cafile='cert.pem')
 
 
 token = b''
@@ -34,13 +17,14 @@ token = b''
 def testMakeAccount(username, password):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect(('localhost', port))
+        if useSsl:
+            s = context.wrap_socket(s, server_hostname='73.11.102.15')
+        s.connect((address, port))
         
         msg = b'a' + username + b'@' + password
+        msg = len(msg).to_bytes(4, byteorder='big') + msg
 
         s.sendall(msg)
-
-        s.shutdown(socket.SHUT_WR)
 
         print('Make Account Result:', s.recv(1024).hex())
     except (ConnectionRefusedError, socket.gaierror):
@@ -51,13 +35,14 @@ def testMakeAccount(username, password):
 def testLogin(username, password):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect(('localhost', port))
+        if useSsl:
+            s = context.wrap_socket(s, server_hostname='73.11.102.15')
+        s.connect((address, port))
         
         msg = b'b' + username + b'@' + password
+        msg = len(msg).to_bytes(4, byteorder='big') + msg
         
         s.sendall(msg)
-
-        s.shutdown(socket.SHUT_WR)
 
         global token
         token = s.recv(1024)
@@ -72,18 +57,20 @@ def testRunAnalysis(username, path, t=token):
     f = open(path, 'rb')
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect(('localhost', port))
+        if useSsl:
+            s = context.wrap_socket(s, server_hostname='73.11.102.15')
+        s.connect((address, port))
 
         msg = b'c' + t + b'|'
         
-        s.sendall(msg)
-        
         buf = f.read(4096)
         while buf:
-            s.sendall(buf)
+            msg += buf
             buf = f.read(4096)
 
-        s.shutdown(socket.SHUT_WR)
+        msg = len(msg).to_bytes(4, byteorder='big') + msg
+
+        s.sendall(msg)
 
         print('Run Analysis Results:', s.recv(1024).decode())
     except (ConnectionRefusedError, socket.gaierror):
@@ -94,13 +81,14 @@ def testRunAnalysis(username, path, t=token):
 def testGetReportList(username, t=token):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect(('localhost', port))
+        if useSsl:
+            s = context.wrap_socket(s, server_hostname='73.11.102.15')
+        s.connect((address, port))
         
         msg = b'd' + t
+        msg = len(msg).to_bytes(4, byteorder='big') + msg
         
         s.sendall(msg)
-
-        s.shutdown(socket.SHUT_WR)
 
         print('Get Report List Results:', s.recv(1024).decode())
     except (ConnectionRefusedError, socket.gaierror):
@@ -111,13 +99,14 @@ def testGetReportList(username, t=token):
 def testGetReport(username, reportID, t=token):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect(('localhost', port))
+        if useSsl:
+            s = context.wrap_socket(s, server_hostname='73.11.102.15')
+        s.connect((address, port))
         
         msg = b'e' + t + b'|' + reportID.to_bytes(4, 'big')
+        msg = len(msg).to_bytes(4, byteorder='big') + msg
 
         s.sendall(msg)
-
-        s.shutdown(socket.SHUT_WR)
 
         print('Get Report Results:', s.recv(1024).decode())
     except (ConnectionRefusedError, socket.gaierror):
@@ -128,13 +117,14 @@ def testGetReport(username, reportID, t=token):
 def testLogout(username, t=token):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect(('localhost', port))
+        if useSsl:
+            s = context.wrap_socket(s, server_hostname='73.11.102.15')
+        s.connect((address, port))
         
         msg = b'z' + t
+        msg = len(msg).to_bytes(4, byteorder='big') + msg
         
         s.sendall(msg)
-
-        s.shutdown(socket.SHUT_WR)
 
         print('Logged Out')
     except (ConnectionRefusedError, socket.gaierror):
