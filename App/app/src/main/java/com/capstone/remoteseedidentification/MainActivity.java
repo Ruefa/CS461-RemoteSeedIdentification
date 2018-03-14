@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -15,6 +14,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -31,7 +31,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -105,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //sets up navigation drawer
     private void initNavigation(){
         mNavData = new ArrayList<>();
         mNavData.add(getResources().getString(R.string.nav_gallery));
@@ -114,19 +114,21 @@ public class MainActivity extends AppCompatActivity {
         mDrawerLayout = findViewById(R.id.drawer_layout);
         mDrawerView = findViewById(R.id.navigation_list_view);
 
-        mDrawerView.setAdapter(new ArrayAdapter<>(this, R.layout.nav_text_view, mNavData));
-
-        mDrawerView.setOnItemClickListener(new DrawerItemClickListener());
-
         //enable hamburger button for navigation drawer
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
+        mDrawerView.setAdapter(new ArrayAdapter<>(this, R.layout.nav_text_view, mNavData));
+
+        mDrawerView.setOnItemClickListener(new DrawerItemClickListener());
+
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 R.string.drawer_open, R.string.drawer_close);
         mDrawerLayout.addDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
     }
 
+    //onClick listener for navigation drawer items
     private class DrawerItemClickListener implements ListView.OnItemClickListener{
 
         @Override
@@ -135,6 +137,8 @@ public class MainActivity extends AppCompatActivity {
 
             if(viewText.equals(getResources().getString(R.string.nav_gallery))) {
                 getImageFromGallery();
+                mDrawerLayout.closeDrawers();
+                mDrawerToggle.syncState();
             }
             else if(viewText.equals(getResources().getString(R.string.nav_results))){
                 goResults();
@@ -161,6 +165,10 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, LoginController.class);
 
         startActivity(intent);
+    }
+
+    private void doLogout(){
+
     }
 
     private void goResults(){
@@ -278,4 +286,18 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, message);
         }
     };
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(mDrawerToggle.onOptionsItemSelected(item)){
+            return true;
+        }
+        switch (item.getItemId()) {
+            case R.id.nav_drawer_logout:
+                doLogout();
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 }

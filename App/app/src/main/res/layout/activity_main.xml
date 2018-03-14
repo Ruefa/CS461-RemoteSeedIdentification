@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:visibility="gone"
             android:onClick="doImageConf"
-            android:text="Accept"/>
+            android:text="@string/button_accept"/>
 
         <Button
             android:id="@+id/button_conf_deny"
@@ -60,19 +60,28 @@
             android:layout_height="wrap_content"
             android:visibility="gone"
             android:onClick="doImageConf"
-            android:text="Deny"/>
+            android:text="@string/button_deny"/>
     </LinearLayout>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/navigation"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="start">
+        android:layout_gravity="start"
+        android:theme="@style/NavDrawerTheme">
 
         <ListView
             android:id="@+id/navigation_list_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/nav_drawer_logout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/NavDrawerListTheme"
+            android:layout_gravity="bottom"
+            android:text="@string/nav_logout"/>
     </android.support.design.widget.NavigationView>
 
 
