@@ -170,6 +170,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void doLogout(){
+
+    }
+
     private void goResults(){
         Intent intent = new Intent(this, ResultsController.class);
 
@@ -291,6 +295,12 @@ public class MainActivity extends AppCompatActivity {
         if(mDrawerToggle.onOptionsItemSelected(item)){
             return true;
         }
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.nav_drawer_logout:
+                doLogout();
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
