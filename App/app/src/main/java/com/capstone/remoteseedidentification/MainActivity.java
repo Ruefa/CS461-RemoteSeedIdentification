@@ -167,8 +167,13 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void doLogout(){
+    public void doLogout(View v){
+        Intent stopService = new Intent(this, SocketService.class);
+        stopService.putExtra(SocketService.SEND_MESSAGE_KEY, SocketService.RESET);
+       startService(stopService);
 
+        Intent loginIntent = new Intent(this, LoginController.class);
+        startActivity(loginIntent);
     }
 
     private void goResults(){
@@ -293,8 +298,6 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         switch (item.getItemId()) {
-            case R.id.nav_drawer_logout:
-                doLogout();
 
             default:
                 return super.onOptionsItemSelected(item);
