@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:visibility="gone"
             android:onClick="doImageConf"
-            android:text="Accept"/>
+            android:text="@string/button_accept"/>
 
         <Button
             android:id="@+id/button_conf_deny"
@@ -60,7 +60,7 @@
             android:layout_height="wrap_content"
             android:visibility="gone"
             android:onClick="doImageConf"
-            android:text="Deny"/>
+            android:text="@string/button_deny"/>
     </LinearLayout>
 
     <android.support.design.widget.NavigationView
