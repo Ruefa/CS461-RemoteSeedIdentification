@@ -74,6 +74,14 @@
             android:id="@+id/navigation_list_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/nav_drawer_logout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/NavDrawerListTheme"
+            android:layout_gravity="bottom"
+            android:text="@string/nav_logout"/>
     </android.support.design.widget.NavigationView>
 
 
