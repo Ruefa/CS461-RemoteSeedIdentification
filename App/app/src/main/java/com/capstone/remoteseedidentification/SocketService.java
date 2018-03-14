@@ -3,9 +3,11 @@ package com.capstone.remoteseedidentification;
 import android.app.IntentService;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -35,6 +37,8 @@ public class SocketService extends Service {
 
     public final static String BROADCAST_KEY = "message";
     public final static String BROADCAST_FAILURE = "failure";
+
+    public final static String SEND_MESSAGE_KEY = "message";
 
     private final class ServiceHandler extends Handler {
         public ServiceHandler(Looper looper){
@@ -123,7 +127,7 @@ public class SocketService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId){
         Message message = mServiceHandler.obtainMessage();
         message.arg1 = startId;
-        message.obj = intent.getStringExtra("message");
+        message.obj = intent.getStringExtra(SEND_MESSAGE_KEY);
         mServiceHandler.sendMessage(message);
 
         return START_STICKY;
@@ -138,4 +142,5 @@ public class SocketService extends Service {
     public void onDestroy(){
         Log.d(TAG, "Destroyed");
     }
+
 }
