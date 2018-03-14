@@ -83,7 +83,7 @@ public class LoginController extends AppCompatActivity {
             Log.d(TAG, "doLogin");
 
             Intent intent = new Intent(this, SocketService.class);
-            intent.putExtra("message", message);
+            intent.putExtra(SocketService.SEND_MESSAGE_KEY, message);
 
             startService(intent);
         }else{
@@ -147,6 +147,11 @@ public class LoginController extends AppCompatActivity {
 
     public void doRegister(View v){
         Intent intent = new Intent(this, RegisterController.class);
+        startActivity(intent);
+    }
+
+    public void skipLogin(View v){
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 }
