@@ -126,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
         //enable hamburger button for navigation drawer
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false); //hide title
 
         mDrawerView.setAdapter(new ArrayAdapter<>(this, R.layout.nav_text_view, mNavData));
 
