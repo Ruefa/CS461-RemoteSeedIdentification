@@ -40,6 +40,8 @@ public class SocketService extends Service {
 
     public final static String SEND_MESSAGE_KEY = "message";
 
+    public final static String RESET = "_reset";
+
     private final class ServiceHandler extends Handler {
         public ServiceHandler(Looper looper){
             super(looper);
@@ -90,12 +92,7 @@ public class SocketService extends Service {
         //for accessing in ServiceHandler class
         mContext = this;
 
-        mServer = new ServerUtils(new ServerUtils.MessageCallback() {
-            @Override
-            public void callbackMessageReceiver(String message) {
-                Log.d("Server message: ", message);
-            }
-        }, null);
+        mServer = new ServerUtils(null);
     }
 
     public class SocketBinder extends Binder {
@@ -126,9 +123,13 @@ public class SocketService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
         Message message = mServiceHandler.obtainMessage();
-        message.arg1 = startId;
-        message.obj = intent.getStringExtra(SEND_MESSAGE_KEY);
-        mServiceHandler.sendMessage(message);
+        if(intent.getStringExtra(SEND_MESSAGE_KEY).equals(RESET)){
+            mServer = new ServerUtils(null);
+        }else {
+            message.arg1 = startId;
+            message.obj = intent.getStringExtra(SEND_MESSAGE_KEY);
+            mServiceHandler.sendMessage(message);
+        }
 
         return START_STICKY;
     }
