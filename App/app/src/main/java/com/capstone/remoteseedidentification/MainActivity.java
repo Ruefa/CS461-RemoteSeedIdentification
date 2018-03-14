@@ -99,6 +99,13 @@ public class MainActivity extends AppCompatActivity {
             mCamera.setDisplayOrientation(90);
 
             mCameraView = new CameraView(this, mCamera);
+            mCameraView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mCamera.autoFocus(null);
+                    Log.d(TAG, "frameLaout onClick");
+                }
+            });
             FrameLayout frameLayout = findViewById(R.id.cam_view);
             frameLayout.addView(mCameraView);
         }
