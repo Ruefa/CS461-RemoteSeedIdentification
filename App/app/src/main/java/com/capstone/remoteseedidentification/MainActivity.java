@@ -13,6 +13,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -53,6 +55,10 @@ public class MainActivity extends AppCompatActivity {
 
     //image data
     private byte[] mByteImage;
+
+    //nav drawer recycler view
+    private RecyclerView mNavRV;
+    private NavDrawerRVAdapter mNavAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     mCamera.autoFocus(null);
-                    Log.d(TAG, "frameLaout onClick");
+                    Log.d(TAG, "frameLayout onClick");
                 }
             });
             FrameLayout frameLayout = findViewById(R.id.cam_view);
@@ -121,16 +127,24 @@ public class MainActivity extends AppCompatActivity {
         mNavData.add(getResources().getString(R.string.nav_login));
 
         mDrawerLayout = findViewById(R.id.drawer_layout);
-        mDrawerView = findViewById(R.id.navigation_list_view);
+//        mDrawerView = findViewById(R.id.navigation_list_view);
 
         //enable hamburger button for navigation drawer
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false); //hide title
 
-        mDrawerView.setAdapter(new ArrayAdapter<>(this, R.layout.nav_text_view, mNavData));
+//        mDrawerView.setAdapter(new ArrayAdapter<>(this, R.layout.nav_text_view, mNavData));
+//
+//        mDrawerView.setOnItemClickListener(new DrawerItemClickListener());
 
-        mDrawerView.setOnItemClickListener(new DrawerItemClickListener());
+        mNavRV = findViewById(R.id.nav_drawer_rv);
+        mNavAdapter = new NavDrawerRVAdapter(this);
+        mNavRV.setAdapter(mNavAdapter);
+        mNavRV.setLayoutManager(new LinearLayoutManager(this));
+        mNavRV.setHasFixedSize(true);
+        mNavAdapter.updateItems(mNavData);
+
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 R.string.drawer_open, R.string.drawer_close);
