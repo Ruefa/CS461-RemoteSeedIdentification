@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -39,6 +40,7 @@ public class SocketService extends Service {
     public final static String BROADCAST_FAILURE = "failure";
 
     public final static String SEND_MESSAGE_KEY = "message";
+    public final static String OUTBOUND_KEY = "outbound";
 
     public final static String RESET = "_reset";
 
@@ -58,9 +60,9 @@ public class SocketService extends Service {
                 socketSuccess =  mServer.openSocket();
             }
 
-            Intent intent = new Intent(LoginController.BROADCAST_ACTION);
+            Intent intent = new Intent(message.getData().getString(OUTBOUND_KEY));
             if(socketSuccess || mServer.mRun) {
-                mServer.sendMessage((String) message.obj);
+                mServer.sendMessage(message.getData().getString(SEND_MESSAGE_KEY));
 
                 String incomingMessage = mServer.receiveMessage();
 
@@ -108,7 +110,7 @@ public class SocketService extends Service {
             mServer = new ServerUtils(null);
         }else {
             message.arg1 = startId;
-            message.obj = intent.getStringExtra(SEND_MESSAGE_KEY);
+            message.setData(intent.getExtras());
             mServiceHandler.sendMessage(message);
         }
 
