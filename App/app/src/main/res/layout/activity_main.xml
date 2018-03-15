@@ -71,8 +71,13 @@
         android:paddingTop="56dp"
         android:theme="@style/NavDrawerTheme">
 
-        <ListView
+        <!--<ListView
             android:id="@+id/navigation_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>-->
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/nav_drawer_rv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
