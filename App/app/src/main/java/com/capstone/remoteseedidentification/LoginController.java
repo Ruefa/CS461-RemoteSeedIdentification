@@ -62,7 +62,6 @@ public class LoginController extends AppCompatActivity {
     }
 
     public void doLogin(View v){
-        boolean loginSuccess = true;
         EditText etUser, etPass;
         final String message;
 
@@ -89,12 +88,6 @@ public class LoginController extends AppCompatActivity {
         }else{
             mTVError.setText(R.string.login_error_empty);
             mTVError.setVisibility(View.VISIBLE);
-        }
-
-
-
-        if(loginSuccess) {
-            //goMain();
         }
     }
 
