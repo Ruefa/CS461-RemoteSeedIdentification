@@ -30,6 +30,7 @@ public class ServerUtils {
 
     public static final String SEND_MESSAGE = "socket.service.intent.action.SEND_MESSAGE";
     public static final String LOGIN_ACCEPT = "01";
+    public static final String REGISTER_ACCEPT = "01";
 
     private PrintWriter mOutBuffer;
     private BufferedReader mInBuffer;
