@@ -101,25 +101,6 @@ public class SocketService extends Service {
         }
     }
 
-    /*@Override
-    protected void onHandleIntent(@Nullable Intent intent) {
-        if(mServer != null){
-            Log.d(TAG, "mserver not null");
-        }
-        try {
-            Log.d("Server: ", "about to begin");
-            mServer = new ServerUtils(new ServerUtils.MessageCallback() {
-                @Override
-                public void callbackMessageReceiver(String message) {
-                    Log.d("Server message: ", message);
-                }
-            }, this, intent.getStringExtra("message"));
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
-        mServer.openSocket();
-    }*/
-
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
         Message message = mServiceHandler.obtainMessage();
