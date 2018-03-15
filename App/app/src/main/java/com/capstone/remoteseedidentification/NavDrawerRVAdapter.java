@@ -2,6 +2,7 @@ package com.capstone.remoteseedidentification;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,25 +16,38 @@ import java.util.ArrayList;
 
 public class NavDrawerRVAdapter extends RecyclerView.Adapter <NavDrawerRVAdapter.ViewHolder> {
 
-    ArrayList<String> mNDItems;
-    Context mContext;
+    private ArrayList<String> mNDItems;
+    private Context mContext;
+    private onNavDrawerItemClickListener mNavDrawerClickListener;
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    public interface onNavDrawerItemClickListener{
+        void onNavDrawerItemClick(String item);
+    }
+
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView mOptionTV;
 
         public ViewHolder(View itemView) {
             super(itemView);
             mOptionTV = itemView.findViewById(R.id.nav_drawer_item);
+            mOptionTV.setOnClickListener(this);
         }
 
         public void bind(String item){
             mOptionTV.setText(item);
         }
+
+        @Override
+        public void onClick(View v){
+            String item = mNDItems.get(getAdapterPosition());
+            mNavDrawerClickListener.onNavDrawerItemClick(item);
+        }
     }
 
-    public NavDrawerRVAdapter(Context context){
+    public NavDrawerRVAdapter(Context context, onNavDrawerItemClickListener clickListener){
         mContext = context;
+        mNavDrawerClickListener = clickListener;
     }
 
     public void updateItems(ArrayList<String> items){
