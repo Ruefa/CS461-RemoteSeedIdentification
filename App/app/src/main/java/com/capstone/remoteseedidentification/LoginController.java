@@ -75,14 +75,13 @@ public class LoginController extends AppCompatActivity {
 
             findViewById(R.id.pb_login).setVisibility(View.VISIBLE);
 
-            //open socket with server
-//            ServerAsyncTask socketTask = new ServerAsyncTask(mCallback);
-//            socketTask.execute(message);
-
             Log.d(TAG, "doLogin");
 
             Intent intent = new Intent(this, SocketService.class);
-            intent.putExtra(SocketService.SEND_MESSAGE_KEY, message);
+            Bundle bundle = new Bundle();
+            bundle.putString(SocketService.SEND_MESSAGE_KEY, message);
+            bundle.putString(SocketService.OUTBOUND_KEY, BROADCAST_ACTION);
+            intent.putExtras(bundle);
 
             startService(intent);
         }else{
