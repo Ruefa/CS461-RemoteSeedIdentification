@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -35,7 +36,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapter.onNavDrawerItemClickListener {
 
     private final static String TAG = "MainActivity";
 
@@ -124,7 +125,6 @@ public class MainActivity extends AppCompatActivity {
         mNavData = new ArrayList<>();
         mNavData.add(getResources().getString(R.string.nav_gallery));
         mNavData.add(getResources().getString(R.string.nav_results));
-        mNavData.add(getResources().getString(R.string.nav_login));
 
         mDrawerLayout = findViewById(R.id.drawer_layout);
 //        mDrawerView = findViewById(R.id.navigation_list_view);
@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
 //        mDrawerView.setOnItemClickListener(new DrawerItemClickListener());
 
         mNavRV = findViewById(R.id.nav_drawer_rv);
-        mNavAdapter = new NavDrawerRVAdapter(this);
+        mNavAdapter = new NavDrawerRVAdapter(this, this);
         mNavRV.setAdapter(mNavAdapter);
         mNavRV.setLayoutManager(new LinearLayoutManager(this));
         mNavRV.setHasFixedSize(true);
@@ -150,6 +150,21 @@ public class MainActivity extends AppCompatActivity {
                 R.string.drawer_open, R.string.drawer_close);
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onNavDrawerItemClick(String item) {
+        if(item.equals(getString(R.string.nav_gallery))) {
+            getImageFromGallery();
+            mDrawerLayout.closeDrawers();
+            mDrawerToggle.syncState();
+        }
+        else if(item.equals(getString(R.string.nav_results))){
+            goResults();
+        }
+        else if(item.equals(getString(R.string.nav_login))) {
+            goLogin();
+        }
     }
 
     //onClick listener for navigation drawer items
