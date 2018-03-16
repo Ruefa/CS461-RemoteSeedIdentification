@@ -125,6 +125,11 @@ public class ServerUtils {
 
     public void stopSocket(){
         mRun = false;
+        try {
+            mSocket.close();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     public void sendMessage(String message){
