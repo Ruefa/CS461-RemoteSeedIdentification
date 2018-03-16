@@ -107,10 +107,15 @@ public class SocketService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
         Message message = mServiceHandler.obtainMessage();
+        message.arg1 = startId;
+        Bundle receivedBundle = intent.getExtras();
         if(intent.getStringExtra(SEND_MESSAGE_KEY).equals(RESET)){
             mServer = new ServerUtils(null);
-        }else {
-            message.arg1 = startId;
+        } else if(receivedBundle.getString(SEND_MESSAGE_KEY).equals(ResultsController.ACTION_VIEW_RESULTS)){
+            receivedBundle.putString(SEND_MESSAGE_KEY, ServerUtils.resultsListFormat(mServer.getCookie()));
+            message.setData(receivedBundle);
+            mServiceHandler.sendMessage(message);
+        } else {
             message.setData(intent.getExtras());
             mServiceHandler.sendMessage(message);
         }
