@@ -44,6 +44,7 @@ public class ServerUtils {
 
     public static final String SEND_MESSAGE = "socket.service.intent.action.SEND_MESSAGE";
     public static final String LOGIN_ACCEPT = "01";
+    public static final String FAILURE = "00";
     public static final String REGISTER_ACCEPT = "01";
 
     private PrintWriter mOutBuffer;
@@ -146,30 +147,38 @@ public class ServerUtils {
 
     public String receiveMessage() {
         String incomingMessage = null;
+        int available = 0;
+        int numBytesRead = 0;
 
         try {
-            while (true) {
+            //wait for server
+            while (available == 0){
+                available = mInputStream.available();
+            }
 //                incomingMessage = mInBuffer.readLine();
 //                if (incomingMessage != null) {
 //                    Log.d(TAG, incomingMessage);
 //                    return incomingMessage;
 //                }
 //                incomingMessage = null;
-                try {
-                    sleep(5000);
-                }catch (InterruptedException e){
-                    e.printStackTrace();
-                }
-                byte[] b = new byte[5];
-                int  bytesRead = mInputStream.read(b);
-                Log.d(TAG, String.valueOf(bytesRead));
-                Log.d(TAG, Arrays.toString(b));
-            }
+//            mInputStream.available();
+//            byteRead = mInputStream.read();
+//            Log.d(TAG, String.valueOf(byteRead));
+//            if(byteRead != -1){
+//                byteArrayOutputStream.write(byteRead);
+
+            byte[] bytesRead = new byte[available];
+            numBytesRead = mInputStream.read(bytesRead);
+            Log.d(TAG, Arrays.toString(bytesRead));
         }catch (IOException e){
             e.printStackTrace();
         }
 
-        return null;
+        if(numBytesRead > 1){
+            return LOGIN_ACCEPT;
+        }else {
+            return FAILURE;
+        }
     }
 
     //interface to handle data received from socket
