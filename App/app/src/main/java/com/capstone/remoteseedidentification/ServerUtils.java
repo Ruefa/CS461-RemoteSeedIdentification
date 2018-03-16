@@ -253,4 +253,30 @@ public class ServerUtils {
         Log.d(TAG, new String(userID, Charset.forName("UTF-8")));
         return REPORT_LIST_INDICATOR + new String(userID, Charset.forName("UTF-8"));
     }
+
+    public static byte[] prepareImage(byte[] image, byte[] userID){
+        byte[] finalBytes = new byte[1];
+        byte[] preLength;
+
+        ByteArrayOutputStream combiner = new ByteArrayOutputStream();
+        try {
+            combiner.write(ANALYZE_INDICATOR.getBytes());
+            combiner.write(userID);
+            combiner.write(image);
+            preLength = combiner.toByteArray();
+
+            ByteBuffer byteBuffer = ByteBuffer.allocate(4);
+            byteBuffer.putInt(preLength.length);
+
+            byte[] sizeBytes = byteBuffer.array();
+            combiner.reset();
+            combiner.write(sizeBytes);
+            combiner.write(preLength);
+            finalBytes = combiner.toByteArray();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+        return finalBytes;
+    }
 }
