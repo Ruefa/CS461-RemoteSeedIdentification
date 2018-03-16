@@ -57,7 +57,7 @@ public class ServerUtils {
 
     public String mInitMessage = "Successfully connected";
 
-    private String cookie;
+    private byte[] cookie;
 
     public ServerUtils(String message){
         BroadcastReceiver receiver = new MessageReceiver();
