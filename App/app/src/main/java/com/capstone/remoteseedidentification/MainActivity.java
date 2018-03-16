@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
 
         initNavigation();
 
+        //icon testing
         ((TextView) findViewById(R.id.nav_drawer_logout)).setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_action_gallery,0,0,0);
     }
 
