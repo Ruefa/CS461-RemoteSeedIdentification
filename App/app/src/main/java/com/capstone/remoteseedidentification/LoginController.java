@@ -75,6 +75,8 @@ public class LoginController extends AppCompatActivity {
 
             findViewById(R.id.pb_login).setVisibility(View.VISIBLE);
 
+            ServerUtils.loginFormat(etUser.getText().toString(), etPass.getText().toString());
+
             Log.d(TAG, "doLogin");
 
             Intent intent = new Intent(this, SocketService.class);
