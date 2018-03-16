@@ -321,16 +321,10 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
     }
 
     private void sendImage(){
-        ServerAsyncTask asyncTask = new ServerAsyncTask(mCallback);
-        //asyncTask.execute("c" + mByteImage.toString()); needs work
+
     }
 
-    ServerUtils.MessageCallback mCallback = new ServerUtils.MessageCallback() {
-        @Override
-        public void callbackMessageReceiver(String message) {
-            Log.d(TAG, message);
-        }
-    };
+    
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
