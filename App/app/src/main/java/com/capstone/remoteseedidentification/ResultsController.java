@@ -31,6 +31,8 @@ public class ResultsController extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "receiving");
+            String results = intent.getStringExtra(SocketService.BROADCAST_KEY);
+            Log.d(TAG, results);
         }
     };
 }
