@@ -65,7 +65,7 @@ public class SocketService extends Service {
                 mServer.sendMessage(message.getData().getString(SEND_MESSAGE_KEY));
 
                 Log.d(TAG, "waiting to receive message");
-                String incomingMessage = mServer.receiveMessage();
+                String incomingMessage = mServer.receiveMessage(message.getData().getString(OUTBOUND_KEY));
 
                 intent.putExtra(BROADCAST_KEY, incomingMessage);
             }else{
