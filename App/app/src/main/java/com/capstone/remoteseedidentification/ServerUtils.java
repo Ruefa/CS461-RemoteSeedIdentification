@@ -182,17 +182,19 @@ public class ServerUtils {
 
         if(messageType.equals(LoginController.BROADCAST_ACTION)) {
             if (numBytesRead > 1) {
+                cookie = bytesRead;
                 return LOGIN_ACCEPT;
             } else {
                 return FAILURE;
             }
-        }
-        else if(messageType.equals(RegisterController.BROADCAST_ACTION)) {
+        } else if(messageType.equals(RegisterController.BROADCAST_ACTION)) {
             if (String.valueOf(bytesRead[0]).equals("1")) {
                 return LOGIN_ACCEPT;
             } else {
                 return FAILURE;
             }
+        } else if(messageType.equals(ResultsController.BROADCAST_ACTION)){
+            return LOGIN_ACCEPT;
         }
 
         return FAILURE;
@@ -239,10 +241,16 @@ public class ServerUtils {
         return finalBytes;
     }
 
+    public byte[] getCookie(){
+        return cookie;
+    }
+
     public static String loginFormat(String username, String pass){
-        String loginQuery = LOGIN_INDICATOR + username + "@" + pass;
+        return LOGIN_INDICATOR + username + "@" + pass;
+    }
 
-
-        return loginQuery;
+    public static String resultsListFormat(byte[] userID){
+        Log.d(TAG, new String(userID, Charset.forName("UTF-8")));
+        return REPORT_LIST_INDICATOR + new String(userID, Charset.forName("UTF-8"));
     }
 }
