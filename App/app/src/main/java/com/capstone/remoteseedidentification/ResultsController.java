@@ -3,6 +3,7 @@ package com.capstone.remoteseedidentification;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,6 +16,11 @@ public class ResultsController extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_results);
+
+        mBroadcastManager = LocalBroadcastManager.getInstance(this);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BROADCAST_ACTION);
+        mBroadcastManager.registerReceiver(mBroadcastReceiver, intentFilter);
 
         Intent listIntent = new Intent(this, SocketService.class);
         Bundle bundle = new Bundle();
