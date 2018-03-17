@@ -7,10 +7,16 @@ import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
-public class ResultsController extends AppCompatActivity {
+import java.util.ArrayList;
+
+public class ResultsController extends AppCompatActivity implements ResultsListRVAdapter.OnResultsClickListener {
     private static final String TAG = "ResultsController";
+
+    private ResultsListRVAdapter mResultsRVAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +34,16 @@ public class ResultsController extends AppCompatActivity {
         bundle.putString(SocketService.OUTBOUND_KEY, BROADCAST_ACTION);
         listIntent.putExtras(bundle);
         startService(listIntent);
+
+        initResultsList();
+    }
+
+    private void initResultsList(){
+        RecyclerView rvResults = findViewById(R.id.rv_results_list);
+        mResultsRVAdapter = new ResultsListRVAdapter(this);
+        rvResults.setAdapter(mResultsRVAdapter);
+        rvResults.setLayoutManager(new LinearLayoutManager(this));
+        rvResults.setHasFixedSize(true);
     }
 
     public final static String BROADCAST_ACTION = "results";
@@ -38,6 +54,17 @@ public class ResultsController extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             String results = intent.getStringExtra(SocketService.BROADCAST_KEY);
             Log.d(TAG, results);
+
+            ArrayList<String> testList = new ArrayList<>();
+            for(int i=1; i<=10; i++) {
+                testList.add("results " + String.valueOf(i));
+            }
+            mResultsRVAdapter.updateItems(testList);
         }
     };
+
+    @Override
+    public void onResultsClick(String item) {
+        Log.d(TAG, "item clicked: " + item);
+    }
 }
