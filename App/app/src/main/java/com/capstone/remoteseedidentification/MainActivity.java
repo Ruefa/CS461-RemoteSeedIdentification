@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -68,6 +69,11 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mBroadcastManager = LocalBroadcastManager.getInstance(this);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BROADCAST_ACTION);
+        mBroadcastManager.registerReceiver(mBroadcastReceiver, intentFilter);
 
         mThumbView = findViewById(R.id.thumb_view);
         mCaptureButton = findViewById(R.id.button_snap);
@@ -212,8 +218,11 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
 
     public void doLogout(View v){
         Intent stopService = new Intent(this, SocketService.class);
-        stopService.putExtra(SocketService.SEND_MESSAGE_KEY, SocketService.RESET);
-       startService(stopService);
+        Bundle bundle = new Bundle();
+        bundle.putString(SocketService.SEND_MESSAGE_KEY, SocketService.RESET);
+        bundle.putString(SocketService.OUTBOUND_KEY, BROADCAST_ACTION);
+        stopService.putExtras(bundle);
+        startService(stopService);
 
         Intent loginIntent = new Intent(this, LoginController.class);
         startActivity(loginIntent);
