@@ -36,7 +36,6 @@ public class ResultsController extends AppCompatActivity {
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "receiving");
             String results = intent.getStringExtra(SocketService.BROADCAST_KEY);
             Log.d(TAG, results);
         }
