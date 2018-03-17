@@ -280,6 +280,7 @@ public class ServerUtils {
         try {
             combiner.write(ANALYZE_INDICATOR.getBytes());
             combiner.write(userID);
+            combiner.write("|".getBytes());
             combiner.write(image);
             preLength = combiner.toByteArray();
 
