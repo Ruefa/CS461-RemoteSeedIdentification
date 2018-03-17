@@ -262,12 +262,14 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
             try {
                 Uri imageUri = data.getData();
                 InputStream imageStream = getContentResolver().openInputStream(imageUri);
-                //mByteImage = getBytes(imageStream);
                 Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
                 mThumbView.setImageBitmap(selectedImage);
-                mCameraView.setVisibility(View.INVISIBLE); //remove later
+                mCameraView.setVisibility(View.INVISIBLE);
+                //get image from gallery as a byte array for sending
+                mByteImage = getBytes(getContentResolver().openInputStream(imageUri));
+
                 initConfirmation();
-            }
+        }
             catch (FileNotFoundException e){
                 e.printStackTrace();
             }
@@ -275,8 +277,8 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
     }
 
     //https://stackoverflow.com/questions/10296734/image-uri-to-bytesarray
-    //needs testing. definitely a bug here
     private byte[] getBytes(InputStream inputStream){
+        Log.d(TAG, "getting bytes");
         ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
         int bufferSize = 1024;
         byte[] buffer = new byte[bufferSize];
