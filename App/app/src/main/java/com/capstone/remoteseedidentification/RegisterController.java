@@ -45,7 +45,7 @@ public class RegisterController extends AppCompatActivity {
         if(etPass.getText().toString().equals(etPassConfirm.getText().toString())
                 && !etUser.getText().toString().equals("")
                 && !etPass.getText().toString().equals("")) {
-            message = "a" + etUser.getText().toString() + "@" + etPass.getText().toString();
+            message = ServerUtils.registerFormat(etUser.getText().toString(), etPass.getText().toString());
 
             Intent intent = new Intent(this, SocketService.class);
             Bundle bundle = new Bundle();
