@@ -16,6 +16,16 @@
         <item name="editTextStyle">@style/bordered_edit_text</item>
     </style>
 
+    <style name="ResultsTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/transparent</item>
+        <item name="android:background">@color/soft_blue</item>
+    </style>
+
+    <style name="ResultsRVTheme">
+        <item name="android:textSize">16sp</item>
+        <item name="android:paddingBottom">8dp</item>
+    </style>
+
     <style name="NavDrawerTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:background">@color/dark_grey</item>
         <item name="background">@color/dark_grey</item>
