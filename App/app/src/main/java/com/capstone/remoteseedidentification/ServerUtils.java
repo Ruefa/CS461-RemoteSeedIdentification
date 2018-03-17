@@ -132,19 +132,20 @@ public class ServerUtils {
         }
     }
 
-    public void sendMessage(String message){
+    public void sendMessage(byte[] message){
         Log.d("Server: ", "starting sendMessage");
         if(mOutBuffer != null && !mOutBuffer.checkError()){
 //            mOutBuffer.println(message);
 //            mOutBuffer.flush();
             try {
-                mOutputStream.write(stringToByte(message));
+                mOutputStream.write(message);
                 mOutputStream.flush();
             }
             catch (IOException e){
                 e.printStackTrace();
             }
-            Log.d("Server: ", "sent message: " + message);
+            Log.d("Server: ", "sent message: " + Arrays.toString(message));
+            Log.d("Server: ", "curr cookie: " + Arrays.toString(cookie));
         }else {
             Log.d("Server: ", "mOutBuffer is null");
         }
