@@ -65,7 +65,9 @@ public class SocketService extends Service {
                 mServer.sendMessage(message.getData().getString(SEND_MESSAGE_KEY));
 
                 Log.d(TAG, "waiting to receive message");
-                String incomingMessage = mServer.receiveMessage();
+                String incomingMessage = mServer.receiveMessage(message.getData().getString(OUTBOUND_KEY));
+                Log.d(TAG, "received message");
+                mServer.stopSocket();
 
                 intent.putExtra(BROADCAST_KEY, incomingMessage);
             }else{
@@ -107,10 +109,15 @@ public class SocketService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
         Message message = mServiceHandler.obtainMessage();
+        message.arg1 = startId;
+        Bundle receivedBundle = intent.getExtras();
         if(intent.getStringExtra(SEND_MESSAGE_KEY).equals(RESET)){
             mServer = new ServerUtils(null);
-        }else {
-            message.arg1 = startId;
+        } else if(receivedBundle.getString(SEND_MESSAGE_KEY).equals(ResultsController.ACTION_VIEW_RESULTS)){
+            receivedBundle.putString(SEND_MESSAGE_KEY, ServerUtils.resultsListFormat(mServer.getCookie()));
+            message.setData(receivedBundle);
+            mServiceHandler.sendMessage(message);
+        } else {
             message.setData(intent.getExtras());
             mServiceHandler.sendMessage(message);
         }

@@ -57,7 +57,7 @@ public class ServerUtils {
 
     public String mInitMessage = "Successfully connected";
 
-    private String cookie;
+    private byte[] cookie;
 
     public ServerUtils(String message){
         BroadcastReceiver receiver = new MessageReceiver();
@@ -125,6 +125,11 @@ public class ServerUtils {
 
     public void stopSocket(){
         mRun = false;
+        try {
+            mSocket.close();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     public void sendMessage(String message){
@@ -145,10 +150,11 @@ public class ServerUtils {
         }
     }
 
-    public String receiveMessage() {
+    public String receiveMessage(String messageType) {
         String incomingMessage = null;
         int available = 0;
         int numBytesRead = 0;
+        byte[] bytesRead = new byte[1];
 
         try {
             //wait for server
@@ -167,18 +173,31 @@ public class ServerUtils {
 //            if(byteRead != -1){
 //                byteArrayOutputStream.write(byteRead);
 
-            byte[] bytesRead = new byte[available];
+            bytesRead = new byte[available];
             numBytesRead = mInputStream.read(bytesRead);
             Log.d(TAG, Arrays.toString(bytesRead));
         }catch (IOException e){
             e.printStackTrace();
         }
 
-        if(numBytesRead > 1){
+        if(messageType.equals(LoginController.BROADCAST_ACTION)) {
+            if (numBytesRead > 1) {
+                cookie = bytesRead;
+                return LOGIN_ACCEPT;
+            } else {
+                return FAILURE;
+            }
+        } else if(messageType.equals(RegisterController.BROADCAST_ACTION)) {
+            if (String.valueOf(bytesRead[0]).equals("1")) {
+                return LOGIN_ACCEPT;
+            } else {
+                return FAILURE;
+            }
+        } else if(messageType.equals(ResultsController.BROADCAST_ACTION)){
             return LOGIN_ACCEPT;
-        }else {
-            return FAILURE;
         }
+
+        return FAILURE;
     }
 
     //interface to handle data received from socket
@@ -222,10 +241,16 @@ public class ServerUtils {
         return finalBytes;
     }
 
+    public byte[] getCookie(){
+        return cookie;
+    }
+
     public static String loginFormat(String username, String pass){
-        String loginQuery = LOGIN_INDICATOR + username + "@" + pass;
+        return LOGIN_INDICATOR + username + "@" + pass;
+    }
 
-
-        return loginQuery;
+    public static String resultsListFormat(byte[] userID){
+        Log.d(TAG, new String(userID, Charset.forName("UTF-8")));
+        return REPORT_LIST_INDICATOR + new String(userID, Charset.forName("UTF-8"));
     }
 }

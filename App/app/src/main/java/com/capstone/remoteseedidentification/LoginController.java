@@ -71,11 +71,11 @@ public class LoginController extends AppCompatActivity {
         mTVError.setVisibility(View.INVISIBLE);
 
         if(!etUser.getText().toString().equals("") && !etPass.getText().toString().equals("")) {
-            message = "b" + etUser.getText() + "@" + etPass.getText();
+            //message = "b" + etUser.getText() + "@" + etPass.getText();
 
             findViewById(R.id.pb_login).setVisibility(View.VISIBLE);
 
-            ServerUtils.loginFormat(etUser.getText().toString(), etPass.getText().toString());
+            message = ServerUtils.loginFormat(etUser.getText().toString(), etPass.getText().toString());
 
             Log.d(TAG, "doLogin");
 
