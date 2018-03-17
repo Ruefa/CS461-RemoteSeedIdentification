@@ -263,6 +263,10 @@ public class ServerUtils {
         return cookie;
     }
 
+    public void removeCookie(){
+        cookie = null;
+    }
+
     public static String loginFormat(String username, String pass){
         return LOGIN_INDICATOR + username + "@" + pass;
     }
