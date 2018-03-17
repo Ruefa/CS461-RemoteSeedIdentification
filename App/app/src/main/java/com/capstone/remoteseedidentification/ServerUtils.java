@@ -194,8 +194,8 @@ public class ServerUtils {
             } else {
                 return FAILURE;
             }
-        } else if(messageType.equals(ResultsController.BROADCAST_ACTION)){
-            return LOGIN_ACCEPT;
+        } else if(messageType.equals(ResultsController.BROADCAST_ACTION)) {
+            return new String(bytesRead, Charset.forName("UTF-8"));
         }
 
         return FAILURE;
