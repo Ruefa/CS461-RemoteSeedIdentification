@@ -124,9 +124,8 @@ public class SocketService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId){
         Message message = mServiceHandler.obtainMessage();
         message.arg1 = startId;
-        Bundle receivedBundle = intent.getExtras();
         if(intent.getStringExtra(SEND_MESSAGE_KEY).equals(RESET)){
-            mServer = new ServerUtils(null);
+            mServer.removeCookie();
         } else {
             message.setData(intent.getExtras());
             mServiceHandler.sendMessage(message);
