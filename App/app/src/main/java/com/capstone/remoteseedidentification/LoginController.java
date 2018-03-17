@@ -50,9 +50,8 @@ public class LoginController extends AppCompatActivity {
         intent.putExtra("message", "connect");
 
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        //startService(intent);
 
-        ActionBar actionBar = getSupportActionBar();
+        //ActionBar actionBar = getSupportActionBar();
         //action bar transparent
         //actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#00000000")));
         //unsure what this does
