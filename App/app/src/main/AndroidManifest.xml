@@ -28,8 +28,10 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ResultsController"
+            android:theme="@style/ResultsTheme"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".RegisterController"
+        <activity
+            android:name=".RegisterController"
             android:theme="@style/LoginTheme"
             android:parentActivityName=".LoginController"/>
 
