@@ -267,6 +267,10 @@ public class ServerUtils {
         return LOGIN_INDICATOR + username + "@" + pass;
     }
 
+    public static String registerFormat(String username, String pass){
+        return REGISTER_INDICATOR + username + "@" + pass;
+    }
+
     public static byte[] formatResultsList(byte[] userID){
         Log.d(TAG, new String(userID, Charset.forName("UTF-8")));
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
