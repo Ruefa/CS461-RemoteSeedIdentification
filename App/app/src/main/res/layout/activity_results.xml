@@ -6,9 +6,22 @@
     android:layout_height="match_parent"
     tools:context="com.capstone.remoteseedidentification.ResultsController">
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/results_example"/>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_results_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/rv_results_list">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/results_example"
+            android:visibility="invisible"/>
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
