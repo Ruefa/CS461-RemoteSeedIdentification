@@ -52,6 +52,7 @@ public class SocketService extends Service {
 
         public void handleMessage(Message message){
             boolean socketSuccess = false;
+            byte[] messageToSend;
 
             Log.d(TAG, "handling message");
 
@@ -63,7 +64,19 @@ public class SocketService extends Service {
 
             Intent intent = new Intent(message.getData().getString(OUTBOUND_KEY));
             if(socketSuccess || mServer.mRun) {
-                mServer.sendMessage(message.getData().getString(SEND_MESSAGE_KEY));
+                if(message.getData().getByteArray(SEND_IMAGE_KEY) != null){
+                    mServer.sendMessage(ServerUtils.prepareImage(
+                            message.getData().getByteArray(SEND_IMAGE_KEY),
+                            mServer.getCookie()
+                    ));
+                } else if(message.getData().getString(SEND_MESSAGE_KEY).equals(ResultsController.ACTION_VIEW_RESULTS)){
+                    Log.d(TAG, "results list request");
+                    messageToSend = ServerUtils.formatResultsList(mServer.getCookie());
+                    mServer.sendMessage(messageToSend);
+                } else {
+                    messageToSend = ServerUtils.stringToByte(message.getData().getString(SEND_MESSAGE_KEY));
+                    mServer.sendMessage(messageToSend);
+                }
 
                 Log.d(TAG, "waiting to receive message");
                 String incomingMessage = mServer.receiveMessage(message.getData().getString(OUTBOUND_KEY));
@@ -114,10 +127,6 @@ public class SocketService extends Service {
         Bundle receivedBundle = intent.getExtras();
         if(intent.getStringExtra(SEND_MESSAGE_KEY).equals(RESET)){
             mServer = new ServerUtils(null);
-        } else if(receivedBundle.getString(SEND_MESSAGE_KEY).equals(ResultsController.ACTION_VIEW_RESULTS)){
-            receivedBundle.putString(SEND_MESSAGE_KEY, ServerUtils.resultsListFormat(mServer.getCookie()));
-            message.setData(receivedBundle);
-            mServiceHandler.sendMessage(message);
         } else {
             message.setData(intent.getExtras());
             mServiceHandler.sendMessage(message);
