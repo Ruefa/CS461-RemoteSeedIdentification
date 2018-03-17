@@ -242,6 +242,23 @@ public class ServerUtils {
         return finalBytes;
     }
 
+    private static byte[] addLengthToBytes(byte[] bytes){
+        ByteBuffer byteBuffer = ByteBuffer.allocate(4);
+        byteBuffer.putInt(bytes.length);
+        byte[] size = byteBuffer.array();
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        try {
+            byteArrayOutputStream.write(size);
+            byteArrayOutputStream.write(bytes);
+            return byteArrayOutputStream.toByteArray();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     public byte[] getCookie(){
         return cookie;
     }
