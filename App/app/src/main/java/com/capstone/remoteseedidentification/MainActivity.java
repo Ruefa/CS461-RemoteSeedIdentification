@@ -1,6 +1,8 @@
 package com.capstone.remoteseedidentification;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -10,6 +12,7 @@ import android.net.Uri;
 import android.nfc.Tag;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -321,10 +324,24 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
     }
 
     private void sendImage(){
-
+        Log.d(TAG, "starting send image");
+        Intent intent = new Intent(this, SocketService.class);
+        Bundle bundle = new Bundle();
+        bundle.putByteArray(SocketService.SEND_IMAGE_KEY, mByteImage);
+        bundle.putString(SocketService.SEND_MESSAGE_KEY, "sendingimage");
+        bundle.putString(SocketService.OUTBOUND_KEY, BROADCAST_ACTION);
+        intent.putExtras(bundle);
+        startService(intent);
     }
 
-    
+    public final static String BROADCAST_ACTION = "mainActivity";
+    private LocalBroadcastManager mBroadcastManager;
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "main receiving");
+        }
+    };
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
