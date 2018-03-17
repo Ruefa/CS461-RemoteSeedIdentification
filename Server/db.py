@@ -54,7 +54,7 @@ def logout(username):
     #TODO Exception handling
     account = Account.get(username=username)
     if account:
-	account.sessionToken = None
+        account.sessionToken = None
 
 @db_session
 def addReport(username, results):
