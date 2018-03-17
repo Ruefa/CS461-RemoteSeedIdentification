@@ -43,16 +43,18 @@ def login(username, password):
 
 @db_session
 def checkToken(username, token):
-
     #TODO Exception handling
-    if token == Account[username].sessionToken:
+    account = Account.get(username=username)
+    if account and token == account.sessionToken:
         return True
     return False
 
 @db_session
 def logout(username):
     #TODO Exception handling
-    Account[username].sessionToken = None
+    account = Account.get(username=username)
+    if account:
+        account.sessionToken = None
 
 @db_session
 def addReport(username, results):
