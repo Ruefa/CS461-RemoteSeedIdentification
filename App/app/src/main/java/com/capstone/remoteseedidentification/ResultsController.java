@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 
@@ -17,11 +19,15 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
     private static final String TAG = "ResultsController";
 
     private ResultsListRVAdapter mResultsRVAdapter;
+    private ProgressBar mpbResultsRV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_results);
+
+        mpbResultsRV = findViewById(R.id.pb_results_rv);
+        mpbResultsRV.setVisibility(View.VISIBLE);
 
         mBroadcastManager = LocalBroadcastManager.getInstance(this);
         IntentFilter intentFilter = new IntentFilter();
@@ -54,6 +60,8 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
         public void onReceive(Context context, Intent intent) {
             String results = intent.getStringExtra(SocketService.BROADCAST_KEY);
             Log.d(TAG, results);
+
+            mpbResultsRV.setVisibility(View.INVISIBLE);
 
             ArrayList<String> testList = new ArrayList<>();
             for(int i=1; i<=10; i++) {
