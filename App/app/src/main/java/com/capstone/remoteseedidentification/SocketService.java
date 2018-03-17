@@ -41,6 +41,7 @@ public class SocketService extends Service {
 
     public final static String SEND_MESSAGE_KEY = "message";
     public final static String OUTBOUND_KEY = "outbound";
+    public final static String SEND_IMAGE_KEY = "image";
 
     public final static String RESET = "_reset";
 
