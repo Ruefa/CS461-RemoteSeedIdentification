@@ -64,9 +64,10 @@ public class SocketService extends Service {
 
             Intent intent = new Intent(message.getData().getString(OUTBOUND_KEY));
             if(socketSuccess || mServer.mRun) {
-                if(message.getData().getByteArray(SEND_IMAGE_KEY) != null){
+                if(message.getData().getString(SEND_IMAGE_KEY) != null){
+                    Log.d(TAG, "sending image");
                     mServer.sendMessage(ServerUtils.prepareImage(
-                            message.getData().getByteArray(SEND_IMAGE_KEY),
+                            MainActivity.fileToBytes(message.getData().getString(SEND_IMAGE_KEY)),
                             mServer.getCookie()
                     ));
                 } else if(message.getData().getString(SEND_MESSAGE_KEY).equals(ResultsController.ACTION_VIEW_RESULTS)){
@@ -122,6 +123,7 @@ public class SocketService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
+        Log.d(TAG, "command received");
         Message message = mServiceHandler.obtainMessage();
         message.arg1 = startId;
         if(intent.getStringExtra(SEND_MESSAGE_KEY).equals(RESET)){
