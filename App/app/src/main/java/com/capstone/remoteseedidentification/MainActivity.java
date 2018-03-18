@@ -372,4 +372,43 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    public static String imageToFile(String fileName, byte[] data){
+        File photo = new File(Environment.getExternalStorageDirectory(), fileName);
+
+        if(photo.exists()){
+            photo.delete();
+        }
+
+        try{
+            FileOutputStream fos = new FileOutputStream(photo.getPath());
+            fos.write(data);
+            fos.close();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+        return photo.getAbsolutePath();
+    }
+
+    public static byte[] fileToBytes(String fileName){
+        File photo = new File(fileName);
+
+        try {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            InputStream inputStream = new FileInputStream(photo);
+            byte[] buffer = new byte[32768];
+            while(inputStream.read(buffer) != -1) {
+                byteArrayOutputStream.write(buffer);
+            }
+            inputStream.close();
+            return byteArrayOutputStream.toByteArray();
+        }catch (FileNotFoundException e){
+            e.printStackTrace();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }
