@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
 
     //image data
     private byte[] mByteImage;
+    private String mImagePath;
 
     //nav drawer recycler view
     private RecyclerView mNavRV;
@@ -248,6 +249,7 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
             @Override
             public void onPictureTaken(byte[] data, Camera camera) {
                 mByteImage = data;
+                mImagePath = imageToFile("tempImage.png", data);
                 Bitmap thumbBitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
                 mThumbView.setImageBitmap(thumbBitmap);
                 initConfirmation();
@@ -274,6 +276,7 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
                 mCameraView.setVisibility(View.INVISIBLE);
                 //get image from gallery as a byte array for sending
                 mByteImage = getBytes(getContentResolver().openInputStream(imageUri));
+                mImagePath = imageToFile("tempImage.png", mByteImage);
 
                 initConfirmation();
         }
@@ -343,9 +346,10 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
 
     private void sendImage(){
         Log.d(TAG, "starting send image");
+        Log.d(TAG, String.valueOf(mByteImage.length));
         Intent intent = new Intent(this, SocketService.class);
         Bundle bundle = new Bundle();
-        bundle.putByteArray(SocketService.SEND_IMAGE_KEY, mByteImage);
+        bundle.putString(SocketService.SEND_IMAGE_KEY, mImagePath);
         bundle.putString(SocketService.SEND_MESSAGE_KEY, "sendingimage");
         bundle.putString(SocketService.OUTBOUND_KEY, BROADCAST_ACTION);
         intent.putExtras(bundle);
