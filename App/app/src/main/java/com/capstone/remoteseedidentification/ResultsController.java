@@ -1,5 +1,6 @@
 package com.capstone.remoteseedidentification;
 
+import android.app.IntentService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -54,6 +55,7 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
 
     public final static String BROADCAST_ACTION = "results";
     public final static String ACTION_VIEW_RESULTS = "view_results";
+    public final static String ACTION_REQUEST_RESULT = "request_result";
     private LocalBroadcastManager mBroadcastManager;
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -74,5 +76,10 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
     @Override
     public void onResultsClick(String item) {
         Log.d(TAG, "item clicked: " + item);
+        Intent intent = new Intent(this, SocketService.class);
+        Bundle bundle = new Bundle();
+        bundle.putString(SocketService.SEND_MESSAGE_KEY, item);
+        bundle.putString(SocketService.ACTION_KEY, ACTION_REQUEST_RESULT);
+        bundle.putString(SocketService.OUTBOUND_KEY, BROADCAST_ACTION);
     }
 }
