@@ -314,4 +314,18 @@ public class ServerUtils {
 
         return finalBytes;
     }
+
+    public static byte[] formatResultRequest(byte[] reportID, byte[] userID){
+        try{
+            ByteArrayOutputStream combiner = new ByteArrayOutputStream();
+            combiner.write(userID);
+            combiner.write("|".getBytes());
+            combiner.write(reportID);
+            return addLengthToBytes(combiner.toByteArray());
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }
