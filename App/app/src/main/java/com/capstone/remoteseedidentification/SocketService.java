@@ -42,6 +42,7 @@ public class SocketService extends Service {
     public final static String SEND_MESSAGE_KEY = "message";
     public final static String OUTBOUND_KEY = "outbound";
     public final static String SEND_IMAGE_KEY = "image";
+    public final static String ACTION_KEY = "action";
 
     public final static String RESET = "_reset";
 
@@ -68,6 +69,12 @@ public class SocketService extends Service {
                     Log.d(TAG, "sending image");
                     mServer.sendMessage(ServerUtils.prepareImage(
                             MainActivity.fileToBytes(message.getData().getString(SEND_IMAGE_KEY)),
+                            mServer.getCookie()
+                    ));
+                } else if(message.getData().getString(ACTION_KEY).equals(ResultsController.ACTION_REQUEST_RESULT)){
+                    Log.d(TAG, "request result");
+                    mServer.sendMessage(ServerUtils.formatResultRequest(
+                            new byte[]{00, 11}, //change
                             mServer.getCookie()
                     ));
                 } else if(message.getData().getString(SEND_MESSAGE_KEY).equals(ResultsController.ACTION_VIEW_RESULTS)){
