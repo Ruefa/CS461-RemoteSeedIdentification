@@ -43,7 +43,8 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
 
         Intent listIntent = new Intent(this, SocketService.class);
         Bundle bundle = new Bundle();
-        bundle.putString(SocketService.SEND_MESSAGE_KEY, ACTION_VIEW_RESULTS);
+        bundle.putString(SocketService.SEND_MESSAGE_KEY, "request list");
+        bundle.putString(SocketService.ACTION_KEY, ACTION_VIEW_RESULTS);
         bundle.putString(SocketService.OUTBOUND_KEY, BROADCAST_ACTION);
         listIntent.putExtras(bundle);
         startService(listIntent);
@@ -103,8 +104,13 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String results = intent.getStringExtra(SocketService.BROADCAST_KEY);
-            Log.d(TAG, results);
+
+            if(intent.getStringExtra(SocketService.ACTION_KEY).equals(ACTION_VIEW_RESULTS)) {
+                String results = intent.getStringExtra(SocketService.BROADCAST_KEY);
+                Log.d(TAG, results);
+            }else if(intent.getStringExtra(SocketService.ACTION_KEY).equals(ACTION_REQUEST_RESULT)){
+                //do something
+            }
 
             mpbResultsRV.setVisibility(View.INVISIBLE);
         }
