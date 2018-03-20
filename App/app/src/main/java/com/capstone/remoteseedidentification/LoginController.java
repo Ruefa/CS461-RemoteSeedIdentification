@@ -51,12 +51,6 @@ public class LoginController extends AppCompatActivity {
 
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
-        //ActionBar actionBar = getSupportActionBar();
-        //action bar transparent
-        //actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#00000000")));
-        //unsure what this does
-        //actionBar.setStackedBackgroundDrawable(new ColorDrawable(Color.parseColor("#550000ff")));
-
         mTVError = findViewById(R.id.tv_login_error);
     }
 
