@@ -112,7 +112,7 @@ def handleConn(conn):
             user = checkAuth(msg)
             if user:
                 #TODO send report ids instead of results?
-                data = '|'.join(getReportList(user))
+                data = '|'.join([str(x) for x in getReportList(user)])
                 sendData(conn, data.encode())
             else:
                 conn.send(bytes([0])) # Invalid login
