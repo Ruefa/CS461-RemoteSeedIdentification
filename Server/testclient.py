@@ -6,9 +6,9 @@ import sys
 # This code is awful and will be replaced with real tests eventually
 
 port = 5777
-address = 'localhost'
+address = '73.11.102.15'
 
-useSsl = True
+useSsl = False
 context = ssl.create_default_context(cafile='cert.pem')
 
 
@@ -137,7 +137,7 @@ def testLogout(username, t=token):
 if __name__ == "__main__":
     testMakeAccount(b'UserName', b'Password')
     testLogin(b'UserName', b'Password')
-    testRunAnalysis(b'UserName', b'/Users/quanah/Desktop/test.jpg', token) # Only works on my local machine (obviously)
+    testRunAnalysis(b'UserName', b'IMG_1332.JPG', token) # Only works on my local machine (obviously)
     testGetReportList(b'UserName', token)
     testGetReport(b'UserName', 1, token)
     testLogout(b'UserName', token)

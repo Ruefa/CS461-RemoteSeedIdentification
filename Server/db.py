@@ -13,7 +13,7 @@ class Account(db.Entity):
     reports = Set('Report')
 
 class Report(db.Entity):
-    results = Required(bytes)
+    results = Optional(str)
     owner = Required(Account)
 
 db.bind(provider='sqlite', filename=':memory:')
@@ -57,8 +57,15 @@ def logout(username):
         account.sessionToken = None
 
 @db_session
-def addReport(username, results):
-    Report(results=results, owner=Account[username])
+def newReport(username):
+    r = Report(owner=Account[username])
+    commit()
+    return r.id
+
+@db_session
+def addReportResults(username, reportId, results):
+    r = Report[reportId]
+    r.results = results
 
 @db_session
 def getReportList(username):

@@ -1,7 +1,12 @@
+import sys
+import pathlib
 import socket
-import db
 
 from pony import orm
+
+import db
+sys.path.append('/home/nvidia/RemoteSeed/CS461-RemoteSeedIdentification/Classifier')
+from sample_analysis import run_analysis
 
 # Read the first 4 bytes from the connection to determine message size, then read
 # the entire message.
@@ -51,19 +56,20 @@ def checkAuth(auth):
     return None
 
 def runAnalysis(img, user):
-    #TODO Link in with Ethans work
-    #     Generate and return results
-    
-    # Temp code to write image to local directory, showing that 
-    # it was received
-    f = open('ReceivedImg.jpg', 'wb')
-    f.write(img)
-    
+    reportID = db.newReport(user)
 
-    results = b'Report Results Placeholder'
-    db.addReport(user, results)
+    path = pathlib.Path('/home/nvidia/RemoteSeed/DB/users/{}/{}'.format(user.decode(), reportID))
+    path.mkdir(parents=True, exist_ok=True)
+
+    f = open(str(path / 'sample.jpg'), 'wb')
+    f.write(img)
+    f.close()
+
+    results = run_analysis('sample.jpg', str(path))
+
+    db.addReportResults(user, reportID, results)
     
-    return results
+    return results.encode()
     
 def getReportList(user):
     #TODO Figure out a format for this. Could just use delimiters or
@@ -106,17 +112,16 @@ def handleConn(conn):
             user = checkAuth(msg)
             if user:
                 #TODO send report ids instead of results?
-                data = b'|'.join(getReportList(user))
-                sendData(conn, data)
+                data = '|'.join(getReportList(user))
+                sendData(conn, data.encode())
             else:
                 conn.send(bytes([0])) # Invalid login
         elif msgType == 101: # Request a specific report
             auth, data = msg.split(b'|', maxsplit=1)
             user = checkAuth(auth)
-            #TODO Error checking (does report exist?)
             if user:
                 report = getReport(user, data)
-                sendData(conn, report)
+                sendData(conn, report.encode())
             else:
                 conn.send(bytes([0])) # Invalid login
         elif msgType == 122: # Logout
