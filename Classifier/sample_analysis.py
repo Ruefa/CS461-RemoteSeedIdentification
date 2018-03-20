@@ -10,11 +10,14 @@ from torch.utils.serialization import load_lua
 import numpy as np
 from data import VOC_CLASSES as labels
 import cv2
+import matplotlib
+matplotlib.use('Agg') # Needed to run without a display
 from matplotlib import pyplot as plt
 from data import VOCDetection, VOCroot, AnnotationTransform
 from ssd import build_ssd
 import math
 import argparse
+
 
 parser = argparse.ArgumentParser(description='Seed sample analzyer')
 parser.add_argument('image', metavar='img', type=str, nargs='+',
