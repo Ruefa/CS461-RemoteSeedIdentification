@@ -48,6 +48,8 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
         listIntent.putExtras(bundle);
         startService(listIntent);
 
+        getSupportActionBar().setTitle("Results");
+
         initResultsList();
 
         initResultsGraph();
@@ -66,7 +68,7 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
         }
         mResultsRVAdapter.updateItems(testList);
     }
-    
+
     private void initResultsGraph(){
 
         GraphView graphView = findViewById(R.id.graph_results);
