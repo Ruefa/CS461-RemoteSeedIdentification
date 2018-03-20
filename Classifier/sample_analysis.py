@@ -184,26 +184,88 @@ def save_predicitons(image, predictions):
 
     file.close()
 
-# Get the arguements
-args = parser.parse_args()
+def run_analysis(img, directory, weights='ssd300_0712_4000.pth'):
+    # Load the weights
+    net = build_ssd('test', 300, 3)    # initialize SSD
+    net.load_weights(weights)
 
-# Load the image
-sample = cv2.imread(args.image[0], cv2.IMREAD_COLOR)
+    # Load the image
+    sample = cv2.imread(directory + '/' + img, cv2.IMREAD_COLOR)
 
-# Load the weights
-net = build_ssd('test', 300, 3)    # initialize SSD
-net.load_weights(args.weights[0])
-
-# Generate the predictions
-predicitions = analyze_sample(sample, net, [300,300])
-
-# Save the predictions
-save_predicitons(sample, predicitions)
+    # Generate predictions
+    predictions = analyze_sample(sample, net, [300, 300])
 
 
+    rgb_image = cv2.cvtColor(sample, cv2.COLOR_BGR2RGB)
 
+    plt.figure(figsize=(10, 10))
+    colors = plt.cm.hsv(np.linspace(0, 1, 3)).tolist()
+    plt.imshow(rgb_image)  # plot the image for matplotlib
+    currentAxis = plt.gca()
 
+    species = {}
 
+    for specie in species_names:
+        species[specie] = 0
 
+    for prediction in predictions:
 
+        j = 0
 
+        # Get the score for the class
+        score = prediction[0]
+        id = prediction[1]
+        coords = (prediction[2][0][1],prediction[2][0][0]),prediction[2][2],prediction[2][1]
+
+        # Add to specie counter
+        species[str(species_names[id-1])] += 1
+
+        # Get the label for the class
+        label_name = labels[id-1]
+        #display_txt = '%s: %.2f' % (label_name, score)
+        color = colors[id]
+
+        currentAxis.add_patch(plt.Rectangle(*coords, fill=False, edgecolor=color, linewidth=2))
+        #currentAxis.text(coords[0][0], coords[0][1], display_txt, bbox={'facecolor': color, 'alpha': 0.5})
+        j += 1
+
+    # Save the image
+    plt.savefig(directory + '/result.png')
+
+    total_seeds = 0
+
+    # Determine statistics
+    for specie in species:
+        total_seeds += species[specie]
+
+    compositions = []
+
+    for specie in species:
+        compositions.append(species[specie]/total_seeds)
+
+    id = 0
+
+    results = ''
+    for specie in compositions:
+        results += (str(species_names[id])+":"+str(compositions[id])+"\n")
+        id += 1
+
+    return results
+
+if __name__ == '__main__':
+
+    # Get the arguements
+    args = parser.parse_args()
+
+    # Load the image
+    sample = cv2.imread(args.image[0], cv2.IMREAD_COLOR)
+
+    # Load the weights
+    net = build_ssd('test', 300, 3)    # initialize SSD
+    net.load_weights(args.weights[0])
+
+    # Generate the predictions
+    predicitions = analyze_sample(sample, net, [300,300])
+
+    # Save the predictions
+    save_predicitons(sample, predicitions)
