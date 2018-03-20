@@ -69,7 +69,7 @@ def runAnalysis(img, user):
 
     db.addReportResults(user, reportID, results)
     
-    return results.encode()
+    return reportID, results.encode()
     
 def getReportList(user):
     #TODO Figure out a format for this. Could just use delimiters or
@@ -79,6 +79,18 @@ def getReportList(user):
 # Get the report stored in the data base with id 'report' under username 'user'
 def getReport(user, report):
     return db.getReport(user, int.from_bytes(report, 'big'))[0]
+
+def sendReportImg(user, reportID, img='result.png'):
+    msg = b''
+    path = pathlib.Path('/home/nvidia/RemoteSeed/DB/users/{}/{}/{}'.format(user.decode(), reportID, img))
+    f = open(str(path), 'rb')
+    buf = f.read(4096)
+    while buf:
+        msg += buf
+        buf = f.read(4096)
+    f.close
+    sendData(msg)
+
 
 def handleConn(conn):
     msg = readMsg(conn)
@@ -104,8 +116,9 @@ def handleConn(conn):
             user = checkAuth(auth)
             if user:
                 #TODO Add some error checking here
-                report = runAnalysis(data, user)
-                sendData(conn, report)
+                reportID, report = runAnalysis(data, user)
+                sendData(conn, report + b'|')
+                sendReportImg(user, reportID)
             else:
                 conn.send(bytes([0])) # Invalid login
         elif msgType == 100: # Request list of reports for certain username
@@ -120,8 +133,10 @@ def handleConn(conn):
             auth, data = msg.split(b'|', maxsplit=1)
             user = checkAuth(auth)
             if user:
+                reportID = int.from_bytes(data, 'big')
                 report = getReport(user, data)
-                sendData(conn, report.encode())
+                sendData(conn, report.encode()+b'|')
+                sendReportImg(user, reportID)
             else:
                 conn.send(bytes([0])) # Invalid login
         elif msgType == 122: # Logout
