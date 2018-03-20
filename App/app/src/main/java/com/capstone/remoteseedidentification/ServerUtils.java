@@ -194,7 +194,9 @@ public class ServerUtils {
             } else {
                 return FAILURE;
             }
-        } else if(messageType.equals(ResultsController.BROADCAST_ACTION)) {
+        } else if(messageType.equals(ResultsController.ACTION_VIEW_RESULTS)) {
+            return new String(bytesRead, Charset.forName("UTF-8"));
+        } else if(messageType.equals(ResultsController.ACTION_REQUEST_RESULT)){
             return new String(bytesRead, Charset.forName("UTF-8"));
         }
 
@@ -318,6 +320,7 @@ public class ServerUtils {
     public static byte[] formatResultRequest(byte[] reportID, byte[] userID){
         try{
             ByteArrayOutputStream combiner = new ByteArrayOutputStream();
+            combiner.write(REPORT_INDICATOR.getBytes());
             combiner.write(userID);
             combiner.write("|".getBytes());
             combiner.write(reportID);

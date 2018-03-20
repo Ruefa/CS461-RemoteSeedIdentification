@@ -65,29 +65,40 @@ public class SocketService extends Service {
 
             Intent intent = new Intent(message.getData().getString(OUTBOUND_KEY));
             if(socketSuccess || mServer.mRun) {
-                if(message.getData().getString(SEND_IMAGE_KEY) != null){
-                    Log.d(TAG, "sending image");
-                    mServer.sendMessage(ServerUtils.prepareImage(
-                            MainActivity.fileToBytes(message.getData().getString(SEND_IMAGE_KEY)),
-                            mServer.getCookie()
-                    ));
-                } else if(message.getData().getString(ACTION_KEY).equals(ResultsController.ACTION_REQUEST_RESULT)){
-                    Log.d(TAG, "request result");
-                    mServer.sendMessage(ServerUtils.formatResultRequest(
-                            new byte[]{00, 11}, //change
-                            mServer.getCookie()
-                    ));
-                } else if(message.getData().getString(SEND_MESSAGE_KEY).equals(ResultsController.ACTION_VIEW_RESULTS)){
-                    Log.d(TAG, "results list request");
-                    messageToSend = ServerUtils.formatResultsList(mServer.getCookie());
-                    mServer.sendMessage(messageToSend);
-                } else {
-                    messageToSend = ServerUtils.stringToByte(message.getData().getString(SEND_MESSAGE_KEY));
-                    mServer.sendMessage(messageToSend);
+                if(message.getData().getString(ACTION_KEY) != null){
+                    if(message.getData().getString(ACTION_KEY).equals(ResultsController.ACTION_REQUEST_RESULT)){
+                        Log.d(TAG, "request result");
+                        intent.putExtra(ACTION_KEY, message.getData().getString(ACTION_KEY));
+                        mServer.sendMessage(ServerUtils.formatResultRequest(
+                                new byte[]{Integer.valueOf(message.getData().getString(SEND_MESSAGE_KEY)).byteValue()}, //change
+                                mServer.getCookie()
+                        ));
+                    } else if(message.getData().getString(ACTION_KEY).equals(ResultsController.ACTION_VIEW_RESULTS)) {
+                        Log.d(TAG, "results list request");
+                        intent.putExtra(ACTION_KEY, message.getData().getString(ACTION_KEY));
+                        messageToSend = ServerUtils.formatResultsList(mServer.getCookie());
+                        mServer.sendMessage(messageToSend);
+                    }
+                }else {
+                    if (message.getData().getString(SEND_IMAGE_KEY) != null) {
+                        Log.d(TAG, "sending image");
+                        mServer.sendMessage(ServerUtils.prepareImage(
+                                MainActivity.fileToBytes(message.getData().getString(SEND_IMAGE_KEY)),
+                                mServer.getCookie()
+                        ));
+                    } else {
+                        messageToSend = ServerUtils.stringToByte(message.getData().getString(SEND_MESSAGE_KEY));
+                        mServer.sendMessage(messageToSend);
+                    }
                 }
 
+                String incomingMessage;
                 Log.d(TAG, "waiting to receive message");
-                String incomingMessage = mServer.receiveMessage(message.getData().getString(OUTBOUND_KEY));
+                if(message.getData().getString(ACTION_KEY) != null){
+                    incomingMessage = mServer.receiveMessage(message.getData().getString(ACTION_KEY));
+                }else {
+                    incomingMessage = mServer.receiveMessage(message.getData().getString(OUTBOUND_KEY));
+                }
                 Log.d(TAG, "received message");
                 mServer.stopSocket();
 
