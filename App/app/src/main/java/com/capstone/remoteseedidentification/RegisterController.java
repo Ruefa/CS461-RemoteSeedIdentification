@@ -60,7 +60,7 @@ public class RegisterController extends AppCompatActivity {
     }
 
     private void goMain(){
-        startActivity(new Intent(this, MainActivity.class));
+        startActivity(new Intent(this, LoginController.class));
     }
 
     public final static String BROADCAST_ACTION = "register_receive";
