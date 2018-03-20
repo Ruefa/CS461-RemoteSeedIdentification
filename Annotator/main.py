@@ -202,7 +202,7 @@ class MainWindow(Frame):
 
         # Remove any empty samples
         for sample in delete_queue:
-            self.delete_sample(file=sample)
+            self.delete_sample(file=sample, update=False)
 
         # Re-load the dataset
         self.load_dataset(self.dataset_dir)
@@ -261,7 +261,7 @@ class MainWindow(Frame):
         tree = et.ElementTree(annotation)
         tree.write(self.dataset_dir+"/Annotations/"+self.dataset_filenames[self.current_sample].split(".")[0]+".xml")
 
-    def delete_sample(self, event=None, file=None):
+    def delete_sample(self, event=None, file=None, update=True):
 
         if len(self.dataset_filenames) > 0:
 
@@ -281,16 +281,18 @@ class MainWindow(Frame):
                 self.dataset_filenames.pop(self.current_sample)
                 self.remove_from_imagesets(file)
 
-                if self.current_sample == len(self.dataset_filenames):
-                    self.current_sample -= 1
+                if update:
 
-                if len(self.dataset_filenames) > 0:
-                    self.load_sample(self.dataset_dir+"/JPEGImages/"+self.dataset_filenames[self.current_sample])
-                else:
-                    # self.image_on_canvas = self.canvas.create_image(0, 0, anchor=tk.NW, image=imgtk)
-                    self.image_on_canvas = self.canvas.create_image(1, 1, anchor=tk.NW, image=None)
-                    self.canvas.image = None
-                    self.canvas.update()
+                    if self.current_sample == len(self.dataset_filenames):
+                        self.current_sample -= 1
+
+                    if len(self.dataset_filenames) > 0:
+                        self.load_sample(self.dataset_dir+"/JPEGImages/"+self.dataset_filenames[self.current_sample])
+                    else:
+                        # self.image_on_canvas = self.canvas.create_image(0, 0, anchor=tk.NW, image=imgtk)
+                        self.image_on_canvas = self.canvas.create_image(1, 1, anchor=tk.NW, image=None)
+                        self.canvas.image = None
+                        self.canvas.update()
 
             if os.path.isfile(annotation_file):
                 os.remove(annotation_file)

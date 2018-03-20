@@ -7,3 +7,4 @@ Annotator/SeedDatasetVOC
 Annotator/raw_images
 App/test_server/
 Data/
+Annotator/weights
