@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +14,11 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.ValueDependentColor;
+import com.jjoe64.graphview.series.BarGraphSeries;
+import com.jjoe64.graphview.series.DataPoint;
 
 import java.util.ArrayList;
 
@@ -43,6 +49,8 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
         startService(listIntent);
 
         initResultsList();
+
+        initResultsGraph();
     }
 
     private void initResultsList(){
@@ -51,6 +59,39 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
         rvResults.setAdapter(mResultsRVAdapter);
         rvResults.setLayoutManager(new LinearLayoutManager(this));
         rvResults.setHasFixedSize(true);
+
+        ArrayList<String> testList = new ArrayList<>();
+        for(int i=1; i<=10; i++) {
+            testList.add("results " + String.valueOf(i));
+        }
+        mResultsRVAdapter.updateItems(testList);
+    }
+    
+    private void initResultsGraph(){
+
+        GraphView graphView = findViewById(R.id.graph_results);
+        BarGraphSeries<DataPoint> series = new BarGraphSeries<>(new DataPoint[] {
+                new DataPoint(0, 15),
+                new DataPoint(1, 20),
+                new DataPoint(2, 45),
+                new DataPoint(3, 10),
+                new DataPoint(4, 10)
+        });
+        graphView.addSeries(series);
+
+        //styling
+        series.setValueDependentColor(new ValueDependentColor<DataPoint>() {
+            @Override
+            public int get(DataPoint data) {
+                return Color.rgb((int) data.getX()*255/4, (int) Math.abs(data.getY()*255/6), 100);
+            }
+        });
+        series.setSpacing(50);
+
+        series.setDrawValuesOnTop(true);
+        series.setValuesOnTopColor(Color.RED);
+        graphView.getViewport().setYAxisBoundsManual(true);
+        graphView.getViewport().setMaxY(100);
     }
 
     public final static String BROADCAST_ACTION = "results";
@@ -64,12 +105,6 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
             Log.d(TAG, results);
 
             mpbResultsRV.setVisibility(View.INVISIBLE);
-
-            ArrayList<String> testList = new ArrayList<>();
-            for(int i=1; i<=10; i++) {
-                testList.add("results " + String.valueOf(i));
-            }
-            mResultsRVAdapter.updateItems(testList);
         }
     };
 
