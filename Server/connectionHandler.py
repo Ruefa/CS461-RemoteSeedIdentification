@@ -80,7 +80,7 @@ def getReportList(user):
 def getReport(user, report):
     return db.getReport(user, int.from_bytes(report, 'big'))[0]
 
-def sendReportImg(user, reportID, img='result.png'):
+def sendReportImg(conn, user, reportID, img='result.png'):
     msg = b''
     path = pathlib.Path('/home/nvidia/RemoteSeed/DB/users/{}/{}/{}'.format(user.decode(), reportID, img))
     f = open(str(path), 'rb')
@@ -89,7 +89,7 @@ def sendReportImg(user, reportID, img='result.png'):
         msg += buf
         buf = f.read(4096)
     f.close
-    sendData(msg)
+    sendData(conn, msg)
 
 
 def handleConn(conn):
@@ -136,7 +136,7 @@ def handleConn(conn):
                 reportID = int.from_bytes(data, 'big')
                 report = getReport(user, data)
                 sendData(conn, report.encode()+b'|')
-                sendReportImg(user, reportID)
+                sendReportImg(conn, user, reportID)
             else:
                 conn.send(bytes([0])) # Invalid login
         elif msgType == 122: # Logout
