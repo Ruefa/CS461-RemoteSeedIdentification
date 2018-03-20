@@ -21,12 +21,15 @@ import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ResultsController extends AppCompatActivity implements ResultsListRVAdapter.OnResultsClickListener {
     private static final String TAG = "ResultsController";
 
     private ResultsListRVAdapter mResultsRVAdapter;
     private ProgressBar mpbResultsRV;
+
+    private GraphView mGraphView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,15 +75,12 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
 
     private void initResultsGraph(){
 
-        GraphView graphView = findViewById(R.id.graph_results);
+        mGraphView = findViewById(R.id.graph_results);
         BarGraphSeries<DataPoint> series = new BarGraphSeries<>(new DataPoint[] {
                 new DataPoint(0, 15),
-                new DataPoint(1, 20),
-                new DataPoint(2, 45),
-                new DataPoint(3, 10),
-                new DataPoint(4, 10)
+                new DataPoint(1, 20)
         });
-        graphView.addSeries(series);
+        mGraphView.addSeries(series);
 
         //styling
         series.setValueDependentColor(new ValueDependentColor<DataPoint>() {
@@ -89,12 +89,16 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
                 return Color.rgb((int) data.getX()*255/4, (int) Math.abs(data.getY()*255/6), 100);
             }
         });
-        series.setSpacing(50);
+        series.setSpacing(2);
 
         series.setDrawValuesOnTop(true);
         series.setValuesOnTopColor(Color.RED);
-        graphView.getViewport().setYAxisBoundsManual(true);
-        graphView.getViewport().setMaxY(100);
+        mGraphView.getViewport().setYAxisBoundsManual(true);
+        mGraphView.getViewport().setMaxY(100);
+        mGraphView.getViewport().setXAxisBoundsManual(true);
+        mGraphView.getViewport().setMaxX(4);
+        mGraphView.getGridLabelRenderer().setHorizontalAxisTitle("Seed Type");
+        mGraphView.getGridLabelRenderer().setVerticalAxisTitle("Percent present");
     }
 
     public final static String BROADCAST_ACTION = "results";
@@ -104,15 +108,46 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            mpbResultsRV.setVisibility(View.INVISIBLE);
 
             if(intent.getStringExtra(SocketService.ACTION_KEY).equals(ACTION_VIEW_RESULTS)) {
                 String results = intent.getStringExtra(SocketService.BROADCAST_KEY);
                 Log.d(TAG, results);
-            }else if(intent.getStringExtra(SocketService.ACTION_KEY).equals(ACTION_REQUEST_RESULT)){
-                //do something
-            }
 
-            mpbResultsRV.setVisibility(View.INVISIBLE);
+                String[] resultArray = results.split("\\|");
+                ArrayList<String> resultList = new ArrayList<String>(Arrays.asList(resultArray));
+                mResultsRVAdapter.updateItems(resultList);
+            }else if(intent.getStringExtra(SocketService.ACTION_KEY).equals(ACTION_REQUEST_RESULT)){
+                Log.d(TAG, "result request received");
+                String results = intent.getStringExtra(SocketService.BROADCAST_KEY);
+                Log.d(TAG, intent.getStringExtra(SocketService.BROADCAST_KEY));
+
+                String[] resultArray = results.split("\n");
+                Log.d(TAG, Arrays.toString(resultArray));
+
+                float prg = Float.valueOf(resultArray[0].split(":")[1])*100;
+                float tf = Float.valueOf(resultArray[1].split(":")[1])*100;
+
+                Log.d(TAG, prg + "\n" + tf);
+
+                BarGraphSeries<DataPoint> series = new BarGraphSeries<>(new DataPoint[] {
+                        new DataPoint(0, prg),
+                        new DataPoint(2, tf)
+                });
+                mGraphView.removeAllSeries();
+                mGraphView.addSeries(series);
+
+                series.setValueDependentColor(new ValueDependentColor<DataPoint>() {
+                    @Override
+                    public int get(DataPoint data) {
+                        return Color.rgb((int) data.getX()*255/4, (int) Math.abs(data.getY()*255/6), 100);
+                    }
+                });
+                series.setSpacing(50);
+
+                series.setDrawValuesOnTop(true);
+                series.setValuesOnTopColor(Color.RED);
+            }
         }
     };
 
@@ -124,5 +159,7 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
         bundle.putString(SocketService.SEND_MESSAGE_KEY, item);
         bundle.putString(SocketService.ACTION_KEY, ACTION_REQUEST_RESULT);
         bundle.putString(SocketService.OUTBOUND_KEY, BROADCAST_ACTION);
+        intent.putExtras(bundle);
+        startService(intent);
     }
 }
