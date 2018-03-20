@@ -14,6 +14,13 @@ from matplotlib import pyplot as plt
 from data import VOCDetection, VOCroot, AnnotationTransform
 from ssd import build_ssd
 import math
+import argparse
+
+parser = argparse.ArgumentParser(description='Seed sample analzyer')
+parser.add_argument('image', metavar='img', type=str, nargs='+',
+                   help='path to the sample image')
+parser.add_argument('weights', metavar='wts', type=str, nargs='+',
+                   help='path to the weights file')
 
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path:
@@ -22,80 +29,29 @@ if module_path not in sys.path:
 if torch.cuda.is_available():
     torch.set_default_tensor_type('torch.cuda.FloatTensor')
 
-net = build_ssd('test', 300, 3)    # initialize SSD
-net.load_weights('weights/ssd300_0712_10000.pth')
-
-image = cv2.imread('./data/IMG_1248.jpg', cv2.IMREAD_COLOR)  # uncomment if dataset not downloaded
+species_names = ['prg', 'tf']
 
 # Chop up an sample image into smaller, overlapping windows
-def partition_image(im, shape):
+def partition_image(image, shape):
 
-    partitions_x = math.floor(im.shape[0]/shape[0]) * 2
-    partitions_y = math.floor(im.shape[1]/shape[1]) * 2
+    # Step half the shape dimension to avoid losing seeds on the edges
+    partitions_x = math.floor(image.shape[1] / shape[0]) * 3
+    partitions_y = math.floor(image.shape[0] / shape[1]) * 3
 
     image_set = []
 
     for x in range(partitions_x):
         for y in range(partitions_y):
-
-            start_x = int(x * shape[0] / 2)
-            start_y = int(y * shape[1] / 2)
+            start_x = int(x * (shape[0] / 3))
+            start_y = int(y * (shape[1] / 3))
             end_x = start_x + shape[0]
             end_y = start_y + shape[1]
 
-            image_set.append([im[start_x:end_x, start_y:end_y,:],[start_x,start_y]])
-
-    for im2 in image_set:
-
-        im2 = im2[0]
-        # image = cv2.imread("/home/ethan/Documents/deeplearning/ssd/pytorch/ssd.pytorch/test_images/IMG_1247.jpg")
-        rgb_image = cv2.cvtColor(im2, cv2.COLOR_BGR2RGB)
-        # View the sampled input image before transform
-        # plt.figure(figsize=(10,10))
-        # plt.imshow(rgb_image)
-        # plt.show()
-
-        x = cv2.resize(im2, (300, 300)).astype(np.float32)
-        x -= (104.0, 117.0, 123.0)
-        x = x.astype(np.float32)
-        x = x[:, :, ::-1].copy()
-        # plt.imshow(x)
-        x = torch.from_numpy(x).permute(2, 0, 1)
-
-        xx = Variable(x.unsqueeze(0))  # wrap tensor in Variable
-        if torch.cuda.is_available():
-            xx = xx.cuda()
-        y = net(xx)
-        top_k = 10
-
-        plt.figure(figsize=(10, 10))
-        colors = plt.cm.hsv(np.linspace(0, 1, 3)).tolist()
-        plt.imshow(rgb_image)  # plot the image for matplotlib
-        currentAxis = plt.gca()
-
-        detections = y.data
-
-        print(detections)
-        # scale each detection back up to the image
-        scale = torch.Tensor([rgb_image.shape[1::-1], rgb_image.shape[1::-1]])
-        for i in range(detections.size(1)):
-            j = 0
-            while detections[0, i, j, 0] >= 0.6:
-                score = detections[0, i, j, 0]
-                label_name = labels[i - 1]
-                display_txt = '%s: %.2f' % (label_name, score)
-                pt = (detections[0, i, j, 1:] * scale).cpu().numpy()
-                coords = (pt[0], pt[1]), pt[2] - pt[0] + 1, pt[3] - pt[1] + 1
-                color = colors[i]
-                currentAxis.add_patch(plt.Rectangle(*coords, fill=False, edgecolor=color, linewidth=2))
-                currentAxis.text(pt[0], pt[1], display_txt, bbox={'facecolor': color, 'alpha': 0.5})
-                j += 1
-
-        plt.show()
+            image_set.append([image[start_y:end_y, start_x:end_x, :], [start_y, start_x]])
 
     return image_set
 
-def gen_slice_predictions(image_slice):
+def gen_slice_predictions(image_slice, net):
 
     predictions = []
 
@@ -122,7 +78,7 @@ def gen_slice_predictions(image_slice):
     scale = torch.Tensor([rgb_image.shape[1::-1], rgb_image.shape[1::-1]])
     for i in range(detections.size(1)):
         j = 0
-        while detections[0,i,j,0] >= 0.6:
+        while detections[0,i,j,0] >= 0.8:
 
             # Get the score of the prediction
             score = detections[0,i,j,0]
@@ -140,32 +96,33 @@ def gen_slice_predictions(image_slice):
     return predictions
 
 
-def analyze_sample(image, slice_shape):
+def analyze_sample(image, net, slice_shape):
 
     predictions = []
 
     rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-    image_set = partition_image(rgb_image,slice_shape)
+    image_set = partition_image(rgb_image, slice_shape)
 
     for im in image_set:
 
-        raw_predictions = gen_slice_predictions(im[0])
+        raw_predictions = gen_slice_predictions(im[0], net)
 
         for prediction in raw_predictions:
 
-            centroid_x = (prediction[2][0][0] + prediction[2][1])/2
-            centroid_y = (prediction[2][0][1] + prediction[2][2])/2
+            centroid_x = (prediction[2][0][1] + prediction[2][2])/2
+            centroid_y = (prediction[2][0][0] + prediction[2][1])/2
 
-            if slice_shape[0] * 0.75 > centroid_x > slice_shape[0] * 0.25 and slice_shape[1] * 0.75 > centroid_y > slice_shape[1] * 0.25:
+            if slice_shape[0] * 0.65 > centroid_x > slice_shape[0] * 0.35 and slice_shape[1] * 0.65 > centroid_y > slice_shape[1] * 0.35:
 
-                shifted_pred = [prediction[0],prediction[1], [(prediction[2][0][0]+im[1][0], prediction[2][0][1]+im[1][1]), prediction[2][1], prediction[2][2]]]
+                shifted_pred = [prediction[0],prediction[1], [(prediction[2][0][1]+im[1][0], prediction[2][0][0]+im[1][1]), prediction[2][2], prediction[2][1]]]
 
                 predictions.append(shifted_pred)
 
     return predictions
 
-def show_predicitons(image, predictions):
+
+def save_predicitons(image, predictions):
 
     rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
@@ -174,6 +131,11 @@ def show_predicitons(image, predictions):
     plt.imshow(rgb_image)  # plot the image for matplotlib
     currentAxis = plt.gca()
 
+    species = {}
+
+    for specie in species_names:
+        species[specie] = 0
+
     for prediction in predictions:
 
         j = 0
@@ -181,23 +143,60 @@ def show_predicitons(image, predictions):
         # Get the score for the class
         score = prediction[0]
         id = prediction[1]
-        coords = (prediction[2][0][0],prediction[2][0][1]),prediction[2][1],prediction[2][2]
+        coords = (prediction[2][0][1],prediction[2][0][0]),prediction[2][2],prediction[2][1]
+
+        # Add to specie counter
+        species[str(species_names[id-1])] += 1
 
         # Get the label for the class
         label_name = labels[id-1]
-        display_txt = '%s: %.2f' % (label_name, score)
+        #display_txt = '%s: %.2f' % (label_name, score)
         color = colors[id]
 
         currentAxis.add_patch(plt.Rectangle(*coords, fill=False, edgecolor=color, linewidth=2))
-        currentAxis.text(coords[0][0], coords[0][1], display_txt, bbox={'facecolor': color, 'alpha': 0.5})
+        #currentAxis.text(coords[0][0], coords[0][1], display_txt, bbox={'facecolor': color, 'alpha': 0.5})
         j += 1
 
-    plt.show()
+    # Save the image
+    plt.savefig('result.png')
 
+    total_seeds = 0
 
-predicitions = analyze_sample(image, [512,512])
+    # Determine statistics
+    for specie in species:
+        total_seeds += species[specie]
 
-#show_predicitons(image, predicitions)
+    compositions = []
+
+    for specie in species:
+        compositions.append(species[specie]/total_seeds)
+
+    file = open("statistics.dat", "w")
+
+    id = 0
+
+    for specie in compositions:
+        file.write(str(species_names[id])+":"+str(compositions[id])+"\n")
+        id += 1
+
+    file.close()
+
+# Get the arguements
+args = parser.parse_args()
+
+# Load the image
+sample = cv2.imread(args.image[0], cv2.IMREAD_COLOR)
+
+# Load the weights
+net = build_ssd('test', 300, 3)    # initialize SSD
+net.load_weights(args.weights[0])
+
+# Generate the predictions
+predicitions = analyze_sample(sample, net, [300,300])
+
+# Save the predictions
+save_predicitons(sample, predicitions)
+
 
 
 
