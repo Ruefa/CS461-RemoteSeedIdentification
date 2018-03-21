@@ -16,7 +16,7 @@ class Report(db.Entity):
     results = Optional(str)
     owner = Required(Account)
 
-db.bind(provider='sqlite', filename=':memory:')
+db.bind(provider='sqlite', filename='/home/nvidia/RemoteSeed/DB/database.sqlite', create_db=True)
 db.generate_mapping(create_tables=True)
 
 set_sql_debug(True)
