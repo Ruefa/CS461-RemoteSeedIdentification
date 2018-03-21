@@ -61,15 +61,14 @@ def runAnalysis(img, user):
     path = pathlib.Path('/home/nvidia/RemoteSeed/DB/users/{}/{}'.format(user.decode(), reportID))
     path.mkdir(parents=True, exist_ok=True)
 
-    f = open(str(path / 'sample.jpg'), 'wb')
-    f.write(img)
-    f.close()
+    with open(str(path / 'sample.jpg'), 'wb') as f:
+        f.write(img)
 
     results = run_analysis('sample.jpg', str(path))
 
     db.addReportResults(user, reportID, results)
     
-    return reportID, results.encode()
+    return reportID
     
 def getReportList(user):
     #TODO Figure out a format for this. Could just use delimiters or
@@ -80,16 +79,17 @@ def getReportList(user):
 def getReport(user, report):
     return db.getReport(user, int.from_bytes(report, 'big'))[0]
 
-def sendReportImg(conn, user, reportID, img='result.png'):
-    msg = b''
+def sendReport(conn, user, reportID, results, img='result.png'):
     path = pathlib.Path('/home/nvidia/RemoteSeed/DB/users/{}/{}/{}'.format(user.decode(), reportID, img))
-    f = open(str(path), 'rb')
-    buf = f.read(4096)
-    while buf:
-        msg += buf
-        buf = f.read(4096)
-    f.close
-    sendData(conn, msg)
+
+    buf = bytearray()
+    buf.append(results.encode())
+    buf.append(b'|')
+
+    with open(str(path), 'rb') as f:
+        buf.append(f.read())
+        
+    sendData(conn, buf)
 
 
 def handleConn(conn):
@@ -116,9 +116,8 @@ def handleConn(conn):
             user = checkAuth(auth)
             if user:
                 #TODO Add some error checking here
-                reportID, report = runAnalysis(data, user)
-                sendData(conn, report + b'|')
-                sendReportImg(conn, user, reportID)
+                reportID = runAnalysis(data, user)
+                sendData(conn, str(reportID).encode())
             else:
                 conn.send(bytes([0])) # Invalid login
         elif msgType == 100: # Request list of reports for certain username
@@ -135,13 +134,12 @@ def handleConn(conn):
             if user:
                 reportID = int.from_bytes(data, 'big')
                 report = getReport(user, data)
-                sendData(conn, report.encode()+b'|')
-                sendReportImg(conn, user, reportID)
+                sendReport(conn, user, reportID, results)
             else:
                 conn.send(bytes([0])) # Invalid login
         elif msgType == 122: # Logout
             db.logout(checkAuth(msg))
 
         msg = readMsg(conn)
-
+    #conn.shutdown(socket.SHUT_RDWR)
     conn.close()
