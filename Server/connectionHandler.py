@@ -83,11 +83,11 @@ def sendReport(conn, user, reportID, results, img='result.png'):
     path = pathlib.Path('/home/nvidia/RemoteSeed/DB/users/{}/{}/{}'.format(user.decode(), reportID, img))
 
     buf = bytearray()
-    buf.append(results.encode())
-    buf.append(b'|')
+    buf += results.encode()
+    buf += b'|'
 
     with open(str(path), 'rb') as f:
-        buf.append(f.read())
+        buf += f.read()
         
     sendData(conn, buf)
 

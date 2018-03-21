@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.SystemClock;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -140,6 +141,7 @@ public class ServerUtils {
             try {
                 mOutputStream.write(message);
                 mOutputStream.flush();
+                mSocket.shutdownOutput();
             }
             catch (IOException e){
                 e.printStackTrace();
@@ -156,12 +158,13 @@ public class ServerUtils {
         int available = 0;
         int numBytesRead = 0;
         byte[] bytesRead = new byte[1];
+        ByteArrayOutputStream combiner = new ByteArrayOutputStream();
 
         try {
             //wait for server
-            while (available == 0){
-                available = mInputStream.available();
-            }
+//            while (available == 0){
+//                available = mInputStream.available();
+//            }
 //                incomingMessage = mInBuffer.readLine();
 //                if (incomingMessage != null) {
 //                    Log.d(TAG, incomingMessage);
@@ -174,15 +177,31 @@ public class ServerUtils {
 //            if(byteRead != -1){
 //                byteArrayOutputStream.write(byteRead);
 
-            bytesRead = new byte[available];
-            numBytesRead = mInputStream.read(bytesRead);
+//            bytesRead = new byte[available];
+//            numBytesRead = mInputStream.read(bytesRead);
+//
+//            byte[] test = new byte[50];
+//            numBytesRead = mInputStream.read(test);
+//            Log.d(TAG, Arrays.toString(bytesRead));
+
+            do {
+                byte[] bytesToCombine = new byte[16384];
+                Log.d(TAG, "waiting on read");
+                numBytesRead = mInputStream.read(bytesToCombine);
+
+                if(numBytesRead > 0) {
+                    combiner.write(bytesToCombine, 0, numBytesRead);
+                }
+            }while(numBytesRead > 0);
+
+            bytesRead = combiner.toByteArray();
             Log.d(TAG, Arrays.toString(bytesRead));
         }catch (IOException e){
             e.printStackTrace();
         }
 
         if(messageType.equals(LoginController.BROADCAST_ACTION)) {
-            if (numBytesRead > 1) {
+            if (bytesRead.length > 1) {
                 cookie = bytesRead;
                 return LOGIN_ACCEPT;
             } else {
@@ -197,7 +216,21 @@ public class ServerUtils {
         } else if(messageType.equals(ResultsController.ACTION_VIEW_RESULTS)) {
             return new String(bytesRead, Charset.forName("UTF-8"));
         } else if(messageType.equals(ResultsController.ACTION_REQUEST_RESULT)){
-            return new String(bytesRead, Charset.forName("UTF-8"));
+            //find location of delimiter
+            int i = 0;
+            while(bytesRead[i] != "|".getBytes()[0]){
+                i++;
+            }
+
+            byte[] data = new byte[i-1];
+            byte[] imageBytes = new byte[bytesRead.length - i - 1];
+
+            System.arraycopy(bytesRead, 0, data, 0, data.length);
+            System.arraycopy(bytesRead, i+1, imageBytes, 0, imageBytes.length);
+
+            String fileName = MainActivity.imageToFile("result.png", imageBytes);
+
+            return new String(bytesRead, Charset.forName("UTF-8"))  + "\n" + fileName;
         }
 
         return FAILURE;
