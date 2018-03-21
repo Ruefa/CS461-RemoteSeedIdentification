@@ -122,7 +122,15 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
 
                 String[] resultArray = results.split("\\|");
                 ArrayList<String> resultList = new ArrayList<String>(Arrays.asList(resultArray));
-                mResultsRVAdapter.updateItems(resultList);
+                Log.d(TAG, "resultList size: " + resultList.size());
+                Log.d(TAG, "result: " + resultList.get(0));
+                if(resultList.size() > 0 && !resultList.get(0).equals("")) {
+                    mResultsRVAdapter.updateItems(resultList);
+                }else{
+                    ArrayList<String> emptyList = new ArrayList<>();
+                    emptyList.add("No results to display");
+                    mResultsRVAdapter.updateItems(emptyList);
+                }
             }else if(intent.getStringExtra(SocketService.ACTION_KEY).equals(ACTION_REQUEST_RESULT)){
                 Log.d(TAG, "result request received");
                 String results = intent.getStringExtra(SocketService.BROADCAST_KEY);
