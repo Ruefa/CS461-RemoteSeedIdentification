@@ -118,7 +118,7 @@ def handleConn(conn):
                 #TODO Add some error checking here
                 reportID, report = runAnalysis(data, user)
                 sendData(conn, report + b'|')
-                sendReportImg(user, reportID)
+                sendReportImg(conn, user, reportID)
             else:
                 conn.send(bytes([0])) # Invalid login
         elif msgType == 100: # Request list of reports for certain username
