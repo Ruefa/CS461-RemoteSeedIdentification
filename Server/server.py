@@ -1,7 +1,10 @@
 import socket, ssl
+import threading
+
 from connectionHandler import handleConn
 
-useSsl = True
+
+useSsl = False
 
 def serverInit(host, port):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -14,7 +17,9 @@ def serverLoop():
 
     while True:
         conn, addr = s.accept()
-        handleConn(conn)
+        t = threading.Thread(target = handleConn, args=(conn,), daemon=False)
+        t.start()
+        # handleConn(conn)
 
 def sslServerLoop():
     s = serverInit('', 5777)
@@ -25,9 +30,17 @@ def sslServerLoop():
     while True:
         conn, addr = s.accept()
         sslConn = context.wrap_socket(conn, server_side=True)
-        handleConn(sslConn)
+        t = threading.Thread(target = handleConn, args=(sslConn,), daemon=False)
+        t.start()
+        # handleConn(sslConn)
 
         
+def start():
+    if useSsl:
+        sslServerLoop()
+    else:
+        serverLoop()
+
 #def handleConn(conn):
 #    f = open('ReceivedImg.jpg', 'wb')
 #
@@ -41,8 +54,3 @@ def sslServerLoop():
 #    conn.send("Image Received\n".encode())
 #
 #    conn.close()
-
-if useSsl:
-    sslServerLoop()
-else:
-    serverLoop()

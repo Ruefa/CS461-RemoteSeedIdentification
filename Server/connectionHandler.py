@@ -1,12 +1,13 @@
 import sys
 import pathlib
 import socket
+import queue
 
 from pony import orm
 
 import db
-sys.path.append('/home/nvidia/RemoteSeed/CS461-RemoteSeedIdentification/Classifier')
-from sample_analysis import run_analysis
+
+jobQueue = queue.Queue()
 
 # Read the first 4 bytes from the connection to determine message size, then read
 # the entire message.
@@ -63,10 +64,8 @@ def runAnalysis(img, user):
 
     with open(str(path / 'sample.jpg'), 'wb') as f:
         f.write(img)
-
-    results = run_analysis('sample.jpg', str(path))
-
-    db.addReportResults(user, reportID, results)
+    
+    jobQueue.put(('sample.jpg', str(path), user, reportID))
     
     return reportID
     
@@ -134,7 +133,11 @@ def handleConn(conn):
             if user:
                 reportID = int.from_bytes(data, 'big')
                 report = getReport(user, data)
-                sendReport(conn, user, reportID, results)
+                print ('Report Contents:', report)
+                if (report):
+                    sendReport(conn, user, reportID, report)
+                else:
+                    conn.send(bytes([0]))
             else:
                 conn.send(bytes([0])) # Invalid login
         elif msgType == 122: # Logout
