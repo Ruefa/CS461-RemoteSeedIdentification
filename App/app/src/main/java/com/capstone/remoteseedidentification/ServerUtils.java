@@ -218,19 +218,26 @@ public class ServerUtils {
         } else if(messageType.equals(ResultsController.ACTION_REQUEST_RESULT)){
             //find location of delimiter
             int i = 0;
-            while(bytesRead[i] != "|".getBytes()[0]){
+            while(i < bytesRead.length && bytesRead[i] != "|".getBytes()[0]){
                 i++;
             }
 
-            byte[] data = new byte[i-1];
+            byte[] data = new byte[i];
             byte[] imageBytes = new byte[bytesRead.length - i - 1];
 
             System.arraycopy(bytesRead, 0, data, 0, data.length);
             System.arraycopy(bytesRead, i+1, imageBytes, 0, imageBytes.length);
 
+            Log.d(TAG, Arrays.toString(data));
+            String resultString = "";
+            for(int j=0; j < data.length; j++){
+                resultString += new String(new byte[]{data[j]}, Charset.forName("UTF-8"));
+            }
+            Log.d(TAG, Arrays.toString(imageBytes));
+
             String fileName = MainActivity.imageToFile("result.png", imageBytes);
 
-            return new String(bytesRead, Charset.forName("UTF-8"))  + "\n" + fileName;
+            return resultString + "\n" + fileName;
         }
 
         return FAILURE;
