@@ -142,9 +142,9 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
                 float prg = Float.valueOf(resultArray[0].split(":")[1])*100;
                 float tf = Float.valueOf(resultArray[1].split(":")[1])*100;
 
-//                byte[] imageBytes = MainActivity.fileToBytes(resultArray[2]);
-//                Bitmap thumbBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-//                mResultView.setImageBitmap(thumbBitmap);
+                byte[] imageBytes = MainActivity.fileToBytes(resultArray[2]);
+                Bitmap thumbBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                mResultView.setImageBitmap(thumbBitmap);
 
                 BarGraphSeries<DataPoint> series = new BarGraphSeries<>(new DataPoint[] {
                         new DataPoint(0, prg),
