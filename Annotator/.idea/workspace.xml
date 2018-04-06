@@ -14,13 +14,25 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="525">
-      <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="676">
-              <caret line="639" column="8" lean-forward="true" selection-start-line="639" selection-start-column="8" selection-end-line="654" selection-end-column="0" />
+            <state relative-caret-position="892">
+              <caret line="707" column="26" lean-forward="false" selection-start-line="683" selection-start-column="8" selection-end-line="707" selection-end-column="26" />
               <folding>
                 <element signature="e#1#21#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="fix.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/fix.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1350">
+              <caret line="113" column="0" lean-forward="false" selection-start-line="113" selection-start-column="0" selection-end-line="113" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#20#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -29,8 +41,8 @@
       <file leaf-file-name="train.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/train.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3189">
-              <caret line="162" column="17" lean-forward="true" selection-start-line="162" selection-start-column="17" selection-end-line="162" selection-end-column="17" />
+            <state relative-caret-position="3996">
+              <caret line="162" column="17" lean-forward="false" selection-start-line="162" selection-start-column="17" selection-end-line="162" selection-end-column="17" />
               <folding />
             </state>
           </provider>
@@ -68,11 +80,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="voc0712.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="voc0712.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/data/voc0712.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3456">
-              <caret line="136" column="41" lean-forward="false" selection-start-line="136" selection-start-column="41" selection-end-line="136" selection-end-column="41" />
+            <state relative-caret-position="786">
+              <caret line="138" column="43" lean-forward="false" selection-start-line="138" selection-start-column="43" selection-end-line="138" selection-end-column="43" />
               <folding />
             </state>
           </provider>
@@ -81,7 +93,7 @@
       <file leaf-file-name="testssd.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/testssd.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="894">
+            <state relative-caret-position="540">
               <caret line="34" column="0" lean-forward="false" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
@@ -101,26 +113,12 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>evaluate_de</find>
-      <find>pick_ra</find>
-      <find>partition_image</find>
-      <find>yoo</find>
-      <find>pth</find>
-      <find>.pth</find>
-      <find>canvas</find>
-      <find>delete_s</find>
-      <find>bboxes</find>
-      <find>build</find>
-      <find>generate</find>
-      <find>gen_</find>
       <find>write</find>
       <find>open</find>
       <find>partition_raw</find>
-      <find>delete_sam</find>
       <find>save</find>
       <find>save_annotation</find>
       <find>partit</find>
-      <find>load_sample</find>
       <find>load_ann</find>
       <find>discard</find>
       <find>filter</find>
@@ -131,6 +129,20 @@
       <find>delete</find>
       <find>delete_sample</find>
       <find>partition</find>
+      <find>next</find>
+      <find>load_sample</find>
+      <find>load_an</find>
+      <find>load_annotation</find>
+      <find>delete_sam</find>
+      <find>current_</find>
+      <find>current_sample =</find>
+      <find>write_bo</find>
+      <find>load_ima</find>
+      <find>imageset</find>
+      <find>pick_rand</find>
+      <find>raw_images</find>
+      <find>raw_images_path</find>
+      <find>base</find>
     </findStrings>
   </component>
   <component name="IdeDocumentHistory">
@@ -138,22 +150,23 @@
       <list>
         <option value="$PROJECT_DIR$/filename.xml" />
         <option value="$USER_HOME$/PycharmProjects/seedclassifier/datafactory.py" />
-        <option value="$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/data/voc0712.py" />
         <option value="$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/test.py" />
         <option value="$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/utils/augmentations.py" />
         <option value="$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/train.py" />
         <option value="$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/eval.py" />
         <option value="$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/testssd.py" />
-        <option value="$PROJECT_DIR$/main.py" />
         <option value="$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/sample_analysis.py" />
+        <option value="$PROJECT_DIR$/main.py" />
+        <option value="$PROJECT_DIR$/fix.py" />
+        <option value="$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/data/voc0712.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="603" />
-    <option name="y" value="388" />
-    <option name="width" value="1392" />
-    <option name="height" value="1108" />
+    <option name="x" value="185" />
+    <option name="y" value="-6" />
+    <option name="width" value="1390" />
+    <option name="height" value="1100" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -171,7 +184,6 @@
     </navigator>
     <panes>
       <pane id="Scratches" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -188,6 +200,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -291,7 +304,8 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="603" y="388" width="3744" height="2160" extended-state="6" />
+    <frame x="98" y="-6" width="3742" height="2166" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24986638" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -320,7 +334,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/main.py</url>
-          <line>648</line>
+          <line>649</line>
           <option name="timeStamp" value="11" />
         </line-breakpoint>
       </breakpoints>
@@ -329,6 +343,130 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#1#21#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3996">
+          <caret line="162" column="17" lean-forward="false" selection-start-line="162" selection-start-column="17" selection-end-line="162" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="324">
+          <caret line="25" column="0" lean-forward="false" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/utils/augmentations.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="10962">
+          <caret line="411" column="30" lean-forward="false" selection-start-line="411" selection-start-column="30" selection-end-line="411" selection-end-column="30" />
+          <folding>
+            <element signature="e#0#12#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/eval.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="459">
+          <caret line="36" column="68" lean-forward="false" selection-start-line="36" selection-start-column="68" selection-end-line="36" selection-end-column="72" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/data/voc0712.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3456">
+          <caret line="136" column="41" lean-forward="false" selection-start-line="136" selection-start-column="41" selection-end-line="136" selection-end-column="41" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/testssd.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="540">
+          <caret line="34" column="0" lean-forward="false" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#1#21#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/utils/augmentations.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="10962">
+          <caret line="411" column="30" lean-forward="false" selection-start-line="411" selection-start-column="30" selection-end-line="411" selection-end-column="30" />
+          <folding>
+            <element signature="e#0#12#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/train.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3996">
+          <caret line="162" column="17" lean-forward="true" selection-start-line="162" selection-start-column="17" selection-end-line="162" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="324">
+          <caret line="25" column="0" lean-forward="false" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/eval.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="459">
+          <caret line="36" column="68" lean-forward="false" selection-start-line="36" selection-start-column="68" selection-end-line="36" selection-end-column="72" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/data/voc0712.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3456">
+          <caret line="136" column="41" lean-forward="false" selection-start-line="136" selection-start-column="41" selection-end-line="136" selection-end-column="41" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/testssd.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="540">
+          <caret line="34" column="0" lean-forward="false" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="5616">
@@ -479,17 +617,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/data/voc0712.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3456">
-          <caret line="136" column="41" lean-forward="false" selection-start-line="136" selection-start-column="41" selection-end-line="136" selection-end-column="41" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/testssd.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="894">
+        <state relative-caret-position="540">
           <caret line="34" column="0" lean-forward="false" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
@@ -499,8 +629,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/train.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3189">
-          <caret line="162" column="17" lean-forward="true" selection-start-line="162" selection-start-column="17" selection-end-line="162" selection-end-column="17" />
+        <state relative-caret-position="3996">
+          <caret line="162" column="17" lean-forward="false" selection-start-line="162" selection-start-column="17" selection-end-line="162" selection-end-column="17" />
           <folding />
         </state>
       </provider>
@@ -509,19 +639,34 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="717">
           <caret line="166" column="38" lean-forward="true" selection-start-line="166" selection-start-column="38" selection-end-line="166" selection-end-column="38" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="676">
-          <caret line="639" column="8" lean-forward="true" selection-start-line="639" selection-start-column="8" selection-end-line="654" selection-end-column="0" />
+        <state relative-caret-position="892">
+          <caret line="707" column="26" lean-forward="false" selection-start-line="683" selection-start-column="8" selection-end-line="707" selection-end-column="26" />
           <folding>
             <element signature="e#1#21#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/fix.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1350">
+          <caret line="113" column="0" lean-forward="false" selection-start-line="113" selection-start-column="0" selection-end-line="113" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#20#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/data/voc0712.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="786">
+          <caret line="138" column="43" lean-forward="false" selection-start-line="138" selection-start-column="43" selection-end-line="138" selection-end-column="43" />
+          <folding />
         </state>
       </provider>
     </entry>

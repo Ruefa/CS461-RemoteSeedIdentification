@@ -81,7 +81,7 @@ def gen_slice_predictions(image_slice, net):
     scale = torch.Tensor([rgb_image.shape[1::-1], rgb_image.shape[1::-1]])
     for i in range(detections.size(1)):
         j = 0
-        while detections[0,i,j,0] >= 0.8:
+        while detections[0,i,j,0] >= 0.75:
 
             # Get the score of the prediction
             score = detections[0,i,j,0]
@@ -116,9 +116,16 @@ def analyze_sample(image, net, slice_shape):
             centroid_x = (prediction[2][0][1] + prediction[2][2])/2
             centroid_y = (prediction[2][0][0] + prediction[2][1])/2
 
-            if slice_shape[0] * 0.65 > centroid_x > slice_shape[0] * 0.35 and slice_shape[1] * 0.65 > centroid_y > slice_shape[1] * 0.35:
+            window_size = 0.75
+            max_bound = (window_size/2)+0.5
+            min_bound = 0.5-(window_size/2)
 
-                shifted_pred = [prediction[0],prediction[1], [(prediction[2][0][1]+im[1][0], prediction[2][0][0]+im[1][1]), prediction[2][2], prediction[2][1]]]
+            if slice_shape[0] * max_bound > centroid_x > slice_shape[0] * min_bound \
+                    and slice_shape[1] * max_bound > centroid_y > slice_shape[1] * min_bound:
+
+                shifted_pred = [prediction[0],prediction[1], [(prediction[2][0][1]+im[1][0],
+                                                               prediction[2][0][0]+im[1][1]),
+                                                              prediction[2][2], prediction[2][1]]]
 
                 predictions.append(shifted_pred)
 
@@ -152,8 +159,6 @@ def save_predicitons(image, predictions):
         species[str(species_names[id-1])] += 1
 
         # Get the label for the class
-        label_name = labels[id-1]
-        #display_txt = '%s: %.2f' % (label_name, score)
         color = colors[id]
 
         currentAxis.add_patch(plt.Rectangle(*coords, fill=False, edgecolor=color, linewidth=2))
@@ -221,8 +226,6 @@ def run_analysis(img, directory, weights='ssd300_0712_4000.pth'):
         species[str(species_names[id-1])] += 1
 
         # Get the label for the class
-        label_name = labels[id-1]
-        #display_txt = '%s: %.2f' % (label_name, score)
         color = colors[id]
 
         currentAxis.add_patch(plt.Rectangle(*coords, fill=False, edgecolor=color, linewidth=2))

@@ -47,7 +47,7 @@ class MainWindow(Frame):
     dataset_filenames = []
 
     # Index of the sample currently being annotated
-    current_sample = 0
+    current_sample = 5000
 
     def __init__(self):
         super().__init__()
@@ -594,7 +594,7 @@ class MainWindow(Frame):
         else:
             self.dataset_dir = dir
 
-        self.current_sample = 0
+        self.current_sample = 5000
 
         self.dataset_filenames = [x[2] for x in os.walk(self.dataset_dir + "/JPEGImages/")][0]
 
@@ -631,6 +631,7 @@ class MainWindow(Frame):
             for bbox in self.bounding_boxes:
                 self.canvas.delete(bbox[0][0])
 
+            self.save_annotation()
             self.current_sample -= 1
             self.bounding_boxes.clear()
             self.load_sample(self.dataset_dir + "/JPEGImages/"+self.dataset_filenames[self.current_sample])
