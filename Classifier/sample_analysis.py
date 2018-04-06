@@ -19,6 +19,8 @@ import math
 import argparse
 
 
+INCLUSION_WINDOW = 0.75
+
 parser = argparse.ArgumentParser(description='Seed sample analzyer')
 parser.add_argument('image', metavar='img', type=str, nargs='+',
                    help='path to the sample image')
@@ -116,9 +118,8 @@ def analyze_sample(image, net, slice_shape):
             centroid_x = (prediction[2][0][1] + prediction[2][2])/2
             centroid_y = (prediction[2][0][0] + prediction[2][1])/2
 
-            window_size = 0.75
-            max_bound = (window_size/2)+0.5
-            min_bound = 0.5-(window_size/2)
+            max_bound = (INCLUSION_WINDOW/2)+0.5
+            min_bound = 0.5-(INCLUSION_WINDOW/2)
 
             if slice_shape[0] * max_bound > centroid_x > slice_shape[0] * min_bound \
                     and slice_shape[1] * max_bound > centroid_y > slice_shape[1] * min_bound:

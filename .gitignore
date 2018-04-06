@@ -4,6 +4,7 @@ Classifier/weights
 Classifier/ssd300_120000
 Annotator/SeedDatasetVOC
 Annotator/raw_images
+Annotator/fix.py
 App/test_server/
 Data/
 Annotator/weights
