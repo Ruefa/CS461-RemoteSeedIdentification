@@ -65,7 +65,7 @@ if torch.cuda.is_available():
     torch.set_default_tensor_type('torch.cuda.FloatTensor')
 
 # The possible species that can be detected
-species_names = ['prg', 'tf']
+species_names = ['prg', 'tf', 'flax']
 
 # Chop up an sample image into smaller, overlapping windows
 def partition_image(image, shape):
@@ -226,7 +226,7 @@ def save_predicitons(image, predictions):
     rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
     plt.figure(figsize=(10, 10))
-    colors = plt.cm.hsv(np.linspace(0, 1, 3)).tolist()
+    colors = plt.cm.hsv(np.linspace(0, 1, len(species_names)+1)).tolist()
     plt.imshow(rgb_image)  # plot the image for matplotlib
     currentAxis = plt.gca()
 
@@ -293,7 +293,7 @@ def run_analysis(img, directory, weights='ssd300_0712_4000.pth'):
     rgb_image = cv2.cvtColor(sample, cv2.COLOR_BGR2RGB)
 
     plt.figure(figsize=(10, 10))
-    colors = plt.cm.hsv(np.linspace(0, 1, 3)).tolist()
+    colors = plt.cm.hsv(np.linspace(0, 1, len(species_names)+1)).tolist()
     plt.imshow(rgb_image)  # plot the image for matplotlib
     currentAxis = plt.gca()
 

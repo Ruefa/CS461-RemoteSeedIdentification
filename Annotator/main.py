@@ -594,7 +594,7 @@ class MainWindow(Frame):
         else:
             self.dataset_dir = dir
 
-        self.current_sample = 5000
+        self.current_sample = 0
 
         self.dataset_filenames = [x[2] for x in os.walk(self.dataset_dir + "/JPEGImages/")][0]
 

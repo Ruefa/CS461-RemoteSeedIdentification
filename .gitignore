@@ -3,6 +3,9 @@ Documents/Winter Progress Report/alex_draft/alex_winter_report.pdf
 Classifier/weights
 Classifier/ssd300_120000
 Annotator/SeedDatasetVOC
+Annotator/FlaxDatasetVOC
+Annotator/MultiDatasetVOC
+Annotator/TFDatasetVOC
 Annotator/raw_images
 Annotator/fix.py
 App/test_server/
