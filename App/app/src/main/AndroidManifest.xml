@@ -26,7 +26,8 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/LoginTheme"/>
         <activity
             android:name=".ResultsController"
             android:theme="@style/ResultsTheme"
@@ -37,13 +38,6 @@
             android:parentActivityName=".LoginController"/>
 
         <service android:name="SocketService"/>
-
-        <!--
-        <receiver android:name=".ServerUtils$MessageReceiver" android:exported="false">
-            <intent-filter>
-                <action android:name="socket.service.intent.action.SEND_MESSAGE"/>
-            </intent-filter>
-        </receiver> -->
     </application>
 
 </manifest>
