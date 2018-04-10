@@ -1,8 +1,10 @@
 package com.capstone.remoteseedidentification;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -10,8 +12,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.net.Uri;
-import android.nfc.Tag;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -25,9 +27,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -42,7 +42,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 
 public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapter.onNavDrawerItemClickListener {
@@ -50,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
     private final static String TAG = "MainActivity";
 
     final static int RESULT_LOAD_IMAGE = 1;
+    final static int RESULT_CAMERA_IMAGE = 2;
     final static int CAMERA_PERMISSION_REQUEST = 50;
 
     private Camera mCamera;
@@ -157,9 +157,8 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
     @Override
     public void onNavDrawerItemClick(String item) {
         if(item.equals(getString(R.string.nav_gallery))) {
-            getImageFromGallery();
-            mDrawerLayout.closeDrawers();
-            mDrawerToggle.syncState();
+            //getImageFromGallery();
+            analyzeAlertDialog();
         }
         else if(item.equals(getString(R.string.nav_results))){
             goResults();
@@ -398,5 +397,37 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         }
 
         return null;
+    }
+
+    public void analyzeAlertDialog() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AnalyzeDialogStyle);
+
+        builder.setTitle("Choose");
+        builder.setItems(R.array.analyze_items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case 0:
+                        startCameraIntent();
+                        break;
+
+                    case 1:
+                        getImageFromGallery();
+                        break;
+
+                    default:
+                        Log.d(TAG, "Unknown item clicked");
+                }
+            }
+        });
+
+        builder.show();
+    }
+
+    private void startCameraIntent(){
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if(intent.resolveActivity(getPackageManager()) != null){
+            startActivityForResult(intent, RESULT_CAMERA_IMAGE);
+        }
     }
 }
