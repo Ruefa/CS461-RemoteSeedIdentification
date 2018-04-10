@@ -82,9 +82,8 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         mBroadcastManager.registerReceiver(mBroadcastReceiver, intentFilter);
 
         mThumbView = findViewById(R.id.thumb_view);
-        mCaptureButton = findViewById(R.id.button_snap);
 
-        initCamera();
+        //initCamera();
 
         initNavigation();
 
@@ -109,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         switch (requestCode){
             case CAMERA_PERMISSION_REQUEST:
                 if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    initCamera();
+                    //initCamera();
                 }
                 break;
         }
@@ -134,8 +133,8 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
                     Log.d(TAG, "frameLayout onClick");
                 }
             });
-            FrameLayout frameLayout = findViewById(R.id.cam_view);
-            frameLayout.addView(mCameraView);
+            //FrameLayout frameLayout = findViewById(R.id.cam_view);
+            //frameLayout.addView(mCameraView);
         }
     }
 
@@ -145,17 +144,7 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         mNavData.add(getResources().getString(R.string.nav_gallery));
         mNavData.add(getResources().getString(R.string.nav_results));
 
-        mDrawerLayout = findViewById(R.id.drawer_layout);
-//        mDrawerView = findViewById(R.id.navigation_list_view);
-
-        //enable hamburger button for navigation drawer
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false); //hide title
-
-//        mDrawerView.setAdapter(new ArrayAdapter<>(this, R.layout.nav_text_view, mNavData));
-//
-//        mDrawerView.setOnItemClickListener(new DrawerItemClickListener());
 
         mNavRV = findViewById(R.id.nav_drawer_rv);
         mNavAdapter = new NavDrawerRVAdapter(this, this);
@@ -163,12 +152,6 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         mNavRV.setLayoutManager(new LinearLayoutManager(this));
         mNavRV.setHasFixedSize(true);
         mNavAdapter.updateItems(mNavData);
-
-
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                R.string.drawer_open, R.string.drawer_close);
-        mDrawerLayout.addDrawerListener(mDrawerToggle);
-        mDrawerToggle.syncState();
     }
 
     @Override
