@@ -49,6 +49,12 @@
         <item name="color">@color/dark_grey</item>
     </style>
 
+    <style name="AnalyzeDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textColorAlertDialogListItem">@color/white</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
     <color name="red">#FF0000</color>
     <color name="soft_green">#90C048</color>
     <color name="transparent">#00000000</color>
