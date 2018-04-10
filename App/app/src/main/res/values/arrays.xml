@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="analyze_items">
+        <item>@string/analyze_dialog_live</item>
+        <item>@string/analyze_dialog_gallery</item>
+    </string-array>
+</resources>
