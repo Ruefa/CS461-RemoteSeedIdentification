@@ -125,6 +125,7 @@ def partition_image(image, shape):
 #                                                                                                 #
 # ************************************************************************************************#
 
+
 def detect(img):
 
     # Blur to make segmenting easier
@@ -150,7 +151,9 @@ def detect(img):
 
     return False
 
+
 def gen_slice_predictions(image_slice, net):
+
     predictions = []
 
     rgb_image = cv2.cvtColor(image_slice, cv2.COLOR_BGR2RGB)
@@ -175,12 +178,14 @@ def gen_slice_predictions(image_slice, net):
     # scale each detection back up to the image
     scale = torch.Tensor([rgb_image.shape[1::-1], rgb_image.shape[1::-1]])
     for i in range(detections.size(1)):
+
         j = 0
+
         while detections[0, i, j, 0] >= DETECTION_THRESHOLD:
             # Get the score of the prediction
             score = detections[0, i, j, 0]
 
-            # Get the centroid of the bouding box
+            # Get the centroid of the bounding box
             pt = (detections[0, i, j, 1:] * scale).cpu().numpy()
 
             # Get the bounding box coordinates
@@ -194,6 +199,7 @@ def gen_slice_predictions(image_slice, net):
 
 
 def analyze_sample(image, net, slice_shape):
+
     predictions = []
 
     rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -314,12 +320,15 @@ def save_predicitons(image, predictions):
     currentAxis = plt.gca()
 
     species = {}
+    hex_colors = {}
     specie_counter = 0
 
     for specie in species_names:
         species[specie] = 0
 
     for specie in predictions:
+
+        name = str(species_names[specie_counter])
 
         if len(specie) > 0:
 
@@ -328,12 +337,19 @@ def save_predicitons(image, predictions):
                 coords = (prediction[0], prediction[1]), prediction[2]-prediction[0], prediction[3]-prediction[1]
 
                 # Add to specie counter
-                species[str(species_names[specie_counter])] += 1
+                species[name] += 1
 
                 # Get the label for the class
                 color = colors[specie_counter+1]
 
+                # Record the color
+                hex_colors[name] = matplotlib.colors.to_hex(color)
+
                 currentAxis.add_patch(plt.Rectangle(*coords, fill=False, edgecolor=color, linewidth=1))
+
+        else:
+
+            hex_colors[name] = matplotlib.colors.to_hex("#000000")
 
         specie_counter += 1
 
@@ -346,18 +362,21 @@ def save_predicitons(image, predictions):
     for specie in species:
         total_seeds += species[specie]
 
-    compositions = []
+    compositions = {}
 
-    for specie in species:
-        compositions.append(species[specie] / total_seeds)
+    if total_seeds != 0:
+        for specie in species:
+            compositions[specie] = species[specie] / total_seeds
+    else:
+        for specie in species:
+            compositions[specie] = 0.0
 
     file = open("statistics.dat", "w")
 
-    id = 0
-
-    for specie in compositions:
-        file.write(str(species_names[id]) + ":" + str(compositions[id]) + "\n")
-        id += 1
+    # Save each specie and its corresponding statistics and colors to a file
+    for specie in species:
+        file.write(specie + ":" + str(round(compositions[specie], 3)) + ","
+                   + str(round(total_seeds*compositions[specie])) + "," + str(hex_colors[specie]) + "\n")
 
     file.close()
 
@@ -365,7 +384,7 @@ def save_predicitons(image, predictions):
 def run_analysis(img, directory, weights='ssd300_0712_4000.pth'):
 
     # Load the weights
-    net = build_ssd('test', 300, 4)  # initialize SSD
+    net = build_ssd('test', 300, len(species_names)+1)  # initialize SSD
     net.load_weights(weights)
 
     # Load the image
@@ -382,6 +401,7 @@ def run_analysis(img, directory, weights='ssd300_0712_4000.pth'):
     currentAxis = plt.gca()
 
     species = {}
+    hex_colors = {}
     specie_counter = 0
 
     for specie in species_names:
@@ -389,18 +409,27 @@ def run_analysis(img, directory, weights='ssd300_0712_4000.pth'):
 
     for specie in predictions:
 
+        name = str(species_names[specie_counter])
+
         if len(specie) > 0:
 
             for prediction in specie[0]:
                 coords = (prediction[0], prediction[1]), prediction[2] - prediction[0], prediction[3] - prediction[1]
 
                 # Add to specie counter
-                species[str(species_names[specie_counter])] += 1
+                species[name] += 1
 
                 # Get the label for the class
                 color = colors[specie_counter + 1]
 
+                # Record the color
+                hex_colors[name] = matplotlib.colors.to_hex(color)
+
                 currentAxis.add_patch(plt.Rectangle(*coords, fill=False, edgecolor=color, linewidth=1))
+
+        else:
+
+            hex_colors[name] = matplotlib.colors.to_hex("#000000")
 
         specie_counter += 1
 
@@ -413,17 +442,21 @@ def run_analysis(img, directory, weights='ssd300_0712_4000.pth'):
     for specie in species:
         total_seeds += species[specie]
 
-    compositions = []
+    compositions = {}
 
-    for specie in species:
-        compositions.append(species[specie] / total_seeds)
-
-    id = 0
+    if total_seeds != 0:
+        for specie in species:
+            compositions[specie] = species[specie] / total_seeds
+    else:
+        for specie in species:
+            compositions[specie] = 0.0
 
     results = ''
-    for specie in compositions:
-        results += (str(species_names[id]) + ":" + str(compositions[id]) + "\n")
-        id += 1
+
+    # Save each specie and its corresponding statistics and colors to a file
+    for specie in species:
+        results += specie + ":" + str(round(compositions[specie], 3)) + "," \
+                    + str(round(total_seeds * compositions[specie])) + "," + str(hex_colors[specie]) + "\n"
 
     return results
 
@@ -437,7 +470,7 @@ if __name__ == '__main__':
     sample = cv2.imread(args.image[0], cv2.IMREAD_COLOR)
 
     # Load the weights
-    net = build_ssd('test', 300, 4)  # initialize SSD
+    net = build_ssd('test', 300, len(species_names)+1)  # initialize SSD
     net.load_weights(args.weights[0])
 
     # Generate the predictions
