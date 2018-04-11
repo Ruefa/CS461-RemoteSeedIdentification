@@ -315,9 +315,13 @@ def save_predicitons(image, predictions):
     rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
     plt.figure(figsize=(10, 10))
+    plt.axis('off')
     colors = plt.cm.hsv(np.linspace(0, 1, len(species_names)+1)).tolist()
     plt.imshow(rgb_image)  # plot the image for matplotlib
     currentAxis = plt.gca()
+
+    currentAxis.xaxis.set_major_locator(matplotlib.ticker.NullLocator())
+    currentAxis.yaxis.set_major_locator(matplotlib.ticker.NullLocator())
 
     species = {}
     hex_colors = {}
@@ -354,7 +358,7 @@ def save_predicitons(image, predictions):
         specie_counter += 1
 
     # Save the image
-    plt.savefig('result.png')
+    plt.savefig('result.png', bbox_inches='tight', pad_inches=0)
 
     total_seeds = 0
 
@@ -396,9 +400,13 @@ def run_analysis(img, directory, weights='ssd300_0712_4000.pth'):
     rgb_image = cv2.cvtColor(sample, cv2.COLOR_BGR2RGB)
 
     plt.figure(figsize=(10, 10))
+    plt.axis('off')
     colors = plt.cm.hsv(np.linspace(0, 1, len(species_names)+1)).tolist()
     plt.imshow(rgb_image)  # plot the image for matplotlib
     currentAxis = plt.gca()
+
+    currentAxis.xaxis.set_major_locator(matplotlib.ticker.NullLocator())
+    currentAxis.yaxis.set_major_locator(matplotlib.ticker.NullLocator())
 
     species = {}
     hex_colors = {}
@@ -434,7 +442,7 @@ def run_analysis(img, directory, weights='ssd300_0712_4000.pth'):
         specie_counter += 1
 
     # Save the image
-    plt.savefig(directory + '/result.png')
+    plt.savefig(directory + '/result.png', bbox_inches='tight', pad_inches=0)
 
     total_seeds = 0
 
@@ -453,7 +461,7 @@ def run_analysis(img, directory, weights='ssd300_0712_4000.pth'):
 
     results = ''
 
-    # Save each specie and its corresponding statistics and colors to a file
+    # Create the results string
     for specie in species:
         results += specie + ":" + str(round(compositions[specie], 3)) + "," \
                     + str(round(total_seeds * compositions[specie])) + "," + str(hex_colors[specie]) + "\n"

@@ -29,8 +29,8 @@
       <file leaf-file-name="sample_analysis.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/../Classifier/sample_analysis.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="344">
-              <caret line="451" column="38" lean-forward="true" selection-start-line="451" selection-start-column="38" selection-end-line="451" selection-end-column="38" />
+            <state relative-caret-position="1208">
+              <caret line="487" column="42" lean-forward="false" selection-start-line="487" selection-start-column="42" selection-end-line="487" selection-end-column="42" />
               <folding>
                 <element signature="e#2202#2211#0" expanded="true" />
               </folding>
@@ -51,8 +51,8 @@
       <file leaf-file-name="sample_analysis.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/sample_analysis.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="560">
-              <caret line="369" column="9" lean-forward="true" selection-start-line="369" selection-start-column="9" selection-end-line="369" selection-end-column="9" />
+            <state relative-caret-position="641">
+              <caret line="453" column="0" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="487" selection-end-column="42" />
               <folding>
                 <element signature="e#2202#2211#0" expanded="true" />
               </folding>
@@ -801,8 +801,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/sample_analysis.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="560">
-          <caret line="369" column="9" lean-forward="true" selection-start-line="369" selection-start-column="9" selection-end-line="369" selection-end-column="9" />
+        <state relative-caret-position="641">
+          <caret line="453" column="0" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="487" selection-end-column="42" />
           <folding>
             <element signature="e#2202#2211#0" expanded="true" />
           </folding>
@@ -811,8 +811,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/../Classifier/sample_analysis.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="344">
-          <caret line="451" column="38" lean-forward="true" selection-start-line="451" selection-start-column="38" selection-end-line="451" selection-end-column="38" />
+        <state relative-caret-position="1208">
+          <caret line="487" column="42" lean-forward="false" selection-start-line="487" selection-start-column="42" selection-end-line="487" selection-end-column="42" />
           <folding>
             <element signature="e#2202#2211#0" expanded="true" />
           </folding>
