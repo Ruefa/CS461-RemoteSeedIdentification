@@ -91,8 +91,10 @@ def partition_image(image, shape):
             end_x = start_x + shape[0]
             end_y = start_y + shape[1]
 
+            # Extract a slice from the image
             img = image[start_y:end_y, start_x:end_x, :]
 
+            # We only need to look within the inclusion window area for objects
             w_end_x = int(img.shape[1] * INCLUSION_WINDOW)
             w_end_y = int(img.shape[0] * INCLUSION_WINDOW)
             w_start_x = img.shape[1] - w_end_x
