@@ -51,7 +51,10 @@ INCLUSION_WINDOW = 0.75
 OVERLAP_THRESHOLD = 0.7
 
 # Edge-to-background ratio required to analyze a sample
-DETECTION_THRESHOLD = 0.03
+EDGE_THRESHOLD = 0.003
+
+# Confidence required to consider a detection valid
+DETECTION_THRESHOLD = 0.75
 
 # Create an argument parser for weights and image file
 parser = argparse.ArgumentParser(description='Seed sample analzyer')
@@ -79,9 +82,6 @@ def partition_image(image, shape):
     partitions_y = math.floor(image.shape[0] / shape[1]) * 3
 
     image_set = []
-
-    i = 0
-    j = 1
 
     for x in range(partitions_x):
         for y in range(partitions_y):
@@ -145,7 +145,7 @@ def detect(img):
     background_factor = np.sum(hist[128:256])
     f = edge_factor / background_factor
 
-    if f > DETECTION_THRESHOLD:
+    if f >= EDGE_THRESHOLD:
         return True
 
     return False
@@ -176,7 +176,7 @@ def gen_slice_predictions(image_slice, net):
     scale = torch.Tensor([rgb_image.shape[1::-1], rgb_image.shape[1::-1]])
     for i in range(detections.size(1)):
         j = 0
-        while detections[0, i, j, 0] >= 0.6:
+        while detections[0, i, j, 0] >= DETECTION_THRESHOLD:
             # Get the score of the prediction
             score = detections[0, i, j, 0]
 
@@ -429,6 +429,7 @@ def run_analysis(img, directory, weights='ssd300_0712_4000.pth'):
 
 
 if __name__ == '__main__':
+
     # Get the arguements
     args = parser.parse_args()
 
