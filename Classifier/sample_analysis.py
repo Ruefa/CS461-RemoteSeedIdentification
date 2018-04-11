@@ -1,4 +1,4 @@
-#*************************************************************************************************#
+# ************************************************************************************************#
 #                                                                                                 #
 #   File: sample_analysis.py                                                                      #
 #   Author: Ethan Takla                                                                           #
@@ -19,7 +19,7 @@
 #           statistics.dat  A text-based file containing the possible species and their           #
 #                           composition percentages                                               #
 #                                                                                                 #
-#*************************************************************************************************#
+# ************************************************************************************************#
 
 
 import os
@@ -35,7 +35,8 @@ import numpy as np
 from data import VOC_CLASSES as labels
 import cv2
 import matplotlib
-matplotlib.use('Agg') # Needed to run without a display
+
+matplotlib.use('Agg')  # Needed to run without a display
 from matplotlib import pyplot as plt
 from data import VOCDetection, VOCroot, AnnotationTransform
 from ssd import build_ssd
@@ -47,14 +48,17 @@ import argparse
 INCLUSION_WINDOW = 0.75
 
 # Amount of overlap required for BBox's to be considered bounding the same object
-OVERLAP_THRESHOLD = 0.8
+OVERLAP_THRESHOLD = 0.7
+
+# Edge-to-background ratio required to analyze a sample
+DETECTION_THRESHOLD = 0.03
 
 # Create an argument parser for weights and image file
 parser = argparse.ArgumentParser(description='Seed sample analzyer')
 parser.add_argument('image', metavar='img', type=str, nargs='+',
-                   help='path to the sample image')
+                    help='path to the sample image')
 parser.add_argument('weights', metavar='wts', type=str, nargs='+',
-                   help='path to the weights file')
+                    help='path to the weights file')
 
 module_path = os.path.abspath(os.path.join('..'))
 if module_path not in sys.path:
@@ -67,28 +71,84 @@ if torch.cuda.is_available():
 # The possible species that can be detected
 species_names = ['prg', 'tf', 'flax']
 
+
 # Chop up an sample image into smaller, overlapping windows
 def partition_image(image, shape):
-
     # Step half the shape dimension to avoid losing seeds on the edges
     partitions_x = math.floor(image.shape[1] / shape[0]) * 3
     partitions_y = math.floor(image.shape[0] / shape[1]) * 3
 
     image_set = []
 
+    i = 0
+    j = 1
+
     for x in range(partitions_x):
         for y in range(partitions_y):
+
             start_x = int(x * (shape[0] / 3))
             start_y = int(y * (shape[1] / 3))
             end_x = start_x + shape[0]
             end_y = start_y + shape[1]
 
-            image_set.append([image[start_y:end_y, start_x:end_x, :], [start_y, start_x]])
+            img = image[start_y:end_y, start_x:end_x, :]
+
+            w_end_x = int(img.shape[1] * INCLUSION_WINDOW)
+            w_end_y = int(img.shape[0] * INCLUSION_WINDOW)
+            w_start_x = img.shape[1] - w_end_x
+            w_start_y = img.shape[0] - w_end_y
+
+            window = img[w_start_y:w_end_y, w_start_x:w_end_x, :]
+
+            # Only analyze images with objects in them
+            if detect(window):
+                image_set.append([img, [start_y, start_x]])
 
     return image_set
 
-def gen_slice_predictions(image_slice, net):
+# ******************************************** detect ********************************************#
+#                                                                                                 #
+#   Author: Ethan Takla                                                                           #
+#   Last modified: 4/10/2018                                                                      #
+#   Description: This function determines if any object (s) exist in the image. First, simple     #
+#                edge detection is performed using a median blur and adaptive threshold, which    #
+#                produces a near-binary image. The histogram of this is computed, which allows    #
+#                once to extract the ratio between black (edge) and white (background) pixels.    #
+#                If the edge-to-background pixel ratio is above a certain threshold, there is     #
+#                most likely an object(s) present                                                 #
+#   Inputs:                                                                                       #
+#           img             Image to be analyzed                                                  #
+#   Returns:                                                                                      #
+#           bool            True if objects present, otherwise false                              #
+#                                                                                                 #
+# ************************************************************************************************#
 
+def detect(img):
+
+    # Blur to make segmenting easier
+    img = cv2.medianBlur(img, 11)
+
+    # Convert to greyscale
+    gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+
+    # Find edges of seeds by using an adaptive threshold
+    thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C,\
+            cv2.THRESH_BINARY,11,10)
+
+    # Find the histogram of the threshold image
+    hist = cv2.calcHist([thresh], [0], None, [256], [0, 256])
+
+    # Very simple measure of the presence of edges
+    edge_factor = np.sum(hist[0:127])
+    background_factor = np.sum(hist[128:256])
+    f = edge_factor / background_factor
+
+    if f > DETECTION_THRESHOLD:
+        return True
+
+    return False
+
+def gen_slice_predictions(image_slice, net):
     predictions = []
 
     rgb_image = cv2.cvtColor(image_slice, cv2.COLOR_BGR2RGB)
@@ -106,7 +166,7 @@ def gen_slice_predictions(image_slice, net):
 
     # Evaluate the net
     y = net(xx)
-    top_k=10
+    top_k = 10
 
     detections = y.data
 
@@ -114,26 +174,24 @@ def gen_slice_predictions(image_slice, net):
     scale = torch.Tensor([rgb_image.shape[1::-1], rgb_image.shape[1::-1]])
     for i in range(detections.size(1)):
         j = 0
-        while detections[0,i,j,0] >= 0.75:
-
+        while detections[0, i, j, 0] >= 0.6:
             # Get the score of the prediction
-            score = detections[0,i,j,0]
+            score = detections[0, i, j, 0]
 
             # Get the centroid of the bouding box
-            pt = (detections[0,i,j,1:]*scale).cpu().numpy()
+            pt = (detections[0, i, j, 1:] * scale).cpu().numpy()
 
             # Get the bounding box coordinates
-            coords = [(pt[0], pt[1]), pt[2]-pt[0]+1, pt[3]-pt[1]+1]
+            coords = [(pt[0], pt[1]), pt[2] - pt[0] + 1, pt[3] - pt[1] + 1]
 
-            predictions.append([score,i,coords])
+            predictions.append([score, i, coords])
 
-            j+=1
+            j += 1
 
     return predictions
 
 
 def analyze_sample(image, net, slice_shape):
-
     predictions = []
 
     rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -146,26 +204,48 @@ def analyze_sample(image, net, slice_shape):
 
         for prediction in raw_predictions:
 
-            centroid_x = (prediction[2][0][1] + prediction[2][2])/2
-            centroid_y = (prediction[2][0][0] + prediction[2][1])/2
+            centroid_x = (prediction[2][0][1] + prediction[2][2]) / 2
+            centroid_y = (prediction[2][0][0] + prediction[2][1]) / 2
 
-            max_bound = (INCLUSION_WINDOW/2)+0.5
-            min_bound = 0.5-(INCLUSION_WINDOW/2)
+            max_bound = (INCLUSION_WINDOW / 2) + 0.5
+            min_bound = 0.5 - (INCLUSION_WINDOW / 2)
 
             if slice_shape[0] * max_bound > centroid_x > slice_shape[0] * min_bound \
                     and slice_shape[1] * max_bound > centroid_y > slice_shape[1] * min_bound:
-
-                shifted_pred = [prediction[0],prediction[1], [(prediction[2][0][1]+im[1][0],
-                                                               prediction[2][0][0]+im[1][1]),
-                                                              prediction[2][2], prediction[2][1]]]
+                shifted_pred = [prediction[0], prediction[1], [(prediction[2][0][1] + im[1][0],
+                                                                prediction[2][0][0] + im[1][1]),
+                                                               prediction[2][2], prediction[2][1]]]
 
                 predictions.append(shifted_pred)
 
-    return predictions
+    # Contains predictions indexed by individual species
+    indexed_bboxes = [[] for x in range(0, len(species_names))]
+    indexed_scores = [[] for x in range(0, len(species_names))]
+    final_bboxes = [[] for x in range(0, len(species_names))]
+
+    # Index predictions by species
+    for prediction in predictions:
+
+        score = prediction[0]
+        coords = prediction[2][0][1], prediction[2][0][0], prediction[2][0][1] + prediction[2][2],\
+                 prediction[2][0][0] + prediction[2][1]
+
+        indexed_bboxes[prediction[1]-1].append(coords)
+        indexed_scores[prediction[1]-1].append(score)
+
+    for specie in range(0, len(species_names)):
+
+        if len(indexed_bboxes[specie]) > 0:
+
+                final_bboxes[specie].append(non_max_suppression_fast(np.asarray(indexed_bboxes[specie]),
+                                                                     np.asarray(indexed_scores[specie]),
+                                                                     OVERLAP_THRESHOLD))
+    return final_bboxes
 
 
 # Non-maximal supression from Adrian Rosebrock, based on Malisiewicz et al.
-def non_max_suppression_fast(boxes, overlapThresh):
+def non_max_suppression_fast(boxes, probs, overlapThresh):
+
     # if there are no boxes, return an empty list
     if len(boxes) == 0:
         return []
@@ -185,9 +265,9 @@ def non_max_suppression_fast(boxes, overlapThresh):
     y2 = boxes[:, 3]
 
     # compute the area of the bounding boxes and sort the bounding
-    # boxes by the bottom-right y-coordinate of the bounding box
+    # boxes by the prediction confidences
     area = (x2 - x1 + 1) * (y2 - y1 + 1)
-    idxs = np.argsort(y2)
+    idxs = np.argsort(probs)
 
     # keep looping while some indexes still remain in the indexes
     # list
@@ -221,6 +301,7 @@ def non_max_suppression_fast(boxes, overlapThresh):
     # integer data type
     return boxes[pick].astype("int")
 
+
 def save_predicitons(image, predictions):
 
     rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -231,28 +312,28 @@ def save_predicitons(image, predictions):
     currentAxis = plt.gca()
 
     species = {}
+    specie_counter = 0
 
     for specie in species_names:
         species[specie] = 0
 
-    for prediction in predictions:
+    for specie in predictions:
 
-        j = 0
+        if len(specie) > 0:
 
-        # Get the score for the class
-        score = prediction[0]
-        id = prediction[1]
-        coords = (prediction[2][0][1],prediction[2][0][0]),prediction[2][2],prediction[2][1]
+            for prediction in specie[0]:
 
-        # Add to specie counter
-        species[str(species_names[id-1])] += 1
+                coords = (prediction[0], prediction[1]), prediction[2]-prediction[0], prediction[3]-prediction[1]
 
-        # Get the label for the class
-        color = colors[id]
+                # Add to specie counter
+                species[str(species_names[specie_counter])] += 1
 
-        currentAxis.add_patch(plt.Rectangle(*coords, fill=False, edgecolor=color, linewidth=2))
-        #currentAxis.text(coords[0][0], coords[0][1], display_txt, bbox={'facecolor': color, 'alpha': 0.5})
-        j += 1
+                # Get the label for the class
+                color = colors[specie_counter+1]
+
+                currentAxis.add_patch(plt.Rectangle(*coords, fill=False, edgecolor=color, linewidth=1))
+
+        specie_counter += 1
 
     # Save the image
     plt.savefig('result.png')
@@ -266,21 +347,23 @@ def save_predicitons(image, predictions):
     compositions = []
 
     for specie in species:
-        compositions.append(species[specie]/total_seeds)
+        compositions.append(species[specie] / total_seeds)
 
     file = open("statistics.dat", "w")
 
     id = 0
 
     for specie in compositions:
-        file.write(str(species_names[id])+":"+str(compositions[id])+"\n")
+        file.write(str(species_names[id]) + ":" + str(compositions[id]) + "\n")
         id += 1
 
     file.close()
 
+
 def run_analysis(img, directory, weights='ssd300_0712_4000.pth'):
+
     # Load the weights
-    net = build_ssd('test', 300, 3)    # initialize SSD
+    net = build_ssd('test', 300, 4)  # initialize SSD
     net.load_weights(weights)
 
     # Load the image
@@ -288,7 +371,6 @@ def run_analysis(img, directory, weights='ssd300_0712_4000.pth'):
 
     # Generate predictions
     predictions = analyze_sample(sample, net, [300, 300])
-
 
     rgb_image = cv2.cvtColor(sample, cv2.COLOR_BGR2RGB)
 
@@ -298,28 +380,27 @@ def run_analysis(img, directory, weights='ssd300_0712_4000.pth'):
     currentAxis = plt.gca()
 
     species = {}
+    specie_counter = 0
 
     for specie in species_names:
         species[specie] = 0
 
-    for prediction in predictions:
+    for specie in predictions:
 
-        j = 0
+        if len(specie) > 0:
 
-        # Get the score for the class
-        score = prediction[0]
-        id = prediction[1]
-        coords = (prediction[2][0][1],prediction[2][0][0]),prediction[2][2],prediction[2][1]
+            for prediction in specie[0]:
+                coords = (prediction[0], prediction[1]), prediction[2] - prediction[0], prediction[3] - prediction[1]
 
-        # Add to specie counter
-        species[str(species_names[id-1])] += 1
+                # Add to specie counter
+                species[str(species_names[specie_counter])] += 1
 
-        # Get the label for the class
-        color = colors[id]
+                # Get the label for the class
+                color = colors[specie_counter + 1]
 
-        currentAxis.add_patch(plt.Rectangle(*coords, fill=False, edgecolor=color, linewidth=2))
-        #currentAxis.text(coords[0][0], coords[0][1], display_txt, bbox={'facecolor': color, 'alpha': 0.5})
-        j += 1
+                currentAxis.add_patch(plt.Rectangle(*coords, fill=False, edgecolor=color, linewidth=1))
+
+        specie_counter += 1
 
     # Save the image
     plt.savefig(directory + '/result.png')
@@ -333,19 +414,19 @@ def run_analysis(img, directory, weights='ssd300_0712_4000.pth'):
     compositions = []
 
     for specie in species:
-        compositions.append(species[specie]/total_seeds)
+        compositions.append(species[specie] / total_seeds)
 
     id = 0
 
     results = ''
     for specie in compositions:
-        results += (str(species_names[id])+":"+str(compositions[id])+"\n")
+        results += (str(species_names[id]) + ":" + str(compositions[id]) + "\n")
         id += 1
 
     return results
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     # Get the arguements
     args = parser.parse_args()
 
@@ -353,11 +434,11 @@ if __name__ == '__main__':
     sample = cv2.imread(args.image[0], cv2.IMREAD_COLOR)
 
     # Load the weights
-    net = build_ssd('test', 300, 3)    # initialize SSD
+    net = build_ssd('test', 300, 4)  # initialize SSD
     net.load_weights(args.weights[0])
 
     # Generate the predictions
-    predicitions = analyze_sample(sample, net, [300,300])
+    predicitions = analyze_sample(sample, net, [300, 300])
 
     # Save the predictions
     save_predicitons(sample, predicitions)
