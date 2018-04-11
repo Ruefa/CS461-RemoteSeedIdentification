@@ -16,6 +16,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -70,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
     //nav drawer recycler view
     private RecyclerView mNavRV;
     private NavDrawerRVAdapter mNavAdapter;
+
+    private String mCurrentImagePath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -251,20 +254,27 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         super.onActivityResult(reqCode, resultCode, data);
 
         if(resultCode == RESULT_OK){
-            try {
-                Uri imageUri = data.getData();
-                InputStream imageStream = getContentResolver().openInputStream(imageUri);
-                Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                mThumbView.setImageBitmap(selectedImage);
-                mCameraView.setVisibility(View.INVISIBLE);
-                //get image from gallery as a byte array for sending
-                mByteImage = getBytes(getContentResolver().openInputStream(imageUri));
-                mImagePath = imageToFile("tempImage.png", mByteImage);
+            if(reqCode == RESULT_LOAD_IMAGE) {
+                try {
+                    Uri imageUri = data.getData();
+                    InputStream imageStream = getContentResolver().openInputStream(imageUri);
+                    Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                    mThumbView.setImageBitmap(selectedImage);
+                    //mCameraView.setVisibility(View.INVISIBLE);
+                    //get image from gallery as a byte array for sending
+                    mByteImage = getBytes(getContentResolver().openInputStream(imageUri));
+                    mImagePath = imageToFile("tempImage.png", mByteImage);
+
+                    initConfirmation();
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            } else if(reqCode == RESULT_CAMERA_IMAGE){
+                Bitmap image = BitmapFactory.decodeFile(mCurrentImagePath);
+                mThumbView.setImageBitmap(image);
 
                 initConfirmation();
-        }
-            catch (FileNotFoundException e){
-                e.printStackTrace();
             }
         }
     }
@@ -295,7 +305,8 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
 
         acc.setVisibility(View.VISIBLE);
         deny.setVisibility(View.VISIBLE);
-        mCaptureButton.setVisibility(View.INVISIBLE);
+        //mCaptureButton.setVisibility(View.INVISIBLE);
+        mThumbView.setVisibility(View.VISIBLE);
     }
 
     public void doImageConf(View v){
@@ -426,8 +437,30 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
 
     private void startCameraIntent(){
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
         if(intent.resolveActivity(getPackageManager()) != null){
+            File photoFile = createImageFile("tempSeedImage");
+            if(photoFile != null) {
+                Uri photoUri = FileProvider.getUriForFile(this,
+                        "com.example.android.fileprovider",
+                        photoFile);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+            }
             startActivityForResult(intent, RESULT_CAMERA_IMAGE);
         }
+    }
+
+    private File createImageFile(String fileName) {
+        File image = null;
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
+        try {
+            image = File.createTempFile(fileName, ".png", storageDir);
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+        mCurrentImagePath = image.getAbsolutePath();
+        return image;
     }
 }
