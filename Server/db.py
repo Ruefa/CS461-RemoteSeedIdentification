@@ -1,6 +1,8 @@
 import os
+import string
 
 from passHash import hashPassword, checkPassword
+from randomPass import makePassword
 from pony.orm import *
 
 db = Database()
@@ -57,6 +59,21 @@ def logout(username):
         account.sessionToken = None
 
 @db_session
+def changePassword(username, newPass):
+    account = Account.get(username=username)
+    if account
+        account.password = hashPassword(newPass)
+
+@db_session
+def newPassword(username):
+    account = Account.get(username=username)
+    if account:
+        newPass = makePassword
+        account.password = hashPassword(newPass)
+        return newPass
+    return None
+
+@db_session
 def newReport(username):
     r = Report(owner=Account[username])
     commit()
@@ -71,8 +88,30 @@ def addReportResults(username, reportId, results):
 def getReportList(username):
     return select(x.id for x in Report if x.owner == Account[username])[:]
 
+#TODO remove username as parameter
 @db_session
 def getReport(username, report):
     #TODO Use get or something here, this is bad
     return select(x.results for x in Report if x.owner == Account[username] and x.id == report)[:]
+
+@db_session
+def deleteReport(reportID):
+    r = Report.get(id=reportID)
+    if r:
+        r.delete()
+        return True
+    return False
+
+@db_session
+def deleteAllReports(username):
+    delete(r for r in Report if r.owner == username)
+
+@db_session
+def deleteAccount(username):
+    acct = Account.get(id=reportID)
+    if acct:
+        acct.delete()
+        return True
+    return False
+
 
