@@ -38,13 +38,13 @@ def sendMsg(conn, msg):
 # Makes a new login
 # Returns True on success, else False
 def newAccount(credentials):
-    username, password = credentials.split(b'@')
+    username, password = credentials.split(b':')
     return db.newAccount(username, password)
 
-# Takes credentials in the format username@password.
+# Takes credentials in the format username:password.
 # Returns a login session token if credentials are valid, otherwise None
 def login(credentials):
-    username, password = credentials.split(b'@')
+    username, password = credentials.split(b':')
     return db.login(username, password)
 
 # Returns the username of the logged in user, or None if invalid token or username
@@ -76,6 +76,9 @@ def getReportList(user):
 # Get the report stored in the data base with id 'report' under username 'user'
 def getReport(user, report):
     return db.getReport(user, int.from_bytes(report, 'big'))[0]
+
+def deleteReport(user, reportID):
+    return db.deleteReport(user, reportID)
 
 def sendReport(conn, user, reportID, results, img='result.png'):
     path = pathlib.Path('/home/nvidia/RemoteSeed/DB/users/{}/{}/{}'.format(user.decode(), reportID, img))
@@ -139,6 +142,8 @@ def handleConn(conn):
                     sendMsg(conn, bytes([0]))
             else:
                 sendMsg(conn, bytes([0])) # Invalid login
+        elif msgType = 102: # Delete a report
+
         elif msgType == 122: # Logout
             db.logout(checkAuth(msg))
 
