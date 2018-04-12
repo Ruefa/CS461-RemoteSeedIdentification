@@ -31,10 +31,9 @@ def readMsg(conn, chunkSize = 4096):
 
     return buf
 
-# Sends a bytes object over the connection
-def sendData(conn, data):
-    #TODO May be more robust to use send in a loop? Investigate further
-    conn.sendall(data)
+def sendMsg(conn, msg):
+    msg = len(msg).to_bytes(4, byteorder='big') + msg
+    conn.sendall(msg)
 
 # Makes a new login
 # Returns True on success, else False
@@ -88,7 +87,7 @@ def sendReport(conn, user, reportID, results, img='result.png'):
     with open(str(path), 'rb') as f:
         buf += f.read()
         
-    sendData(conn, buf)
+    sendMsg(conn, buf)
 
 
 def handleConn(conn):
@@ -101,32 +100,32 @@ def handleConn(conn):
         # and I can't think of meaningful single character codes for every action
         if msgType == 97: # Make Login
             if newAccount(msg):
-                conn.send(bytes([1])) # Valid login
+                sendMsg(conn, bytes([1])) # Valid login
             else:
-                conn.send(bytes([0])) # Invalid login
+                sendMsg(conn, bytes([0])) # Invalid login
         elif msgType == 98: # Login Info
             auth = login(msg)
             if auth:
-                conn.send(auth) # Valid login
+                sendMsg(conn, auth) # Valid login
             else:
-                conn.send(bytes([0])) # Invalid login
+                sendMsg(conn, bytes([0])) # Invalid login
         elif msgType == 99: # Request new analysis
             auth, data = msg.split(b'|', maxsplit=1)
             user = checkAuth(auth)
             if user:
                 #TODO Add some error checking here
                 reportID = runAnalysis(data, user)
-                sendData(conn, str(reportID).encode())
+                sendMsg(conn, str(reportID).encode())
             else:
-                conn.send(bytes([0])) # Invalid login
+                sendMsg(conn, bytes([0])) # Invalid login
         elif msgType == 100: # Request list of reports for certain username
             user = checkAuth(msg)
             if user:
                 #TODO send report ids instead of results?
                 data = '|'.join([str(x) for x in getReportList(user)])
-                sendData(conn, data.encode())
+                sendMsg(conn, data.encode())
             else:
-                conn.send(bytes([0])) # Invalid login
+                sendMsg(conn, bytes([0])) # Invalid login
         elif msgType == 101: # Request a specific report
             auth, data = msg.split(b'|', maxsplit=1)
             user = checkAuth(auth)
@@ -137,9 +136,9 @@ def handleConn(conn):
                 if (report):
                     sendReport(conn, user, reportID, report)
                 else:
-                    conn.send(bytes([0]))
+                    sendMsg(conn, bytes([0]))
             else:
-                conn.send(bytes([0])) # Invalid login
+                sendMsg(conn, bytes([0])) # Invalid login
         elif msgType == 122: # Logout
             db.logout(checkAuth(msg))
 
