@@ -14,7 +14,7 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="525">
-      <file leaf-file-name="sample_analysis.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="sample_analysis.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/../Classifier/sample_analysis.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="1866">
@@ -36,11 +36,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="sample_analysis.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="sample_analysis.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/sample_analysis.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="262">
-              <caret line="19" column="99" lean-forward="true" selection-start-line="19" selection-start-column="99" selection-end-line="19" selection-end-column="99" />
+              <caret line="68" column="32" lean-forward="true" selection-start-line="68" selection-start-column="32" selection-end-line="68" selection-end-column="32" />
               <folding>
                 <element signature="e#2202#2211#0" expanded="true" />
               </folding>
@@ -51,7 +51,7 @@
       <file leaf-file-name="augmentations.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/utils/augmentations.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="7263">
+            <state relative-caret-position="8316">
               <caret line="313" column="24" lean-forward="false" selection-start-line="313" selection-start-column="24" selection-end-line="313" selection-end-column="24" />
               <folding />
             </state>
@@ -61,7 +61,7 @@
       <file leaf-file-name="train.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/train.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1647">
+            <state relative-caret-position="1890">
               <caret line="84" column="20" lean-forward="false" selection-start-line="84" selection-start-column="20" selection-end-line="84" selection-end-column="20" />
               <folding />
             </state>
@@ -71,7 +71,7 @@
       <file leaf-file-name="ssd.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/ssd.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2187">
+            <state relative-caret-position="5103">
               <caret line="195" column="44" lean-forward="false" selection-start-line="195" selection-start-column="44" selection-end-line="195" selection-end-column="44" />
               <folding>
                 <element signature="e#0#12#0" expanded="true" />
@@ -83,7 +83,7 @@
       <file leaf-file-name="detection.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/layers/functions/detection.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-159">
+            <state relative-caret-position="0">
               <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding>
                 <element signature="e#0#12#0" expanded="true" />
@@ -96,7 +96,7 @@
         <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/data/config.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="891">
-              <caret line="33" column="62" lean-forward="true" selection-start-line="33" selection-start-column="62" selection-end-line="33" selection-end-column="62" />
+              <caret line="33" column="62" lean-forward="false" selection-start-line="33" selection-start-column="62" selection-end-line="33" selection-end-column="62" />
               <folding />
             </state>
           </provider>
@@ -105,7 +105,7 @@
       <file leaf-file-name="prior_box.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/layers/functions/prior_box.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="945">
+            <state relative-caret-position="864">
               <caret line="35" column="32" lean-forward="false" selection-start-line="35" selection-start-column="32" selection-end-line="35" selection-end-column="32" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
@@ -210,7 +210,6 @@
     </navigator>
     <panes>
       <pane id="Scratches" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -227,6 +226,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -423,9 +423,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="540">
           <caret line="34" column="0" lean-forward="false" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#9#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -489,9 +486,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="540">
           <caret line="34" column="0" lean-forward="false" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#9#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -547,9 +541,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="540">
           <caret line="34" column="0" lean-forward="false" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#9#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -597,9 +588,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="540">
           <caret line="34" column="0" lean-forward="false" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#9#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -663,9 +651,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="540">
           <caret line="34" column="0" lean-forward="false" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#9#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -687,9 +672,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="540">
           <caret line="34" column="0" lean-forward="false" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#9#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -708,9 +690,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="162">
           <caret line="30" column="0" lean-forward="false" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#20#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -724,7 +703,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/train.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1647">
+        <state relative-caret-position="1890">
           <caret line="84" column="20" lean-forward="false" selection-start-line="84" selection-start-column="20" selection-end-line="84" selection-end-column="20" />
           <folding />
         </state>
@@ -732,7 +711,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/utils/augmentations.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="7263">
+        <state relative-caret-position="8316">
           <caret line="313" column="24" lean-forward="false" selection-start-line="313" selection-start-column="24" selection-end-line="313" selection-end-column="24" />
           <folding />
         </state>
@@ -748,7 +727,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/ssd.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2187">
+        <state relative-caret-position="5103">
           <caret line="195" column="44" lean-forward="false" selection-start-line="195" selection-start-column="44" selection-end-line="195" selection-end-column="44" />
           <folding>
             <element signature="e#0#12#0" expanded="true" />
@@ -758,7 +737,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/layers/functions/prior_box.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="945">
+        <state relative-caret-position="864">
           <caret line="35" column="32" lean-forward="false" selection-start-line="35" selection-start-column="32" selection-end-line="35" selection-end-column="32" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
@@ -770,13 +749,12 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/layers/functions/detection.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-159">
+        <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#0#12#0" expanded="true" />
@@ -787,8 +765,18 @@
     <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/data/config.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="891">
-          <caret line="33" column="62" lean-forward="true" selection-start-line="33" selection-start-column="62" selection-end-line="33" selection-end-column="62" />
+          <caret line="33" column="62" lean-forward="false" selection-start-line="33" selection-start-column="62" selection-end-line="33" selection-end-column="62" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/sample_analysis.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="262">
+          <caret line="68" column="32" lean-forward="true" selection-start-line="68" selection-start-column="32" selection-end-line="68" selection-end-column="32" />
+          <folding>
+            <element signature="e#2202#2211#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -796,16 +784,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1866">
           <caret line="488" column="42" lean-forward="false" selection-start-line="488" selection-start-column="42" selection-end-line="488" selection-end-column="42" />
-          <folding>
-            <element signature="e#2202#2211#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../../../deeplearning/ssd/pytorch/ssd.pytorch/sample_analysis.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="262">
-          <caret line="19" column="99" lean-forward="true" selection-start-line="19" selection-start-column="99" selection-end-line="19" selection-end-column="99" />
           <folding>
             <element signature="e#2202#2211#0" expanded="true" />
           </folding>

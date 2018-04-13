@@ -55,7 +55,7 @@ OVERLAP_THRESHOLD = [0.75, 0.75, 0.75, 0.55]
 EDGE_THRESHOLD = 0.003
 
 # Confidence required to consider a detection valid
-DETECTION_THRESHOLD = 0.85
+DETECTION_THRESHOLD = 0.8
 
 # Create an argument parser for weights and image file
 parser = argparse.ArgumentParser(description='Seed sample analzyer')
@@ -104,7 +104,7 @@ def partition_image(image, shape):
             window = img[w_start_y:w_end_y, w_start_x:w_end_x, :]
 
             # Only analyze images with objects in them
-            if detect(window):
+            if detect(window) and np.shape(img) == (300, 300, 3):
                 image_set.append([img, [start_y, start_x]])
 
     return image_set
