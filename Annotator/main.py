@@ -670,9 +670,9 @@ class MainWindow(Frame):
         filenames = [raw_images_dir + x for x in filenames]
 
         # Determine the size of each of the three sets
-        num_train_elements = math.floor(len(filenames) * float(self.train_size.get()))
-        num_test_elements = math.floor(len(filenames) * float(self.test_size.get()))
-        num_val_elements = math.floor(len(filenames) * float(self.val_size.get()))
+        num_train_elements = int(float(len(filenames) * float(self.train_size.get())))
+        num_test_elements = int(float(len(filenames) * float(self.test_size.get())))
+        num_val_elements = int(float(len(filenames) * float(self.val_size.get())))
 
         # Randomly pick elements of the master set for each sub set
         self.pick_random_elements(filenames, train_images, num_train_elements)

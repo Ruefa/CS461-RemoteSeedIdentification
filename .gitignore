@@ -6,6 +6,7 @@ Annotator/SeedDatasetVOC
 Annotator/FlaxDatasetVOC
 Annotator/MultiDatasetVOC
 Annotator/TFDatasetVOC
+Annotator/WheatDatasetVOC
 Annotator/raw_images
 Annotator/fix.py
 App/test_server/

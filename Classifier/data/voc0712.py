@@ -21,7 +21,7 @@ else:
     import xml.etree.ElementTree as ET
 
 VOC_CLASSES = (  # always index 0
-    'prg','tf', 'flax')
+    'prg','tf', 'flax', 'wheat')
 
 # for making bounding boxes pretty
 COLORS = ((255, 0, 0, 128), (0, 255, 0, 128), (0, 0, 255, 128),

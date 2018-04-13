@@ -45,16 +45,17 @@ import argparse
 
 # Size of center-based inclusion square. BBox's are included if their centroids fit in this square. This is used
 # mainly to eliminate seed detections that touch the edges of the slices
-INCLUSION_WINDOW = 0.75
+INCLUSION_WINDOW = 0.6
 
 # Amount of overlap required for BBox's to be considered bounding the same object
-OVERLAP_THRESHOLD = 0.7
+# For extremely large seeds, a lower threshold is needed
+OVERLAP_THRESHOLD = [0.75, 0.75, 0.75, 0.55]
 
 # Edge-to-background ratio required to analyze a sample
 EDGE_THRESHOLD = 0.003
 
 # Confidence required to consider a detection valid
-DETECTION_THRESHOLD = 0.75
+DETECTION_THRESHOLD = 0.85
 
 # Create an argument parser for weights and image file
 parser = argparse.ArgumentParser(description='Seed sample analzyer')
@@ -72,7 +73,7 @@ if torch.cuda.is_available():
     torch.set_default_tensor_type('torch.cuda.FloatTensor')
 
 # The possible species that can be detected
-species_names = ['prg', 'tf', 'flax']
+species_names = ['prg', 'tf', 'flax', 'wheat']
 
 
 # Chop up an sample image into smaller, overlapping windows
@@ -247,7 +248,7 @@ def analyze_sample(image, net, slice_shape):
 
                 final_bboxes[specie].append(non_max_suppression_fast(np.asarray(indexed_bboxes[specie]),
                                                                      np.asarray(indexed_scores[specie]),
-                                                                     OVERLAP_THRESHOLD))
+                                                                     OVERLAP_THRESHOLD[specie]))
     return final_bboxes
 
 
