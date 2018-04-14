@@ -45,17 +45,20 @@ import argparse
 
 # Size of center-based inclusion square. BBox's are included if their centroids fit in this square. This is used
 # mainly to eliminate seed detections that touch the edges of the slices
-INCLUSION_WINDOW = 0.6
+INCLUSION_WINDOW = 0.7
 
 # Amount of overlap required for BBox's to be considered bounding the same object
 # For extremely large seeds, a lower threshold is needed
-OVERLAP_THRESHOLD = [0.75, 0.75, 0.75, 0.55]
+OVERLAP_THRESHOLD = [0.75, 0.75, 0.75, 0.55, 0.6]
 
 # Edge-to-background ratio required to analyze a sample
 EDGE_THRESHOLD = 0.003
 
 # Confidence required to consider a detection valid
 DETECTION_THRESHOLD = 0.8
+
+# DPI of the result image
+RESULT_DPI = 200
 
 # Create an argument parser for weights and image file
 parser = argparse.ArgumentParser(description='Seed sample analzyer')
@@ -73,7 +76,7 @@ if torch.cuda.is_available():
     torch.set_default_tensor_type('torch.cuda.FloatTensor')
 
 # The possible species that can be detected
-species_names = ['prg', 'tf', 'flax', 'wheat']
+species_names = ['prg', 'tf', 'flax', 'wheat', 'rc']
 
 
 # Chop up an sample image into smaller, overlapping windows
@@ -359,7 +362,7 @@ def save_predicitons(image, predictions):
         specie_counter += 1
 
     # Save the image
-    plt.savefig('result.png', bbox_inches='tight', pad_inches=0)
+    plt.savefig('result.png', bbox_inches='tight', pad_inches=0, dpi=RESULT_DPI)
 
     total_seeds = 0
 
@@ -443,7 +446,7 @@ def run_analysis(img, directory, weights='ssd300_0712_4000.pth'):
         specie_counter += 1
 
     # Save the image
-    plt.savefig(directory + '/result.png', bbox_inches='tight', pad_inches=0)
+    plt.savefig(directory + '/result.png', bbox_inches='tight', pad_inches=0, dpi=RESULT_DPI)
 
     total_seeds = 0
 
