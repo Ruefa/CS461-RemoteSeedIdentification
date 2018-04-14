@@ -35,11 +35,14 @@ def newAccount(username, password):
     return True
 
 @db_session
-def login(username, password):
+def login(username, password, newToken = True):
     account = Account.get(username=username)
     if account and checkPassword(password, account.password): # Username and Password are correct
-        token = os.urandom(tokenLen)
-        account.sessionToken = token
+        if newToken:
+            token = os.urandom(tokenLen)
+            account.sessionToken = token
+        else:
+            token = account.sessionToken
         return username + token
     return None
 
@@ -61,7 +64,7 @@ def logout(username):
 @db_session
 def changePassword(username, newPass):
     account = Account.get(username=username)
-    if account
+    if account:
         account.password = hashPassword(newPass)
 
 @db_session

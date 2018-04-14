@@ -1,4 +1,5 @@
 import socket, ssl
+import time
 import sys
 
 # These are not extensive unit tests, just preliminary testing
@@ -13,135 +14,114 @@ context = ssl.create_default_context(cafile='cert.pem')
 
 
 token = b''
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+if useSsl:
+    s = context.wrap_socket(s, server_hostname='73.11.102.15')
+
+def connect():
+    s.connect((address, port))
+
+def disconnect():
+    s.close()
+
+# Read the first 4 bytes from the connection to determine message size, then read
+# the entire message.
+def readMsg(conn, chunkSize = 4096):
+    # Read the message length first
+    sizeBytes = conn.recv(4)
+    if not sizeBytes: # Connection closed
+        return None
+
+    while len(sizeBytes) < 4:
+        sizeBytes += conn.recv(4 - len(sizeBytes))
+
+    remaining = int.from_bytes(sizeBytes, byteorder='big')
+    buf = bytearray()
+
+    # Get data from the connection until the entire message is read
+    while remaining:
+        chunk = conn.recv(min(chunkSize, remaining))
+        remaining -= len(chunk)
+        buf += chunk
+
+    return buf
+
+def sendMsg(conn, msg):
+    msg = len(msg).to_bytes(4, byteorder='big') + msg
+    conn.sendall(msg)
 
 def testMakeAccount(username, password):
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        if useSsl:
-            s = context.wrap_socket(s, server_hostname='73.11.102.15')
-        s.connect((address, port))
-        
-        msg = b'a' + username + b'@' + password
-        msg = len(msg).to_bytes(4, byteorder='big') + msg
+    msg = b'a' + username + b':' + password
+    print('Message:', msg)
+    sendMsg(s, msg)
 
-        s.sendall(msg)
-
-        print('Make Account Result:', s.recv(1024).hex())
-    except (ConnectionRefusedError, socket.gaierror):
-        print ('Connection failed')
-    finally:
-        s.close()
+    print('Result:', readMsg(s).hex())
 
 def testLogin(username, password):
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        if useSsl:
-            s = context.wrap_socket(s, server_hostname='73.11.102.15')
-        s.connect((address, port))
-        
-        msg = b'b' + username + b'@' + password
-        msg = len(msg).to_bytes(4, byteorder='big') + msg
-        
-        s.sendall(msg)
+    msg = b'b' + username + b':' + password
+    print('Message:', msg)
+    sendMsg(s, msg)
 
-        global token
-        token = s.recv(1024)
+    token = readMsg(s)
 
-        print('Login Result:', token.hex())
-    except (ConnectionRefusedError, socket.gaierror):
-        print ('Connection failed')
-    finally:
-        s.close()
+    print('Result:', token.hex())
 
-def testRunAnalysis(username, path, t=token):
+def testRunAnalysis(username, path):
     f = open(path, 'rb')
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        if useSsl:
-            s = context.wrap_socket(s, server_hostname='73.11.102.15')
-        s.connect((address, port))
-
-        msg = b'c' + t + b'|'
-        
+    msg = b'c'
+    
+    buf = f.read(4096)
+    while buf:
+        msg += buf
         buf = f.read(4096)
-        while buf:
-            msg += buf
-            buf = f.read(4096)
+    f.close()
 
-        msg = len(msg).to_bytes(4, byteorder='big') + msg
+    sendMsg(s, msg) 
 
-        s.sendall(msg)
+    results = readMsg(s)
+    
+    print('Results:', results.decode())
 
-        print('Run Analysis Results:', s.recv(1024).decode())
-    except (ConnectionRefusedError, socket.gaierror):
-        print ('Connection failed')
-    finally:
-        s.close()
+def testGetReportList(username):
+    msg = b'd'
+    print('Message:', msg)
+    sendMsg(s, msg)
 
-def testGetReportList(username, t=token):
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        if useSsl:
-            s = context.wrap_socket(s, server_hostname='73.11.102.15')
-        s.connect((address, port))
-        
-        msg = b'd' + t
-        msg = len(msg).to_bytes(4, byteorder='big') + msg
-        
-        s.sendall(msg)
+    print('Results:', readMsg(s))
 
-        print('Get Report List Results:', s.recv(1024).decode())
-    except (ConnectionRefusedError, socket.gaierror):
-        print ('Connection failed')
-    finally:
-        s.close()
+def testGetReport(username, reportID):
+    msg = b'e' + str(reportID).encode()
+    print('Message:', msg)
+    sendMsg(s, msg)
 
-def testGetReport(username, reportID, t=token):
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        if useSsl:
-            s = context.wrap_socket(s, server_hostname='73.11.102.15')
-        s.connect((address, port))
-        
-        msg = b'e' + t + b'|' + reportID.to_bytes(4, 'big')
-        msg = len(msg).to_bytes(4, byteorder='big') + msg
+    response = readMsg(s)
+    if len(response) > 2:
+        results, img = response.split(b'|', maxsplit=1);
+        f = open('results.png', 'wb')
+        f.write(img)
+        print('Results:', results.decode())
+    else:
+        print('Results', response.hex())
 
-        s.sendall(msg)
+def testLogout(username):
+    msg = b'z'
+    print('Message:', msg)
+    sendMsg(s, msg)
 
-        print('Get Report Results:', s.recv(1024).decode())
-    except (ConnectionRefusedError, socket.gaierror):
-        print ('Connection failed')
-    finally:
-        s.close()
-
-def testLogout(username, t=token):
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        if useSsl:
-            s = context.wrap_socket(s, server_hostname='73.11.102.15')
-        s.connect((address, port))
-        
-        msg = b'z' + t
-        msg = len(msg).to_bytes(4, byteorder='big') + msg
-        
-        s.sendall(msg)
-
-        print('Logged Out')
-    except (ConnectionRefusedError, socket.gaierror):
-        print ('Connection failed')
-    finally:
-        s.close()
+    print('Logged Out')
 
 
 
 if __name__ == "__main__":
+    connect()
     testMakeAccount(b'UserName', b'Password')
     testLogin(b'UserName', b'Password')
-    testRunAnalysis(b'UserName', b'IMG_1332.JPG', token) # Only works on my local machine (obviously)
-    testGetReportList(b'UserName', token)
-    testGetReport(b'UserName', 1, token)
-    testLogout(b'UserName', token)
-    testGetReportList(b'UserName', token)
+    testRunAnalysis(b'UserName', b'test.JPG') # Only works on my local machine (obviously)
+    testGetReportList(b'UserName')
+    testGetReport(b'UserName', 1)
+    testLogout(b'UserName')
+    testGetReportList(b'UserName')
+    disconnect()
 
 
 

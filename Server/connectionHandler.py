@@ -2,12 +2,16 @@ import sys
 import pathlib
 import socket
 import queue
+import threading 
 
 from pony import orm
 
 import db
 
 jobQueue = queue.Queue()
+threadData = threading.local()
+threadData.currentUser = None
+
 
 # Read the first 4 bytes from the connection to determine message size, then read
 # the entire message.
@@ -35,52 +39,7 @@ def sendMsg(conn, msg):
     msg = len(msg).to_bytes(4, byteorder='big') + msg
     conn.sendall(msg)
 
-# Makes a new login
-# Returns True on success, else False
-def newAccount(credentials):
-    username, password = credentials.split(b':')
-    return db.newAccount(username, password)
-
-# Takes credentials in the format username:password.
-# Returns a login session token if credentials are valid, otherwise None
-def login(credentials):
-    username, password = credentials.split(b':')
-    return db.login(username, password)
-
-# Returns the username of the logged in user, or None if invalid token or username
-def checkAuth(auth):
-    username = auth[:-db.tokenLen]
-    token = auth[-db.tokenLen:]
-    if db.checkToken(username, token):
-        return username
-    return None
-
-def runAnalysis(img, user):
-    reportID = db.newReport(user)
-
-    path = pathlib.Path('/home/nvidia/RemoteSeed/DB/users/{}/{}'.format(user.decode(), reportID))
-    path.mkdir(parents=True, exist_ok=True)
-
-    with open(str(path / 'sample.jpg'), 'wb') as f:
-        f.write(img)
-    
-    jobQueue.put(('sample.jpg', str(path), user, reportID))
-    
-    return reportID
-    
-def getReportList(user):
-    #TODO Figure out a format for this. Could just use delimiters or
-    #     could use xml or JSON, ect.
-    return db.getReportList(user)
-
-# Get the report stored in the data base with id 'report' under username 'user'
-def getReport(user, report):
-    return db.getReport(user, int.from_bytes(report, 'big'))[0]
-
-def deleteReport(user, reportID):
-    return db.deleteReport(user, reportID)
-
-def sendReport(conn, user, reportID, results, img='result.png'):
+def sendReport(user, reportID, results, img='result.png'):
     path = pathlib.Path('/home/nvidia/RemoteSeed/DB/users/{}/{}/{}'.format(user.decode(), reportID, img))
 
     buf = bytearray()
@@ -90,63 +49,129 @@ def sendReport(conn, user, reportID, results, img='result.png'):
     with open(str(path), 'rb') as f:
         buf += f.read()
         
-    sendMsg(conn, buf)
+    return buf
 
+
+def newAccount(credentials):
+    username, password = credentials.split(b':')
+    if db.newAccount(username, password):
+        return bytes([1])
+    return bytes([0])
+
+def login(credentials):
+    username, password = credentials.split(b':')
+    auth = db.login(username, password)
+    if auth:
+        threadData.currentUser = username
+        return auth # Valid login
+    threadData.currentUser = None
+    return bytes([0]) # Invalid login
+
+def checkAuth(auth):
+    username = auth[:-db.tokenLen]
+    token = auth[-db.tokenLen:]
+    if db.checkToken(username, token):
+        threadData.currentUser = username
+        return bytes([1])
+    threadData.currentUser = None
+    return bytes([0])
+
+def runAnalysis(img):
+    user = threadData.currentUser
+    if user:
+        reportID = db.newReport(user)
+
+        path = pathlib.Path('/home/nvidia/RemoteSeed/DB/users/{}/{}'.format(user.decode(), reportID))
+        path.mkdir(parents=True, exist_ok=True)
+
+        with open(str(path / 'sample.jpg'), 'wb') as f:
+            f.write(img)
+        
+        jobQueue.put(('sample.jpg', str(path), user, reportID))
+        
+        return str(reportID).encode()
+    return bytes([0])
+    
+def getReportList(_):
+    #TODO Figure out a format for this. Could just use delimiters or
+    #     could use xml or JSON, ect.
+    user = threadData.currentUser
+    if user:
+        return '|'.join([str(x) for x in db.getReportList(user)]).encode()
+    return bytes([0])
+
+def getReport(report):
+    user = threadData.currentUser
+    if user:
+        reportID = int(report)
+        r = db.getReport(user, reportID)[0]
+        if r:
+            return sendReport(user, reportID, r)
+    return bytes([0])
+
+def deleteReport(report):
+    user = threadData.currentUser
+    if user:
+        reportID = int(report)
+        r = db.deleteReport(user, reportID)
+        if r:
+            return bytes([1])
+    return bytes([0])
+
+def deleteAllReports(_):
+    user = threadData.currentUser
+    if user and db.deleteAllReports(user):
+        return bytes([1])
+    return bytes([0])
+
+def deleteAccount(_):
+    user = threadData.currentUser
+    if user and db.deleteAccount(user):
+        return bytes([1])
+    return bytes([0])
+
+def logout(_):
+    user = threadData.currentUser
+    if user and db.logout(user):
+        return bytes([1])
+    return bytes([0])
+
+def changePassword(passwords):
+    oldPass, newPass = passwords.split(b':')
+    user = threadData.currentUser
+    if user and db.login(user, oldPass, newToken = False):
+        db.changePassword(user, newPass)
+        return bytes([1])
+    return bytes([0])
+
+def forgotPassword(user):
+    password = db.newPassword(user)
+    #TODO Email new password
+    return bytes([1])
+
+
+dispatch = { 97:  newAccount,
+             98:  login,
+             99:  runAnalysis,
+             100: getReportList,
+             101: getReport,
+             102: deleteReport,
+             103: deleteAllReports,
+             104: deleteAccount,
+             105: changePassword,
+             106: forgotPassword,
+             122: logout
+           }
+    
 
 def handleConn(conn):
     msg = readMsg(conn)
     while (msg):
         msgType, msg = msg[0], bytes(msg[1:])
-
-        # ASCII letters alphabetically from 'a' are used to indicate message type.
-        # Using ASCII is convenient for pythons representation of received data, 
-        # and I can't think of meaningful single character codes for every action
-        if msgType == 97: # Make Login
-            if newAccount(msg):
-                sendMsg(conn, bytes([1])) # Valid login
-            else:
-                sendMsg(conn, bytes([0])) # Invalid login
-        elif msgType == 98: # Login Info
-            auth = login(msg)
-            if auth:
-                sendMsg(conn, auth) # Valid login
-            else:
-                sendMsg(conn, bytes([0])) # Invalid login
-        elif msgType == 99: # Request new analysis
-            auth, data = msg.split(b'|', maxsplit=1)
-            user = checkAuth(auth)
-            if user:
-                #TODO Add some error checking here
-                reportID = runAnalysis(data, user)
-                sendMsg(conn, str(reportID).encode())
-            else:
-                sendMsg(conn, bytes([0])) # Invalid login
-        elif msgType == 100: # Request list of reports for certain username
-            user = checkAuth(msg)
-            if user:
-                #TODO send report ids instead of results?
-                data = '|'.join([str(x) for x in getReportList(user)])
-                sendMsg(conn, data.encode())
-            else:
-                sendMsg(conn, bytes([0])) # Invalid login
-        elif msgType == 101: # Request a specific report
-            auth, data = msg.split(b'|', maxsplit=1)
-            user = checkAuth(auth)
-            if user:
-                reportID = int.from_bytes(data, 'big')
-                report = getReport(user, data)
-                print ('Report Contents:', report)
-                if (report):
-                    sendReport(conn, user, reportID, report)
-                else:
-                    sendMsg(conn, bytes([0]))
-            else:
-                sendMsg(conn, bytes([0])) # Invalid login
-        elif msgType = 102: # Delete a report
-
-        elif msgType == 122: # Logout
-            db.logout(checkAuth(msg))
+        response = dispatch[msgType](msg)
+        sendMsg(conn, response)
 
         msg = readMsg(conn)
+
     #conn.shutdown(socket.SHUT_RDWR)
     conn.close()
