@@ -50,7 +50,10 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".ResultDetailController"></activity>
+        <activity
+            android:name=".ResultDetailController"
+            android:parentActivityName=".ResultsController"
+            android:theme="@style/ResultsTheme"/>
     </application>
 
 </manifest>
