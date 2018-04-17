@@ -58,7 +58,7 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
         listIntent.putExtras(bundle);
         startService(listIntent);
 
-        getSupportActionBar().setTitle("Results");
+        getSupportActionBar().setTitle(getString(R.string.results_actionbar_title));
 
         initResultsList();
     }
