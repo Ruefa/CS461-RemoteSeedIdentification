@@ -17,8 +17,9 @@
     </style>
 
     <style name="ResultsTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorPrimary">@color/transparent</item>
+        <item name="colorPrimary">@color/soft_blue</item>
         <item name="android:background">@color/soft_blue</item>
+        <item name="actionBarSize">35dp</item>
     </style>
 
     <style name="ResultsRVTheme">
