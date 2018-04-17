@@ -20,6 +20,9 @@ public class ResultDetailController extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result_detail);
 
+        // change to result date later
+        getSupportActionBar().setTitle(getString(R.string.result_detail_actionbar_title));
+
         initResultsGraph();
     }
 
