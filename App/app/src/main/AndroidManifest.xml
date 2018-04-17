@@ -3,7 +3,7 @@
     package="com.capstone.remoteseedidentification">
 
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <uses-feature android:name="android.hardware.camera" />
@@ -16,7 +16,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LoginController"
+        <activity
+            android:name=".LoginController"
             android:theme="@style/LoginTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,17 +28,17 @@
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/LoginTheme"/>
+            android:theme="@style/LoginTheme" />
         <activity
             android:name=".ResultsController"
-            android:theme="@style/ResultsTheme"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/ResultsTheme" />
         <activity
             android:name=".RegisterController"
-            android:theme="@style/LoginTheme"
-            android:parentActivityName=".LoginController"/>
+            android:parentActivityName=".LoginController"
+            android:theme="@style/LoginTheme" />
 
-        <service android:name="SocketService"/>
+        <service android:name=".SocketService" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -46,8 +47,10 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"/>
+                android:resource="@xml/file_paths" />
         </provider>
+
+        <activity android:name=".ResultDetailController"></activity>
     </application>
 
 </manifest>
