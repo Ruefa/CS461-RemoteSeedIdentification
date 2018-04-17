@@ -32,4 +32,10 @@
     <!-- Analyze Dialog -->
     <string name="analyze_dialog_live">Live Image</string>
     <string name="analyze_dialog_gallery">Image From Gallery</string>
+
+    <!-- Results Activity -->
+    <string name="results_actionbar_title">Results</string>
+
+    <!-- Result Detail Activity -->
+    <string name="result_detail_actionbar_title">Result Detail</string>
 </resources>
