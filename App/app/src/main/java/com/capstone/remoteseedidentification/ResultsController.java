@@ -61,8 +61,6 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
         getSupportActionBar().setTitle("Results");
 
         initResultsList();
-
-        initResultsGraph();
     }
 
     private void initResultsList(){
@@ -79,34 +77,6 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
         mResultsRVAdapter.updateItems(testList);
     }
 
-    private void initResultsGraph(){
-
-        mGraphView = findViewById(R.id.graph_results);
-        BarGraphSeries<DataPoint> series = new BarGraphSeries<>(new DataPoint[] {
-                new DataPoint(0, 15),
-                new DataPoint(1, 20)
-        });
-        mGraphView.addSeries(series);
-
-        //styling
-        series.setValueDependentColor(new ValueDependentColor<DataPoint>() {
-            @Override
-            public int get(DataPoint data) {
-                return Color.rgb((int) data.getX()*255/4, (int) Math.abs(data.getY()*255/6), 100);
-            }
-        });
-        series.setSpacing(2);
-
-        series.setDrawValuesOnTop(true);
-        series.setValuesOnTopColor(Color.RED);
-        mGraphView.getViewport().setYAxisBoundsManual(true);
-        mGraphView.getViewport().setMaxY(100);
-        mGraphView.getViewport().setXAxisBoundsManual(true);
-        mGraphView.getViewport().setMaxX(4);
-        mGraphView.getGridLabelRenderer().setHorizontalAxisTitle("Seed Type");
-        mGraphView.getGridLabelRenderer().setVerticalAxisTitle("Percent present");
-    }
-
     public final static String BROADCAST_ACTION = "results";
     public final static String ACTION_VIEW_RESULTS = "view_results";
     public final static String ACTION_REQUEST_RESULT = "request_result";
@@ -116,53 +86,57 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
         public void onReceive(Context context, Intent intent) {
             mpbResultsRV.setVisibility(View.INVISIBLE);
 
-            if(intent.getStringExtra(SocketService.ACTION_KEY).equals(ACTION_VIEW_RESULTS)) {
-                String results = intent.getStringExtra(SocketService.BROADCAST_KEY);
-                Log.d(TAG, results);
+            if(intent.getStringExtra(SocketService.ACTION_KEY) != null) {
+                if (intent.getStringExtra(SocketService.ACTION_KEY).equals(ACTION_VIEW_RESULTS)) {
+                    String results = intent.getStringExtra(SocketService.BROADCAST_KEY);
+                    Log.d(TAG, results);
 
-                String[] resultArray = results.split("\\|");
-                ArrayList<String> resultList = new ArrayList<String>(Arrays.asList(resultArray));
-                Log.d(TAG, "resultList size: " + resultList.size());
-                Log.d(TAG, "result: " + resultList.get(0));
-                if(resultList.size() > 0 && !resultList.get(0).equals("")) {
-                    mResultsRVAdapter.updateItems(resultList);
-                }else{
-                    ArrayList<String> emptyList = new ArrayList<>();
-                    emptyList.add("No results to display");
-                    mResultsRVAdapter.updateItems(emptyList);
-                }
-            }else if(intent.getStringExtra(SocketService.ACTION_KEY).equals(ACTION_REQUEST_RESULT)){
-                Log.d(TAG, "result request received");
-                String results = intent.getStringExtra(SocketService.BROADCAST_KEY);
-                Log.d(TAG, intent.getStringExtra(SocketService.BROADCAST_KEY));
-
-                String[] resultArray = results.split("\n");
-                Log.d(TAG, Arrays.toString(resultArray));
-
-                float prg = Float.valueOf(resultArray[0].split(":")[1])*100;
-                float tf = Float.valueOf(resultArray[1].split(":")[1])*100;
-
-                byte[] imageBytes = MainActivity.fileToBytes(resultArray[2]);
-                Bitmap thumbBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                mResultView.setImageBitmap(thumbBitmap);
-
-                BarGraphSeries<DataPoint> series = new BarGraphSeries<>(new DataPoint[] {
-                        new DataPoint(0, prg),
-                        new DataPoint(2, tf)
-                });
-                mGraphView.removeAllSeries();
-                mGraphView.addSeries(series);
-
-                series.setValueDependentColor(new ValueDependentColor<DataPoint>() {
-                    @Override
-                    public int get(DataPoint data) {
-                        return Color.rgb((int) data.getX()*255/4, (int) Math.abs(data.getY()*255/6), 100);
+                    String[] resultArray = results.split("\\|");
+                    ArrayList<String> resultList = new ArrayList<String>(Arrays.asList(resultArray));
+                    Log.d(TAG, "resultList size: " + resultList.size());
+                    Log.d(TAG, "result: " + resultList.get(0));
+                    if (resultList.size() > 0 && !resultList.get(0).equals("")) {
+                        mResultsRVAdapter.updateItems(resultList);
+                    } else {
+                        ArrayList<String> emptyList = new ArrayList<>();
+                        emptyList.add("No results to display");
+                        mResultsRVAdapter.updateItems(emptyList);
                     }
-                });
-                series.setSpacing(50);
+                } else if (intent.getStringExtra(SocketService.ACTION_KEY).equals(ACTION_REQUEST_RESULT)) {
+                    Log.d(TAG, "result request received");
+                    String results = intent.getStringExtra(SocketService.BROADCAST_KEY);
+                    Log.d(TAG, intent.getStringExtra(SocketService.BROADCAST_KEY));
 
-                series.setDrawValuesOnTop(true);
-                series.setValuesOnTopColor(Color.RED);
+                    String[] resultArray = results.split("\n");
+                    Log.d(TAG, Arrays.toString(resultArray));
+
+                    float prg = Float.valueOf(resultArray[0].split(":")[1]) * 100;
+                    float tf = Float.valueOf(resultArray[1].split(":")[1]) * 100;
+
+                    byte[] imageBytes = MainActivity.fileToBytes(resultArray[2]);
+                    Bitmap thumbBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                    mResultView.setImageBitmap(thumbBitmap);
+
+                    BarGraphSeries<DataPoint> series = new BarGraphSeries<>(new DataPoint[]{
+                            new DataPoint(0, prg),
+                            new DataPoint(2, tf)
+                    });
+                    mGraphView.removeAllSeries();
+                    mGraphView.addSeries(series);
+
+                    series.setValueDependentColor(new ValueDependentColor<DataPoint>() {
+                        @Override
+                        public int get(DataPoint data) {
+                            return Color.rgb((int) data.getX() * 255 / 4, (int) Math.abs(data.getY() * 255 / 6), 100);
+                        }
+                    });
+                    series.setSpacing(50);
+
+                    series.setDrawValuesOnTop(true);
+                    series.setValuesOnTopColor(Color.RED);
+                }
+            } else {
+                //display error
             }
         }
     };
@@ -177,5 +151,12 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
         bundle.putString(SocketService.OUTBOUND_KEY, BROADCAST_ACTION);
         intent.putExtras(bundle);
         startService(intent);
+
+        goResultDetail();
+    }
+
+    private void goResultDetail(){
+        Intent intent = new Intent(this, ResultDetailController.class);
+        startActivity(intent);
     }
 }
