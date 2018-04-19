@@ -150,17 +150,17 @@ def forgotPassword(user):
     return bytes([1])
 
 
-dispatch = { 97:  newAccount,
-             98:  login,
-             99:  runAnalysis,
+dispatch = { 1:   newAccount,
+             2:   login,
+             3:   changePassword,
+             4:   forgotPassword,
+             5:   deleteAccount,
+             99:  logout,
+             100: runAnalysis,
              100: getReportList,
              101: getReport,
              102: deleteReport,
              103: deleteAllReports,
-             104: deleteAccount,
-             105: changePassword,
-             106: forgotPassword,
-             122: logout
            }
     
 

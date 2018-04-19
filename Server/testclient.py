@@ -51,14 +51,14 @@ def sendMsg(conn, msg):
     conn.sendall(msg)
 
 def testMakeAccount(username, password):
-    msg = b'a' + username + b':' + password
+    msg = bytes([1]) + username + b':' + password
     print('Message:', msg)
     sendMsg(s, msg)
 
     print('Result:', readMsg(s).hex())
 
 def testLogin(username, password):
-    msg = b'b' + username + b':' + password
+    msg = bytes([2]) + username + b':' + password
     print('Message:', msg)
     sendMsg(s, msg)
 
@@ -68,7 +68,7 @@ def testLogin(username, password):
 
 def testRunAnalysis(username, path):
     f = open(path, 'rb')
-    msg = b'c'
+    msg = b'd'
     
     buf = f.read(4096)
     while buf:
@@ -83,14 +83,14 @@ def testRunAnalysis(username, path):
     print('Results:', results.decode())
 
 def testGetReportList(username):
-    msg = b'd'
+    msg = b'e'
     print('Message:', msg)
     sendMsg(s, msg)
 
     print('Results:', readMsg(s))
 
 def testGetReport(username, reportID):
-    msg = b'e' + str(reportID).encode()
+    msg = b'f' + str(reportID).encode()
     print('Message:', msg)
     sendMsg(s, msg)
 
@@ -104,7 +104,7 @@ def testGetReport(username, reportID):
         print('Results', response.hex())
 
 def testLogout(username):
-    msg = b'z'
+    msg = bytes([99])
     print('Message:', msg)
     sendMsg(s, msg)
 
