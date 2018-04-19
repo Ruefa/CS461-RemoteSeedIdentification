@@ -1,8 +1,9 @@
 import sys
+import os
 import pathlib
 import socket
 import queue
-import threading 
+import threading
 
 from pony import orm
 
@@ -12,19 +13,22 @@ jobQueue = queue.Queue()
 threadData = threading.local()
 threadData.currentUser = None
 
-
-# Read the first 4 bytes from the connection to determine message size, then read
-# the entire message.
-def readMsg(conn, chunkSize = 4096):
+def readMsgHeader(conn):
     # Read the message length first
     sizeBytes = conn.recv(4)
     if not sizeBytes: # Connection closed
-        return None
+        return None, 0
 
     while len(sizeBytes) < 4:
         sizeBytes += conn.recv(4 - len(sizeBytes))
 
-    remaining = int.from_bytes(sizeBytes, byteorder='big')
+    length = int.from_bytes(sizeBytes, byteorder='big')
+    msgType = ord(conn.recv(1))
+    return msgType, length-1
+
+
+def readMsg(conn, length, chunkSize = 4096):
+    remaining = length
     buf = bytearray()
 
     # Get data from the connection until the entire message is read
@@ -33,24 +37,28 @@ def readMsg(conn, chunkSize = 4096):
         remaining -= len(chunk)
         buf += chunk
 
-    return buf
+    return bytes(buf)
+
+def readMsgToFile(conn, length, file, chunkSize = 4096):
+    remaining = length
+    
+    while remaining:
+        chunk = conn.recv(min(chunkSize, remaining))
+        remaining -= len(chunk)
+        file.write(chunk)
 
 def sendMsg(conn, msg):
     msg = len(msg).to_bytes(4, byteorder='big') + msg
     conn.sendall(msg)
 
-def sendReport(user, reportID, results, img='result.png'):
-    path = pathlib.Path('/home/nvidia/RemoteSeed/DB/users/{}/{}/{}'.format(user.decode(), reportID, img))
-
-    buf = bytearray()
-    buf += results.encode()
-    buf += b'|'
-
-    with open(str(path), 'rb') as f:
-        buf += f.read()
-        
-    return buf
-
+def sendReport(conn, results, imgPath):
+    msg = results.encode() + b'|'
+    print('len', len(msg), '+', os.path.getsize(str(imgPath)))
+    length = len(msg) + os.path.getsize(str(imgPath))
+    conn.sendall(length.to_bytes(4, byteorder='big') + msg)
+    print(str(imgPath))
+    with open(str(imgPath), 'rb') as f:
+        conn.sendfile(f)
 
 def newAccount(credentials):
     username, password = credentials.split(b':')
@@ -76,18 +84,18 @@ def checkAuth(auth):
     threadData.currentUser = None
     return bytes([0])
 
-def runAnalysis(img):
+def runAnalysis(conn, length):
     user = threadData.currentUser
     if user:
         reportID = db.newReport(user)
+        path = db.dbDirectory / user.decode() / str(reportID) / 'sample.jpg'
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with open(str(path), 'wb') as f:
+            readMsgToFile(conn, length, f)
 
-        path = pathlib.Path('/home/nvidia/RemoteSeed/DB/users/{}/{}'.format(user.decode(), reportID))
-        path.mkdir(parents=True, exist_ok=True)
+        db.updateReport(reportID, sourceImg=str(path))
 
-        with open(str(path / 'sample.jpg'), 'wb') as f:
-            f.write(img)
-        
-        jobQueue.put(('sample.jpg', str(path), user, reportID))
+        jobQueue.put((reportID, path))
         
         return str(reportID).encode()
     return bytes([0])
@@ -104,10 +112,11 @@ def getReport(report):
     user = threadData.currentUser
     if user:
         reportID = int(report)
-        r = db.getReport(user, reportID)[0]
-        if r:
-            return sendReport(user, reportID, r)
-    return bytes([0])
+        r = db.getReport(reportID)
+        if r and r.results:
+            print (r.results)
+            return r.results, pathlib.Path(r.resultsImg)
+    return False
 
 def deleteReport(report):
     user = threadData.currentUser
@@ -156,22 +165,28 @@ dispatch = { 1:   newAccount,
              4:   forgotPassword,
              5:   deleteAccount,
              99:  logout,
-             100: runAnalysis,
-             100: getReportList,
-             101: getReport,
-             102: deleteReport,
-             103: deleteAllReports,
+             101: getReportList,
+             103: deleteReport,
+             104: deleteAllReports
            }
     
-
 def handleConn(conn):
-    msg = readMsg(conn)
-    while (msg):
-        msgType, msg = msg[0], bytes(msg[1:])
-        response = dispatch[msgType](msg)
-        sendMsg(conn, response)
+    msgType, length = readMsgHeader(conn)
+    while msgType:
+        # Run Analysis and Get Report are special cased to avoid moving image files around in memory
+        if msgType == 100:
+            response = runAnalysis(conn, length)
+            sendMsg(conn, response)
+        elif msgType == 102:
+            msg = readMsg(conn, length)
+            report = getReport(msg)
+            sendReport(conn, *report)
+        else:
+            msg = readMsg(conn, length)
+            response = dispatch[msgType](msg)
+            sendMsg(conn, response)
 
-        msg = readMsg(conn)
+        msgType, length = readMsgHeader(conn)
 
     #conn.shutdown(socket.SHUT_RDWR)
     conn.close()

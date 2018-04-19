@@ -1,4 +1,5 @@
 import sys
+import pathlib
 import threading
 import queue
 import db
@@ -14,7 +15,9 @@ serverThread = threading.Thread(target = server.start, daemon=True)
 serverThread.start()
 
 while True:
-    img, path, user, reportID = jobQueue.get()
+    reportID, imgPath = jobQueue.get()
 
-    results = run_analysis(img, path)
-    db.addReportResults(user, reportID, results)
+    resultImgPath = imgPath.parent / 'result.png'
+
+    results = run_analysis(str(imgPath), str(resultImgPath))
+    db.updateReport(reportID, results=results, resultsImg=str(resultImgPath))

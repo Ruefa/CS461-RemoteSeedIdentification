@@ -1,4 +1,5 @@
 import os
+import pathlib
 import string
 
 from passHash import hashPassword, checkPassword
@@ -6,6 +7,7 @@ from randomPass import makePassword
 from pony.orm import *
 
 db = Database()
+dbDirectory = pathlib.Path('/home/nvidia/RemoteSeed/DB/')
 tokenLen = 16
 
 class Account(db.Entity):
@@ -16,9 +18,11 @@ class Account(db.Entity):
 
 class Report(db.Entity):
     results = Optional(str)
+    sourceImg = Optional(str)
+    resultsImg = Optional(str)
     owner = Required(Account)
 
-db.bind(provider='sqlite', filename='/home/nvidia/RemoteSeed/DB/database.sqlite', create_db=True)
+db.bind(provider='sqlite', filename=str(dbDirectory/'RemoteSeedDB.sqlite'), create_db=True)
 db.generate_mapping(create_tables=True)
 
 set_sql_debug(True)
@@ -77,25 +81,25 @@ def newPassword(username):
     return None
 
 @db_session
-def newReport(username):
-    r = Report(owner=Account[username])
+def newReport(username, sourceImg='', resultsImg='', results=''):
+    r = Report(owner=Account[username], sourceImg=sourceImg, resultsImg=resultsImg, results=results)
     commit()
     return r.id
 
 @db_session
-def addReportResults(username, reportId, results):
+def updateReport(reportId, sourceImg='', resultsImg='', results=''):
     r = Report[reportId]
+    r.sourceImg = sourceImg
+    r.resultsImg = resultsImg
     r.results = results
 
 @db_session
 def getReportList(username):
     return select(x.id for x in Report if x.owner == Account[username])[:]
 
-#TODO remove username as parameter
 @db_session
-def getReport(username, report):
-    #TODO Use get or something here, this is bad
-    return select(x.results for x in Report if x.owner == Account[username] and x.id == report)[:]
+def getReport(report):
+    return Report.get(id=report)
 
 @db_session
 def deleteReport(reportID):
@@ -111,7 +115,7 @@ def deleteAllReports(username):
 
 @db_session
 def deleteAccount(username):
-    acct = Account.get(id=reportID)
+    acct = Account.get(username=username)
     if acct:
         acct.delete()
         return True
