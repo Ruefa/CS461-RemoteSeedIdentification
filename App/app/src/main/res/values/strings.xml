@@ -3,7 +3,7 @@
 
     <!-- Nav Drawer -->
     <string name="nav_login">Login</string>
-    <string name="nav_gallery">Image from gallery</string>
+    <string name="nav_gallery">Analyze</string>
     <string name="nav_results">Results</string>
     <string name="drawer_open">Open drawer</string>
     <string name="drawer_close">Close drawer</string>
@@ -28,4 +28,14 @@
     <string name="register_hint_confirm">Confirm Password</string>
     <string name="register_error_mismatch">Passwords do not match</string>
     <string name="register_button_register">Register</string>
+
+    <!-- Analyze Dialog -->
+    <string name="analyze_dialog_live">Live Image</string>
+    <string name="analyze_dialog_gallery">Image From Gallery</string>
+
+    <!-- Results Activity -->
+    <string name="results_actionbar_title">Results</string>
+
+    <!-- Result Detail Activity -->
+    <string name="result_detail_actionbar_title">Result Detail</string>
 </resources>

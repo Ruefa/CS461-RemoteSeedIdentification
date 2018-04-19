@@ -47,7 +47,7 @@ class MainWindow(Frame):
     dataset_filenames = []
 
     # Index of the sample currently being annotated
-    current_sample = 0
+    current_sample = 5000
 
     def __init__(self):
         super().__init__()
@@ -631,6 +631,7 @@ class MainWindow(Frame):
             for bbox in self.bounding_boxes:
                 self.canvas.delete(bbox[0][0])
 
+            self.save_annotation()
             self.current_sample -= 1
             self.bounding_boxes.clear()
             self.load_sample(self.dataset_dir + "/JPEGImages/"+self.dataset_filenames[self.current_sample])
@@ -669,9 +670,9 @@ class MainWindow(Frame):
         filenames = [raw_images_dir + x for x in filenames]
 
         # Determine the size of each of the three sets
-        num_train_elements = math.floor(len(filenames) * float(self.train_size.get()))
-        num_test_elements = math.floor(len(filenames) * float(self.test_size.get()))
-        num_val_elements = math.floor(len(filenames) * float(self.val_size.get()))
+        num_train_elements = int(float(len(filenames) * float(self.train_size.get())))
+        num_test_elements = int(float(len(filenames) * float(self.test_size.get())))
+        num_val_elements = int(float(len(filenames) * float(self.val_size.get())))
 
         # Randomly pick elements of the master set for each sub set
         self.pick_random_elements(filenames, train_images, num_train_elements)
