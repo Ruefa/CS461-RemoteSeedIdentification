@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -32,8 +33,6 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
     private ResultsListRVAdapter mResultsRVAdapter;
     private ProgressBar mpbResultsRV;
     private ImageView mResultView;
-
-    private GraphView mGraphView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +62,19 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
         initResultsList();
     }
 
+    private ArrayList<Bitmap> testBitmaps(){
+        ArrayList<Bitmap> bitmaps = new ArrayList<>();
+
+        Bitmap singleBitmap = BitmapFactory.decodeResource(getResources(),
+                R.drawable.results_example);
+
+        for(int i=0; i<10; i++) {
+            bitmaps.add(singleBitmap);
+        }
+
+        return bitmaps;
+    }
+
     private void initResultsList(){
         RecyclerView rvResults = findViewById(R.id.rv_results_list);
         mResultsRVAdapter = new ResultsListRVAdapter(this);
@@ -74,7 +86,7 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
         for(int i=1; i<=10; i++) {
             testList.add("results " + String.valueOf(i));
         }
-        mResultsRVAdapter.updateItems(testList);
+        mResultsRVAdapter.updateItems(testList, testBitmaps());
     }
 
     public final static String BROADCAST_ACTION = "results";
@@ -96,11 +108,11 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
                     Log.d(TAG, "resultList size: " + resultList.size());
                     Log.d(TAG, "result: " + resultList.get(0));
                     if (resultList.size() > 0 && !resultList.get(0).equals("")) {
-                        mResultsRVAdapter.updateItems(resultList);
+                        mResultsRVAdapter.updateItems(resultList, testBitmaps());
                     } else {
                         ArrayList<String> emptyList = new ArrayList<>();
                         emptyList.add("No results to display");
-                        mResultsRVAdapter.updateItems(emptyList);
+                        mResultsRVAdapter.updateItems(emptyList, testBitmaps());
                     }
                 } else if (intent.getStringExtra(SocketService.ACTION_KEY).equals(ACTION_REQUEST_RESULT)) {
                     Log.d(TAG, "result request received");
@@ -121,8 +133,8 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
                             new DataPoint(0, prg),
                             new DataPoint(2, tf)
                     });
-                    mGraphView.removeAllSeries();
-                    mGraphView.addSeries(series);
+                    //mGraphView.removeAllSeries();
+                    //mGraphView.addSeries(series);
 
                     series.setValueDependentColor(new ValueDependentColor<DataPoint>() {
                         @Override
