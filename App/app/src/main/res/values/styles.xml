@@ -25,7 +25,7 @@
     <style name="ResultsRVTheme">
         <item name="android:textSize">24sp</item>
         <item name="android:paddingBottom">8dp</item>
-        <item name="android:textAlignment">center</item>
+        <item name="android:paddingLeft">10dp</item>
     </style>
 
     <style name="NavDrawerTheme" parent="Theme.AppCompat.Light.DarkActionBar">
