@@ -79,12 +79,16 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
         RecyclerView rvResults = findViewById(R.id.rv_results_list);
         mResultsRVAdapter = new ResultsListRVAdapter(this);
         rvResults.setAdapter(mResultsRVAdapter);
-        rvResults.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setReverseLayout(true);
+        layoutManager.setStackFromEnd(true);
+        rvResults.setLayoutManager(layoutManager);
         rvResults.setHasFixedSize(true);
 
+        // create list of tests strings
         ArrayList<String> testList = new ArrayList<>();
         for(int i=1; i<=10; i++) {
-            testList.add("results " + String.valueOf(i));
+            testList.add("9/" + String.valueOf(i) + "/2018 13:05");
         }
         mResultsRVAdapter.updateItems(testList, testBitmaps());
     }
