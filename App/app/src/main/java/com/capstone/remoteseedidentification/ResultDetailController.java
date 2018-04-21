@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.github.mikephil.charting.charts.PieChart;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.ValueDependentColor;
 import com.jjoe64.graphview.series.BarGraphSeries;
@@ -14,6 +15,7 @@ public class ResultDetailController extends AppCompatActivity {
     private final static String TAG = "ResultDetailController";
 
     private GraphView mGraphView;
+    private PieChart mPieChart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +26,8 @@ public class ResultDetailController extends AppCompatActivity {
         getSupportActionBar().setTitle(getString(R.string.result_detail_actionbar_title));
 
         initResultsGraph();
+
+        initPieChart();
     }
 
     private void initResultsGraph(){
@@ -53,5 +57,9 @@ public class ResultDetailController extends AppCompatActivity {
         mGraphView.getGridLabelRenderer().setHorizontalAxisTitle("Seed Type");
         mGraphView.getGridLabelRenderer().setVerticalAxisTitle("Percent present");
         mGraphView.getGridLabelRenderer().setPadding(30);
+    }
+
+    private void initPieChart(){
+        mPieChart = findViewById(R.id.pc_seed_makeup);
     }
 }
