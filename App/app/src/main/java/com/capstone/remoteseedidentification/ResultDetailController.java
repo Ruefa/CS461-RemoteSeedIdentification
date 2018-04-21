@@ -6,10 +6,17 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.ValueDependentColor;
 import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ResultDetailController extends AppCompatActivity {
     private final static String TAG = "ResultDetailController";
@@ -61,5 +68,17 @@ public class ResultDetailController extends AppCompatActivity {
 
     private void initPieChart(){
         mPieChart = findViewById(R.id.pc_seed_makeup);
+
+        // create test data
+        List<PieEntry> entries = new ArrayList<>();
+        entries.add(new PieEntry(20.0f, "Green"));
+        entries.add(new PieEntry(40.0f, "Red"));
+        entries.add(new PieEntry(30.0f, "Blue"));
+        entries.add(new PieEntry(10.0f, "Yellow"));
+
+        // create data set and add to pie char
+        PieDataSet dataSet = new PieDataSet(entries, "Seed Distribution");
+        mPieChart.setData(new PieData(dataSet));
+        mPieChart.invalidate(); // refresh
     }
 }
