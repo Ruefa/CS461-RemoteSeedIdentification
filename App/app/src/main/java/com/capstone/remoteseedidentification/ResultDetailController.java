@@ -71,13 +71,15 @@ public class ResultDetailController extends AppCompatActivity {
 
         // create test data
         List<PieEntry> entries = new ArrayList<>();
-        entries.add(new PieEntry(20.0f, "Green"));
-        entries.add(new PieEntry(40.0f, "Red"));
-        entries.add(new PieEntry(30.0f, "Blue"));
-        entries.add(new PieEntry(10.0f, "Yellow"));
+        entries.add(new PieEntry(20.0f, "Seed1"));
+        entries.add(new PieEntry(40.0f, "Seed2"));
+        entries.add(new PieEntry(30.0f, "Seed3"));
+        entries.add(new PieEntry(10.0f, "Seed4"));
 
         // create data set and add to pie char
         PieDataSet dataSet = new PieDataSet(entries, "Seed Distribution");
+        // colors appear in same order as entries
+        dataSet.setColors(Color.GREEN, Color.RED, Color.BLUE, Color.YELLOW);
         mPieChart.setData(new PieData(dataSet));
         mPieChart.invalidate(); // refresh
     }
