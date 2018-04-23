@@ -36,6 +36,9 @@
         android:layout_height="wrap_content"
         android:onClick="doLogin"
         android:text="@string/login_button_login"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginStart="15dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintRight_toLeftOf="@id/button_register"
         app:layout_constraintTop_toBottomOf="@+id/edit_pass" />
@@ -46,6 +49,9 @@
         android:layout_height="wrap_content"
         android:onClick="doRegister"
         android:text="@string/login_button_register"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginEnd="15dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toRightOf="@id/button_login"
         app:layout_constraintTop_toBottomOf="@+id/edit_pass" />
