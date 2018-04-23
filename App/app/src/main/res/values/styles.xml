@@ -14,6 +14,7 @@
         <item name="colorPrimary">@color/transparent</item>
         <item name="android:background">@color/soft_blue</item>
         <item name="editTextStyle">@style/bordered_edit_text</item>
+        <item name="buttonStyle">@style/ColoredButtonStyle</item>
     </style>
 
     <style name="ResultsTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -57,6 +58,10 @@
         <item name="android:textAlignment">center</item>
     </style>
 
+    <style name="ColoredButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/button_background</item>
+    </style>
+
     <color name="red">#FF0000</color>
     <color name="soft_green">#90C048</color>
     <color name="transparent">#00000000</color>
@@ -64,6 +69,7 @@
     <color name="grey">#D2D2D2</color>
     <color name="dark_grey">#939393</color>
     <color name="soft_blue">#90D4E7</color>
+    <color name="light_orange">#e7a390</color>
     <color name="white">#FFFFFF</color>
 
 </resources>
