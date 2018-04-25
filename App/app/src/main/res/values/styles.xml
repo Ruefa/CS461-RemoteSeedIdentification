@@ -12,14 +12,14 @@
 
     <style name="LoginTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/transparent</item>
-        <item name="android:background">@color/soft_blue</item>
+        <item name="android:background">@color/primary_background</item>
         <item name="editTextStyle">@style/bordered_edit_text</item>
         <item name="buttonStyle">@style/ColoredButtonStyle</item>
     </style>
 
     <style name="ResultsTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorPrimary">@color/soft_blue</item>
-        <item name="android:background">@color/soft_blue</item>
+        <item name="colorPrimary">@color/snow_white</item>
+        <item name="android:background">@color/snow_white</item>
         <item name="actionBarSize">35dp</item>
     </style>
 
@@ -72,7 +72,14 @@
     <color name="grey">#D2D2D2</color>
     <color name="dark_grey">#939393</color>
     <color name="soft_blue">#90D4E7</color>
-    <color name="light_orange">#e7a390</color>
+    <color name="blue">#067bc2</color>
+    <color name="light_orange">#f37748</color>
     <color name="white">#FFFFFF</color>
+    <color name="snow_white">#fafafa</color>
+    <color name="charcoal">#262322</color>
+    <color name="gold">#ecc30b</color>
+    <color name="light_red">#d56062</color>
+    <color name="primary_background">@color/snow_white</color>
+    <color name="primary_foreground">@color/charcoal</color>
 
 </resources>
