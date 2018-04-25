@@ -79,7 +79,10 @@ public class ResultDetailController extends AppCompatActivity {
         // create data set and add to pie char
         PieDataSet dataSet = new PieDataSet(entries, "Seed Distribution");
         // colors appear in same order as entries
-        dataSet.setColors(Color.GREEN, Color.RED, Color.BLUE, Color.YELLOW);
+        dataSet.setColors(getResources().getColor(R.color.blue),
+                getResources().getColor(R.color.light_orange),
+                getResources().getColor(R.color.gold),
+                getResources().getColor(R.color.light_red));
         mPieChart.setData(new PieData(dataSet));
         mPieChart.invalidate(); // refresh
     }
