@@ -38,6 +38,15 @@ DEFAULT_TRAIN_SIZE = 0.85
 DEFAULT_TEST_SIZE = 0.1
 DEFAULT_VAL_SIZE = 0.05
 
+# Color list for various specie boxes
+colors = [
+
+    "#0000FF",
+    "#00FFFF",
+    "#00FF00",
+    "#FF00FF",
+]
+
 class MainWindow(Frame):
 
     # Directory of the dataset
@@ -97,6 +106,8 @@ class MainWindow(Frame):
         self.bind('<Left>', self.prev_sample)
         self.bind('s', self.save_annotation)
         self.bind('<Delete>', self.delete_sample)
+        self.bind('<Up>', self.prev_class)
+        self.bind('<Down>', self.next_class)
 
         # Create image canvas
         self.canvas = tk.Canvas(self, width=300, height=300, background='white')
@@ -145,6 +156,29 @@ class MainWindow(Frame):
         self.menubar.add_cascade(label="Help", menu=self.helpMenu)
 
         self.focus_set()
+
+    def next_class(self, event=None):
+
+        current_class_index = self.seed_classes.index(self.current_class.get())
+        next = (current_class_index+1) % len(self.seed_classes)
+
+        if next == 0:
+            next += 1
+
+        print(self.seed_classes)
+        print(next)
+
+        self.current_class.set(self.seed_classes[next])
+
+    def prev_class(self, event=None):
+
+        current_class_index = self.seed_classes.index(self.current_class.get())
+        prev = (current_class_index-1) % len(self.seed_classes)
+
+        if prev == 0:
+            prev -= 1
+
+        self.current_class.set(self.seed_classes[prev])
 
     def gen_dataset_bboxes(self):
 
@@ -248,7 +282,7 @@ class MainWindow(Frame):
             object = et.SubElement(annotation, "object")
             bndbox = et.SubElement(object, "bndbox")
 
-            et.SubElement(object, "name").text = self.current_class.get()
+            et.SubElement(object, "name").text = bbox[5]
             et.SubElement(object, "pose").text = "Unspecified"
             et.SubElement(object, "truncated").text = "0"
             et.SubElement(object, "difficult").text = "0"
@@ -289,7 +323,6 @@ class MainWindow(Frame):
                     if len(self.dataset_filenames) > 0:
                         self.load_sample(self.dataset_dir+"/JPEGImages/"+self.dataset_filenames[self.current_sample])
                     else:
-                        # self.image_on_canvas = self.canvas.create_image(0, 0, anchor=tk.NW, image=imgtk)
                         self.image_on_canvas = self.canvas.create_image(1, 1, anchor=tk.NW, image=None)
                         self.canvas.image = None
                         self.canvas.update()
@@ -315,6 +348,12 @@ class MainWindow(Frame):
 
         rectids = []
 
+        xmin = 0
+        ymin = 0
+        xmax = 0
+        ymax = 0
+        name = ""
+
         if os.path.isfile(path):
 
             tree = et.parse(path)
@@ -324,20 +363,11 @@ class MainWindow(Frame):
                 if child.tag == "object":
                     for gchild in child:
                         if gchild.tag == "bndbox":
+
                             xmin = float(gchild.find("xmin").text)
                             ymin = float(gchild.find("ymin").text)
                             xmax = float(gchild.find("xmax").text)
                             ymax = float(gchild.find("ymax").text)
-
-                            # Create rectangle
-                            self.rect = self.canvas.create_rectangle(
-                            xmin, ymin, xmax, ymax, fill=None, width=2)
-
-                            # Get rectangle's canvas object ID
-                            self.rectid = self.canvas.find_closest(xmin, ymin, halo=2)
-
-                            # Append box to bounding boxes
-                            self.bounding_boxes.append([self.rectid, xmin, ymin, xmax, ymax])
 
                         elif gchild.tag == "name":
 
@@ -345,9 +375,18 @@ class MainWindow(Frame):
 
                             if name not in self.seed_classes:
 
-                                self.seed_classes.insert(0, name)
+                                self.seed_classes.append(name)
                                 self.refresh_class_dropdown()
 
+                    # Create rectangle
+                    self.rect = self.canvas.create_rectangle(
+                        xmin, ymin, xmax, ymax, fill=None, width=2, outline=colors[self.seed_classes.index(name)-1])
+
+                    # Get rectangle's canvas object ID
+                    self.rectid = self.canvas.find_closest(xmin, ymin, halo=2)
+
+                    # Append box to bounding boxes
+                    self.bounding_boxes.append([self.rectid, xmin, ymin, xmax, ymax, name])
 
     def dropdown_callback(self, item):
 
@@ -429,7 +468,8 @@ class MainWindow(Frame):
         os.makedirs("SeedDatasetVOC/JPEGImages")
 
         # Create and partition the data set
-        self.partition_raw_dataset_images(self.raw_images_path.get()+"/", "SeedDatasetVOC/", [int(self.slice_dim.get()), int(self.slice_dim.get()), 3])
+        self.partition_raw_dataset_images(self.raw_images_path.get()+"/", "SeedDatasetVOC/",
+                                          [int(self.slice_dim.get()), int(self.slice_dim.get()), 3])
 
         # Load the dataset into the annotator
         self.load_dataset("SeedDatasetVOC/")
@@ -438,19 +478,19 @@ class MainWindow(Frame):
 
     def refresh_class_dropdown(self):
 
-        self.current_class.set(self.seed_classes[0])
+        self.current_class.set(self.seed_classes[len(self.seed_classes)-1])
 
         # Reset var and delete all old options
         #self.classDropdown['menu'].delete(0, 'end')
 
         # Insert list of new options (tk._setit hooks them up to var)
-        label = self.seed_classes[0]
+        label = self.seed_classes[len(self.seed_classes)-1]
 
         self.classDropdown['menu'].add_command(label=label, command=tk._setit(self.current_class, label))
 
     def add_class(self):
 
-        self.seed_classes.insert(0, self.new_class.get())
+        self.seed_classes.append(self.new_class.get())
         self.refresh_class_dropdown()
         self.class_window.destroy()
 
@@ -464,7 +504,8 @@ class MainWindow(Frame):
 
         # Create rectangle
         self.rect = self.canvas.create_rectangle(
-            self.rectx0, self.recty0, self.rectx0, self.recty0, fill=None, width=2)
+            self.rectx0, self.recty0, self.rectx0, self.recty0, fill=None,
+            outline=colors[self.seed_classes.index(self.current_class.get())-1], width=2)
 
         # Get rectangle's canvas object ID
         self.rectid = self.canvas.find_closest(self.rectx0, self.recty0, halo=2)
@@ -501,7 +542,8 @@ class MainWindow(Frame):
                         self.canvas.itemconfigure(bbox[0][0], outline="red")
                         outlined=True
                 else:
-                    self.canvas.itemconfigure(bbox[0][0], outline="black")
+                    color = colors[self.seed_classes.index(bbox[5])-1]
+                    self.canvas.itemconfigure(bbox[0][0], outline=color)
 
     def stopRect(self, event):
 
@@ -532,7 +574,8 @@ class MainWindow(Frame):
 
         # Only draw box if area is big enough to avoid annoying small boxes
         if (coords[2]-coords[0])*(coords[3]-coords[1]) > MIN_AREA:
-            self.bounding_boxes.append([self.rectid, coords[0], coords[1], coords[2], coords[3]])
+            self.bounding_boxes.append([self.rectid, coords[0], coords[1], coords[2], coords[3],\
+                                        self.current_class.get()])
         else:
             self.canvas.delete(self.rectid)
 
@@ -551,16 +594,15 @@ class MainWindow(Frame):
     def load_sample(self, filename):
 
         # Read image and change color format for tkinter
-        img2 = cv2.imread(filename)
-        img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2RGB)
+        img = cv2.imread(filename)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
         # Convert the opencv image to tkinter compatible form
-        im2 = Image.fromarray(img2)
-        imgtk2 = ImageTk.PhotoImage(image=im2)
+        img_arr = Image.fromarray(img)
+        img_tk = ImageTk.PhotoImage(image=img_arr)
 
-        #self.image_on_canvas = self.canvas.create_image(0, 0, anchor=tk.NW, image=imgtk)
-        self.image_on_canvas = self.canvas.create_image(1, 1, anchor=tk.NW, image=imgtk2)
-        self.canvas.image = imgtk2
+        self.image_on_canvas = self.canvas.create_image(1, 1, anchor=tk.NW, image=img_tk)
+        self.canvas.image = img_tk
 
         self.canvas.update()
         self.load_annotation()
