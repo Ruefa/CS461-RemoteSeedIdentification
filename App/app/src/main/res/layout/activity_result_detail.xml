@@ -26,7 +26,7 @@
         android:id="@+id/iv_result"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:src="@drawable/results_example"
+        android:src="@drawable/result_better_example"
         android:paddingTop="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/gd_image_graph_divider"/>
