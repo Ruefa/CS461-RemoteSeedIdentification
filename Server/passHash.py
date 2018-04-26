@@ -17,6 +17,7 @@ def hashPassword(password):
     h = hashlib.pbkdf2_hmac(hashName, password, s, iterations)
     return s + h
 
+# Validate a password against the passed in hash
 def checkPassword(password, passHash):
     s, h = passHash[:16], passHash[16:]
     if h == hashlib.pbkdf2_hmac(hashName, password, s, iterations):
