@@ -106,7 +106,9 @@ public class ResultDetailController extends AppCompatActivity {
         mPieChart.setDrawEntryLabels(false);
 
         // disable hole that is drawn in center of pie char
-        mPieChart.setDrawHoleEnabled(false);
+        //mPieChart.setDrawHoleEnabled(false);
+        mPieChart.setHoleRadius(mPieChart.getHoleRadius()-15);
+        mPieChart.setTransparentCircleRadius(mPieChart.getTransparentCircleRadius()-15);
 
         // hide description
         Description description = new Description();
