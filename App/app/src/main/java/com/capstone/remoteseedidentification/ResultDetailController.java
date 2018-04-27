@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
@@ -95,6 +96,10 @@ public class ResultDetailController extends AppCompatActivity {
         // set format of values to percentages
         dataSet.setValueFormatter(new PercentFormatter());
         mPieChart.setData(new PieData(dataSet));
+
+        // center legend text horizontally and set text size
+        mPieChart.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+        mPieChart.getLegend().setTextSize(12);
 
         // hide labels on pie chart
         mPieChart.setDrawEntryLabels(false);
