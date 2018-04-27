@@ -36,7 +36,7 @@ public class ResultDetailController extends AppCompatActivity {
         setContentView(R.layout.activity_result_detail);
 
         // change to result date later
-        getSupportActionBar().setTitle(getString(R.string.result_detail_actionbar_title));
+        getSupportActionBar().setTitle("4/25/2018 15:00");
 
         initResultsGraph();
 
