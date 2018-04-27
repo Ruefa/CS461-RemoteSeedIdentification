@@ -11,6 +11,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.ValueDependentColor;
 import com.jjoe64.graphview.series.BarGraphSeries;
@@ -26,7 +27,7 @@ public class ResultDetailController extends AppCompatActivity {
     private PieChart mPieChart;
 
     // pie chart settings
-    private static final int PC_TEXT_SIZE = 18;
+    private static final int PC_TEXT_SIZE = 14;
     private static final String PC_TITLE = "Seed Distribution";
 
     @Override
@@ -91,6 +92,8 @@ public class ResultDetailController extends AppCompatActivity {
                 getResources().getColor(R.color.gold),
                 getResources().getColor(R.color.light_red));
         dataSet.setValueTextSize(PC_TEXT_SIZE);
+        // set format of values to percentages
+        dataSet.setValueFormatter(new PercentFormatter());
         mPieChart.setData(new PieData(dataSet));
 
         // hide labels on pie chart
