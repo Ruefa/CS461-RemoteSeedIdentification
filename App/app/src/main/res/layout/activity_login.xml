@@ -72,7 +72,7 @@
         android:layout_height="wrap_content"
         android:onClick="doRegister"
         android:text="@string/login_button_register"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="30dp"
         android:layout_marginRight="15dp"
         android:layout_marginEnd="15dp"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -115,6 +115,6 @@
         android:text="Skip Login"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
+        app:layout_constraintRight_toRightOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
