@@ -11,7 +11,7 @@
         android:layout_width="1dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent=".4"/>
+        app:layout_constraintGuide_percent=".3"/>
 
     <ImageView
         android:id="@+id/iv_login_logo"
@@ -21,7 +21,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/gl_login_logo"/>
+        app:layout_constraintBottom_toBottomOf="@id/gl_login_logo"
+        android:layout_marginBottom="20dp"/>
 
     <EditText
         android:id="@+id/edit_username"
