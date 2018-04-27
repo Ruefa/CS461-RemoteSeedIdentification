@@ -22,7 +22,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="@id/gl_login_logo"
-        android:layout_marginBottom="20dp"/>
+        android:layout_marginBottom="30dp"/>
 
     <EditText
         android:id="@+id/edit_username"
@@ -42,7 +42,7 @@
         android:id="@+id/edit_pass"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="13dp"
         android:hint="@string/login_hint_password"
         android:layout_marginLeft="25dp"
         android:layout_marginStart="25dp"
