@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
@@ -83,7 +84,20 @@ public class ResultDetailController extends AppCompatActivity {
                 getResources().getColor(R.color.light_orange),
                 getResources().getColor(R.color.gold),
                 getResources().getColor(R.color.light_red));
+        dataSet.setValueTextSize(18);
         mPieChart.setData(new PieData(dataSet));
+
+        // hide labels on pie chart
+        mPieChart.setDrawEntryLabels(false);
+
+        // disable hole that is drawn in center of pie char
+        mPieChart.setDrawHoleEnabled(false);
+
+        // hide description
+        Description description = new Description();
+        description.setText("");
+        mPieChart.setDescription(description);
+
         mPieChart.invalidate(); // refresh
     }
 }
