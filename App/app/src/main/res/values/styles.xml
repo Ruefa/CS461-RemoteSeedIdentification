@@ -27,7 +27,7 @@
         <item name="colorPrimary">@color/snow_white</item>
         <item name="android:background">@color/snow_white</item>
         <item name="actionMenuTextColor">@color/black</item>
-        <item name="actionBarStyle">@style/Widget.Styled.ActionBar</item>
+        <item name="actionBarStyle">@style/result_actionbar</item>
         <item name="actionBarSize">35dp</item>
     </style>
 
@@ -74,11 +74,19 @@
     </style>
 
     <style name="Widget.Styled.ActionBar" parent="@style/Widget.AppCompat.Light.ActionBar">
+        <item name="titleTextStyle">@style/ActionBarTitleTextTransparent</item>
+    </style>
+
+    <style name="result_actionbar" parent="@style/Widget.AppCompat.Light.ActionBar">
         <item name="titleTextStyle">@style/ActionBarTitleText</item>
     </style>
 
-    <style name="ActionBarTitleText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+    <style name="ActionBarTitleTextTransparent" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
         <item name="android:textColor">@color/transparent</item>
+    </style>
+
+    <style name="ActionBarTitleText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/charcoal</item>
     </style>
 
     <style name="toolbar_style">
