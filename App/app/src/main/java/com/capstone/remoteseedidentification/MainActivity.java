@@ -147,8 +147,6 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         mNavData.add(getResources().getString(R.string.nav_gallery));
         mNavData.add(getResources().getString(R.string.nav_results));
 
-        getSupportActionBar().setDisplayShowTitleEnabled(false); //hide title
-
         mNavRV = findViewById(R.id.nav_drawer_rv);
         mNavAdapter = new NavDrawerRVAdapter(this, this);
         mNavRV.setAdapter(mNavAdapter);
