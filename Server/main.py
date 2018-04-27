@@ -11,6 +11,7 @@ sys.path.append('/home/nvidia/RemoteSeed/CS461-RemoteSeedIdentification/Classifi
 from sample_analysis import run_analysis
 
 
+db.dbInit()
 serverThread = threading.Thread(target = server.start, daemon=True)
 serverThread.start()
 

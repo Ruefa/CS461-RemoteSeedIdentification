@@ -22,11 +22,9 @@ class Report(db.Entity):
     resultsImg = Optional(str)
     owner = Required(Account)
 
-db.bind(provider='sqlite', filename=str(dbDirectory/'RemoteSeedDB.sqlite'), create_db=True)
-db.generate_mapping(create_tables=True)
-
-set_sql_debug(True)
-
+def dbInit(dbDirectory = dbDirectory):
+    db.bind(provider='sqlite', filename=str(dbDirectory/'RemoteSeedDB.sqlite'), create_db=True)
+    db.generate_mapping(create_tables=True)
 
 @db_session
 def newAccount(username, password):
