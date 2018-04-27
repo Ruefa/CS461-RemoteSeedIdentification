@@ -6,6 +6,23 @@
     android:layout_height="match_parent"
     tools:context="com.capstone.remoteseedidentification.LoginController">
 
+    <android.support.constraint.Guideline
+        android:id="@+id/gl_login_logo"
+        android:layout_width="1dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".4"/>
+
+    <ImageView
+        android:id="@+id/iv_login_logo"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/logo"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/gl_login_logo"/>
+
     <EditText
         android:id="@+id/edit_username"
         android:layout_width="0dp"
@@ -17,7 +34,8 @@
         android:layout_marginEnd="25dp"
         android:focusableInTouchMode="true"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/gl_login_logo"/>
 
     <EditText
         android:id="@+id/edit_pass"
@@ -36,7 +54,7 @@
 
     <Button
         android:id="@+id/button_login"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="doLogin"
         android:text="@string/login_button_login"
@@ -47,9 +65,9 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@id/button_forgot_pw"/>
 
-    <Button
-        android:id="@+id/button_register"
-        android:layout_width="0dp"
+    <TextView
+        android:id="@+id/tv_register_link"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="doRegister"
         android:text="@string/login_button_register"
@@ -79,7 +97,7 @@
 
     <Button
         android:id="@+id/button_forgot_pw"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/login_forgot_password_button"
         android:layout_marginTop="20dp"
