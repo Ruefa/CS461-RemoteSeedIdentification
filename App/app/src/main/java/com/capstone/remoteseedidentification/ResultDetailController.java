@@ -25,6 +25,10 @@ public class ResultDetailController extends AppCompatActivity {
     private GraphView mGraphView;
     private PieChart mPieChart;
 
+    // pie chart settings
+    private static final int PC_TEXT_SIZE = 18;
+    private static final String PC_TITLE = "Seed Distribution";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +42,7 @@ public class ResultDetailController extends AppCompatActivity {
         initPieChart();
     }
 
+    // deprecated. now using pie chart
     private void initResultsGraph(){
         mGraphView = findViewById(R.id.graph_results);
 
@@ -67,6 +72,7 @@ public class ResultDetailController extends AppCompatActivity {
         mGraphView.getGridLabelRenderer().setPadding(30);
     }
 
+    // initializes pie chart with data and themeing
     private void initPieChart(){
         mPieChart = findViewById(R.id.pc_seed_makeup);
 
@@ -78,13 +84,13 @@ public class ResultDetailController extends AppCompatActivity {
         entries.add(new PieEntry(10.0f, "Seed4"));
 
         // create data set and add to pie char
-        PieDataSet dataSet = new PieDataSet(entries, "Seed Distribution");
+        PieDataSet dataSet = new PieDataSet(entries, PC_TITLE);
         // colors appear in same order as entries
         dataSet.setColors(getResources().getColor(R.color.blue),
                 getResources().getColor(R.color.light_orange),
                 getResources().getColor(R.color.gold),
                 getResources().getColor(R.color.light_red));
-        dataSet.setValueTextSize(18);
+        dataSet.setValueTextSize(PC_TEXT_SIZE);
         mPieChart.setData(new PieData(dataSet));
 
         // hide labels on pie chart
