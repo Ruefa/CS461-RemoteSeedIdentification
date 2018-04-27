@@ -85,8 +85,9 @@ public class ResultDetailController extends AppCompatActivity {
         entries.add(new PieEntry(30.0f, "Seed3"));
         entries.add(new PieEntry(10.0f, "Seed4"));
 
-        // create data set and add to pie char
-        PieDataSet dataSet = new PieDataSet(entries, PC_TITLE);
+        // create data set and add to pie chart
+        // label hidden
+        PieDataSet dataSet = new PieDataSet(entries, "");
         // colors appear in same order as entries
         dataSet.setColors(getResources().getColor(R.color.blue),
                 getResources().getColor(R.color.light_orange),
