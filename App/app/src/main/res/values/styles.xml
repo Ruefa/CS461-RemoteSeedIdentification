@@ -8,7 +8,6 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="windowActionBarOverlay">true</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
-        <item name="actionMenuTextColor">@color/black</item>
         <item name="actionBarStyle">@style/Widget.Styled.ActionBar</item>
         <item name="actionBarSize">35dp</item>
     </style>
@@ -18,16 +17,15 @@
         <item name="android:background">@color/primary_background</item>
         <item name="editTextStyle">@style/bordered_edit_text</item>
         <item name="buttonStyle">@style/ColoredButtonStyle</item>
-        <item name="actionMenuTextColor">@color/black</item>
         <item name="actionBarStyle">@style/Widget.Styled.ActionBar</item>
         <item name="actionBarSize">35dp</item>
     </style>
 
-    <style name="ResultsTheme" parent="Theme.AppCompat.Light">
+    <style name="ResultsTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/snow_white</item>
         <item name="android:background">@color/snow_white</item>
-        <item name="actionMenuTextColor">@color/black</item>
         <item name="actionBarStyle">@style/result_actionbar</item>
+        <item name="actionBarTheme">@style/result_actionbar_theme</item>
         <item name="actionBarSize">35dp</item>
     </style>
 
@@ -86,11 +84,12 @@
     </style>
 
     <style name="ActionBarTitleText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
-        <item name="android:textColor">@color/charcoal</item>
+        <item name="android:textColor">@color/snow_white</item>
     </style>
 
-    <style name="toolbar_style">
-        <item name="colorControlNormal">@color/charcoal</item>
+    <style name="result_actionbar_theme">
+        <item name="colorControlNormal">@color/snow_white</item>
+        <item name="android:background">@color/charcoal</item>
     </style>
 
     <color name="red">#FF0000</color>
