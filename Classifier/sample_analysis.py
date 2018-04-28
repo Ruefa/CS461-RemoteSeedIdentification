@@ -49,16 +49,19 @@ INCLUSION_WINDOW = 0.7
 
 # Amount of overlap required for BBox's to be considered bounding the same object
 # For extremely large seeds, a lower threshold is needed
-OVERLAP_THRESHOLD = [0.75, 0.75, 0.75, 0.55, 0.6]
+OVERLAP_THRESHOLD = [0.75, 0.65, 0.6, 0.55, 0.6]
 
 # Edge-to-background ratio required to analyze a sample
 EDGE_THRESHOLD = 0.003
 
-# Confidence required to consider a detection valid
-DETECTION_THRESHOLD = 0.8
+# Confidence required to consider a detection valid, different for each specie
+DETECTION_THRESHOLDS = [0.7, 0.7, 0.9, 0.9, 0.9]
 
 # DPI of the result image
 RESULT_DPI = 200
+
+# Colors to use for the bounding boxes
+COLORS = ["#000000", "#000000", "#067BC2", "#ECC30B", "#F37748", "#d56062"]
 
 # Create an argument parser for weights and image file
 parser = argparse.ArgumentParser(description='Seed sample analzyer')
@@ -185,7 +188,7 @@ def gen_slice_predictions(image_slice, net):
 
         j = 0
 
-        while detections[0, i, j, 0] >= DETECTION_THRESHOLD:
+        while detections[0, i, j, 0] >= DETECTION_THRESHOLDS[i-1]:
             # Get the score of the prediction
             score = detections[0, i, j, 0]
 
@@ -320,7 +323,6 @@ def save_predicitons(image, predictions):
 
     plt.figure(figsize=(10, 10))
     plt.axis('off')
-    colors = plt.cm.hsv(np.linspace(0, 1, len(species_names)+1)).tolist()
     plt.imshow(rgb_image)  # plot the image for matplotlib
     currentAxis = plt.gca()
 
@@ -347,13 +349,10 @@ def save_predicitons(image, predictions):
                 # Add to specie counter
                 species[name] += 1
 
-                # Get the label for the class
-                color = colors[specie_counter+1]
-
                 # Record the color
-                hex_colors[name] = matplotlib.colors.to_hex(color)
+                hex_colors[name] = COLORS[specie_counter+1]
 
-                currentAxis.add_patch(plt.Rectangle(*coords, fill=False, edgecolor=color, linewidth=1))
+                currentAxis.add_patch(plt.Rectangle(*coords, fill=False, edgecolor=COLORS[specie_counter+1], linewidth=1))
 
         else:
 
@@ -405,7 +404,6 @@ def run_analysis(img, directory, weights='ssd300_0712_4000.pth'):
 
     plt.figure(figsize=(10, 10))
     plt.axis('off')
-    colors = plt.cm.hsv(np.linspace(0, 1, len(species_names)+1)).tolist()
     plt.imshow(rgb_image)  # plot the image for matplotlib
     currentAxis = plt.gca()
 
@@ -431,13 +429,10 @@ def run_analysis(img, directory, weights='ssd300_0712_4000.pth'):
                 # Add to specie counter
                 species[name] += 1
 
-                # Get the label for the class
-                color = colors[specie_counter + 1]
-
                 # Record the color
-                hex_colors[name] = matplotlib.colors.to_hex(color)
+                hex_colors[name] = COLORS[specie_counter + 1]
 
-                currentAxis.add_patch(plt.Rectangle(*coords, fill=False, edgecolor=color, linewidth=1))
+                currentAxis.add_patch(plt.Rectangle(*coords, fill=False, edgecolor=COLORS[specie_counter + 1], linewidth=1))
 
         else:
 
