@@ -80,10 +80,10 @@ public class ResultDetailController extends AppCompatActivity {
 
         // create test data
         List<PieEntry> entries = new ArrayList<>();
-        entries.add(new PieEntry(20.0f, "Seed1"));
-        entries.add(new PieEntry(40.0f, "Seed2"));
-        entries.add(new PieEntry(30.0f, "Seed3"));
-        entries.add(new PieEntry(10.0f, "Seed4"));
+        entries.add(new PieEntry(20.3f, "Tall Fescue"));
+        entries.add(new PieEntry(24.0f, "Wheat"));
+        entries.add(new PieEntry(24.0f, "Flax"));
+        entries.add(new PieEntry(31.7f, "Red Clover"));
 
         // create data set and add to pie chart
         // label hidden
