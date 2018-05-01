@@ -86,10 +86,6 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
 
         mThumbView = findViewById(R.id.thumb_view);
 
-        //initCamera();
-
-        initNavigation();
-
         //icon testing
         ((TextView) findViewById(R.id.nav_drawer_logout)).setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_action_gallery,0,0,0);
     }
@@ -141,6 +137,7 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         }
     }
 
+    /* no longer used
     //sets up navigation drawer
     private void initNavigation(){
         mNavData = new ArrayList<>();
@@ -154,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         mNavRV.setHasFixedSize(true);
         mNavAdapter.updateItems(mNavData);
     }
+    */
 
     @Override
     public void onNavDrawerItemClick(String item) {
