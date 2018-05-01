@@ -224,6 +224,11 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         startActivity(intent);
     }
 
+    // overload to support calling from button in layout
+    public void goResults(View v){
+        goResults();
+    }
+
     public void takePicture(View v){
 
         //using jpg because raw is not supported on every phone
@@ -406,7 +411,7 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         return null;
     }
 
-    public void analyzeAlertDialog() {
+    private void analyzeAlertDialog() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AnalyzeDialogStyle);
 
         builder.setTitle("Choose");
@@ -429,6 +434,11 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         });
 
         builder.show();
+    }
+
+    // overload to support onClick from button in layout
+    public void anaylzeAlertDialog(View v){
+        analyzeAlertDialog();
     }
 
     private void startCameraIntent(){
