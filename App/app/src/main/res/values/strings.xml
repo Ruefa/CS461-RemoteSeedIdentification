@@ -42,4 +42,5 @@
 
     <!-- Result Detail Activity -->
     <string name="result_detail_actionbar_title">Result Detail</string>
+    <string name="action_share">"Share PDF of Results"</string>
 </resources>
