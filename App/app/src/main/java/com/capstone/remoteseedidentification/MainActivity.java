@@ -87,9 +87,6 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         checkPermissions();
 
         mThumbView = findViewById(R.id.thumb_view);
-
-        //icon testing
-        ((TextView) findViewById(R.id.nav_drawer_logout)).setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_action_gallery,0,0,0);
     }
 
     private Camera getCameraInstance(){
