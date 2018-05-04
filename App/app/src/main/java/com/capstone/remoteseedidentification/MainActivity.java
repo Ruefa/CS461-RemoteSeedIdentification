@@ -84,6 +84,8 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         intentFilter.addAction(BROADCAST_ACTION);
         mBroadcastManager.registerReceiver(mBroadcastReceiver, intentFilter);
 
+        checkPermissions();
+
         mThumbView = findViewById(R.id.thumb_view);
 
         //icon testing
@@ -113,14 +115,16 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         }
     }
 
-    private void initCamera(){
+    private void checkPermissions(){
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     CAMERA_PERMISSION_REQUEST);
         }
-        else {
+    }
+
+    private void initCamera(){
             mCamera = getCameraInstance();
             mCamera.setDisplayOrientation(90);
 
@@ -134,7 +138,6 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
             });
             //FrameLayout frameLayout = findViewById(R.id.cam_view);
             //frameLayout.addView(mCameraView);
-        }
     }
 
     /* no longer used
