@@ -6,6 +6,24 @@
     android:layout_height="match_parent"
     tools:context="com.capstone.remoteseedidentification.RegisterController">
 
+    <android.support.constraint.Guideline
+        android:id="@+id/gl_register_logo"
+        android:layout_width="1dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".3"/>
+
+    <ImageView
+        android:id="@+id/iv_register_logo"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/logo"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/gl_register_logo"
+        android:layout_marginBottom="30dp"/>
+
     <EditText
         android:id="@+id/et_register_username"
         android:layout_width="match_parent"
@@ -15,7 +33,8 @@
         android:layout_marginStart="25dp"
         android:layout_marginRight="25dp"
         android:layout_marginEnd="25dp"
-        android:focusableInTouchMode="true"/>
+        android:focusableInTouchMode="true"
+        app:layout_constraintTop_toBottomOf="@id/gl_register_logo"/>
 
     <EditText
         android:id="@+id/et_register_pass"
@@ -23,12 +42,12 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:hint="@string/register_hint_password"
-        app:layout_constraintTop_toBottomOf="@+id/et_register_username"
         android:layout_marginLeft="25dp"
         android:layout_marginStart="25dp"
         android:layout_marginRight="25dp"
         android:layout_marginEnd="25dp"
-        android:focusableInTouchMode="true"/>
+        android:focusableInTouchMode="true"
+        app:layout_constraintTop_toBottomOf="@+id/et_register_username"/>
 
     <EditText
         android:id="@+id/et_register_pass_confirm"
@@ -36,20 +55,27 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:hint="@string/register_hint_confirm"
-        app:layout_constraintTop_toBottomOf="@id/et_register_pass"
         android:layout_marginLeft="25dp"
         android:layout_marginStart="25dp"
         android:layout_marginRight="25dp"
         android:layout_marginEnd="25dp"
-        android:focusableInTouchMode="true"/>
+        android:focusableInTouchMode="true"
+        app:layout_constraintTop_toBottomOf="@id/et_register_pass"/>
 
     <Button
         android:id="@+id/button_register"
         android:onClick="doRegister"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/register_button_register"
+        android:layout_marginLeft="25dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginEnd="25dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/et_register_pass_confirm" />
 
