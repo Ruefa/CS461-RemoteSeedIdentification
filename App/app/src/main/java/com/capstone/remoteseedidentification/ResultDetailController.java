@@ -1,9 +1,23 @@
 package com.capstone.remoteseedidentification;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
@@ -13,11 +27,19 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.ValueDependentColor;
 import com.jjoe64.graphview.series.BarGraphSeries;
 import com.jjoe64.graphview.series.DataPoint;
 
+import org.w3c.dom.Document;
+
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +53,8 @@ public class ResultDetailController extends AppCompatActivity {
     private static final int PC_TEXT_SIZE = 14;
     private static final String PC_TITLE = "Seed Distribution";
 
+    private static final String PDF_PATH_TITLE = "Result_Detail";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +66,90 @@ public class ResultDetailController extends AppCompatActivity {
         initResultsGraph();
 
         initPieChart();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.result_detail_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_share:
+                sharePDF();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void sharePDF(){
+        Bitmap screen = getScreenBitmap();
+        ((ImageView)findViewById(R.id.iv_result)).setImageBitmap(screen);
+
+        Uri uri = bitmapToUri(screen);
+        Intent share = new Intent();
+        share.setAction(Intent.ACTION_SEND);
+        share.setType("application/pdf");
+        share.putExtra(Intent.EXTRA_STREAM, uri);
+        startActivity(share);
+    }
+
+    // gets bitmap of current activities screen display
+    private Bitmap getScreenBitmap(){
+        Bitmap screen;
+
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+        ConstraintLayout root = (ConstraintLayout) inflater.inflate(R.layout.activity_result_detail, null);
+        root.setDrawingCacheEnabled(true);
+        screen = getBitmapFromView(this.getWindow().findViewById(R.id.result_detail_root));
+
+        return screen;
+    }
+
+    private Bitmap getBitmapFromView(View view){
+        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(returnedBitmap);
+        Drawable drawable = view.getBackground();
+        if(drawable != null){
+            drawable.draw(canvas);
+        }else{
+            canvas.drawColor(Color.WHITE);
+        }
+
+        view.draw(canvas);
+
+        return returnedBitmap;
+    }
+
+    private Uri bitmapToUri(Bitmap bitmap){
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(this.getContentResolver(), bitmap,
+                PDF_PATH_TITLE, null);
+        return Uri.parse(path);
+    }
+
+    private void bitmapToPDF(Bitmap bitmap){
+        com.itextpdf.text.Document document = new com.itextpdf.text.Document();
+        String dirPath = android.os.Environment.getExternalStorageDirectory().toString();
+        try {
+            PdfWriter.getInstance(document, new FileOutputStream(dirPath + "/" + PDF_PATH_TITLE + ".pdf"));
+            document.open();
+            Image img = Image.getInstance(dirPath + "/" + PDF_PATH_TITLE + ".png");
+            //img = Image.getInstance(bitmap);
+
+            float scalar = ((document.getPageSize().getWidth() - document.leftMargin()
+            - document.rightMargin() - 0) / img.getWidth()) * 100;
+            img.scalePercent(scalar);
+            img.setAlignment(Image.ALIGN_CENTER | Image.ALIGN_TOP);
+            document.add(img);
+            document.close();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     // deprecated. now using pie chart
