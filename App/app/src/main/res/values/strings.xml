@@ -12,8 +12,8 @@
     <!-- main -->
     <string name="bt_main_analyze">Analyze</string>
     <string name="bt_main_results">Results</string>
-    <string name="button_accept">Accept</string>
-    <string name="button_deny">Deny</string>
+    <string name="button_accept">Send Image</string>
+    <string name="button_deny">Cancel</string>
     <string name="button_snap">Take a picture!</string>
 
     <!-- Login activity -->

@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Environment;
@@ -273,7 +274,13 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
                 }
             } else if(reqCode == RESULT_CAMERA_IMAGE){
                 Bitmap image = BitmapFactory.decodeFile(mCurrentImagePath);
-                mThumbView.setImageBitmap(image);
+
+                Matrix matrix = new Matrix();
+                matrix.postRotate(90);
+                Bitmap rotated = Bitmap.createBitmap(image, 0, 0, image.getWidth(),
+                        image.getHeight(), matrix, true);
+
+                mThumbView.setImageBitmap(rotated);
 
                 initConfirmation();
             }
@@ -306,6 +313,9 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
 
         acc.setVisibility(View.VISIBLE);
         deny.setVisibility(View.VISIBLE);
+        findViewById(R.id.bt_main_analyze).setVisibility(View.INVISIBLE);
+        findViewById(R.id.bt_main_results).setVisibility(View.INVISIBLE);
+        findViewById(R.id.bt_main_logout).setVisibility(View.INVISIBLE);
         //mCaptureButton.setVisibility(View.INVISIBLE);
         mThumbView.setVisibility(View.VISIBLE);
     }
@@ -316,25 +326,24 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         switch(v.getId()){
             case R.id.button_conf_accept:
                 sendImage();
-                toast = Toast.makeText(this, "Image Sent", Toast.LENGTH_LONG);
-                break;
-
-            case R.id.button_conf_deny:
-                toast = Toast.makeText(this, "Image Denied", Toast.LENGTH_LONG);
+                toast = Toast.makeText(getApplicationContext(), "Image Sent", Toast.LENGTH_LONG);
+                toast.show();
                 break;
 
             default:
                 Log.e("doImageConf", "Unknown id: " + v.getId() );
-                return;
+                break;
         }
-
-        toast.show();
 
         //restart camera preview
         //set visibility appropriately
        // mCamera.startPreview();
         //mCameraView.setVisibility(View.VISIBLE);
         //mCaptureButton.setVisibility(View.VISIBLE);
+        findViewById(R.id.bt_main_analyze).setVisibility(View.VISIBLE);
+        findViewById(R.id.bt_main_results).setVisibility(View.VISIBLE);
+        findViewById(R.id.bt_main_logout).setVisibility(View.VISIBLE);
+        mThumbView.setVisibility(View.INVISIBLE);
         findViewById(R.id.button_conf_accept).setVisibility(View.GONE);
         findViewById(R.id.button_conf_deny).setVisibility(View.GONE);
     }
