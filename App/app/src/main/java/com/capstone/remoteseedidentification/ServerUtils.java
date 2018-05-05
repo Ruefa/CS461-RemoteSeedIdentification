@@ -41,7 +41,7 @@ public class ServerUtils {
     private static final byte LOGIN_INDICATOR = 0x02;
     private static final byte ANALYZE_INDICATOR = 0x64;
     private static final byte REPORT_LIST_INDICATOR = 0x65;
-    private static final String REPORT_INDICATOR = "e";
+    private static final byte REPORT_INDICATOR = 0x66;
     private static final String LOGOUT_INDICATOR = "z";
 
     public static final String SEND_MESSAGE = "socket.service.intent.action.SEND_MESSAGE";
@@ -222,7 +222,7 @@ public class ServerUtils {
                 return FAILURE;
             }
         } else if(messageType.equals(ResultsController.ACTION_VIEW_RESULTS)) {
-            return new String(bytesRead, Charset.forName("UTF-8"));
+            return new String(bytesRead, Charset.forName("ASCII"));
         } else if(messageType.equals(ResultsController.ACTION_REQUEST_RESULT)){
             //find location of delimiter
             int i = 0;
@@ -383,9 +383,9 @@ public class ServerUtils {
     public static byte[] formatResultRequest(byte[] reportID, byte[] userID){
         try{
             ByteArrayOutputStream combiner = new ByteArrayOutputStream();
-            combiner.write(REPORT_INDICATOR.getBytes());
-            combiner.write(userID);
-            combiner.write("|".getBytes());
+            combiner.write(REPORT_INDICATOR);
+            //combiner.write(userID);
+            //combiner.write("|".getBytes());
             combiner.write(reportID);
             return addLengthToBytes(combiner.toByteArray());
         } catch (IOException e){
