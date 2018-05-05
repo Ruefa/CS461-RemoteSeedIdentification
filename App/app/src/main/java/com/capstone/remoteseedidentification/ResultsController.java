@@ -121,35 +121,9 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
                 } else if (intent.getStringExtra(SocketService.ACTION_KEY).equals(ACTION_REQUEST_RESULT)) {
                     Log.d(TAG, "result request received");
                     String results = intent.getStringExtra(SocketService.BROADCAST_KEY);
-                    Log.d(TAG, intent.getStringExtra(SocketService.BROADCAST_KEY));
-
-                    String[] resultArray = results.split("\n");
-                    Log.d(TAG, Arrays.toString(resultArray));
-
-                    float prg = Float.valueOf(resultArray[0].split(":")[1]) * 100;
-                    float tf = Float.valueOf(resultArray[1].split(":")[1]) * 100;
-
-                    byte[] imageBytes = MainActivity.fileToBytes(resultArray[2]);
-                    Bitmap thumbBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-                    mResultView.setImageBitmap(thumbBitmap);
-
-                    BarGraphSeries<DataPoint> series = new BarGraphSeries<>(new DataPoint[]{
-                            new DataPoint(0, prg),
-                            new DataPoint(2, tf)
-                    });
-                    //mGraphView.removeAllSeries();
-                    //mGraphView.addSeries(series);
-
-                    series.setValueDependentColor(new ValueDependentColor<DataPoint>() {
-                        @Override
-                        public int get(DataPoint data) {
-                            return Color.rgb((int) data.getX() * 255 / 4, (int) Math.abs(data.getY() * 255 / 6), 100);
-                        }
-                    });
-                    series.setSpacing(50);
-
-                    series.setDrawValuesOnTop(true);
-                    series.setValuesOnTopColor(Color.RED);
+                    Intent resultDetailIntent = new Intent(context, ResultDetailController.class);
+                    intent.putExtra(SocketService.BROADCAST_KEY, results);
+                    startActivity(resultDetailIntent);
                 }
             } else {
                 //display error
