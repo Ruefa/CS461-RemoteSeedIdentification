@@ -192,15 +192,19 @@ public class ServerUtils {
             Log.d(TAG, "byte size: " + Arrays.toString(sizeBytes));
 
             int messageSize = ByteBuffer.wrap(sizeBytes).getInt();
+            int maxBlockSize = 16384; // 2^14
 
             do {
-                byte[] bytesToCombine = new byte[messageSize];
+                byte[] bytesToCombine;
+                bytesToCombine = messageSize >= maxBlockSize ? new byte[maxBlockSize] : new byte[messageSize];
                 numBytesRead = mInputStream.read(bytesToCombine);
+
+                messageSize -= numBytesRead;
 
                 if(numBytesRead > 0) {
                     combiner.write(bytesToCombine, 0, numBytesRead);
                 }
-            }while(numBytesRead < messageSize);
+            }while(messageSize > 0);
 
             bytesRead = combiner.toByteArray();
             Log.d(TAG, Arrays.toString(bytesRead));
