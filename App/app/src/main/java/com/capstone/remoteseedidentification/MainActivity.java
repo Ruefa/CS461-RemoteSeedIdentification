@@ -332,9 +332,9 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
 
         //restart camera preview
         //set visibility appropriately
-        mCamera.startPreview();
-        mCameraView.setVisibility(View.VISIBLE);
-        mCaptureButton.setVisibility(View.VISIBLE);
+       // mCamera.startPreview();
+        //mCameraView.setVisibility(View.VISIBLE);
+        //mCaptureButton.setVisibility(View.VISIBLE);
         findViewById(R.id.button_conf_accept).setVisibility(View.GONE);
         findViewById(R.id.button_conf_deny).setVisibility(View.GONE);
     }
