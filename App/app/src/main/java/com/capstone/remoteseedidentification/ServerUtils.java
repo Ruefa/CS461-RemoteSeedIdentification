@@ -36,8 +36,8 @@ public class ServerUtils {
     private static final int SERVER_PORT = 5777;
     private static final String TAG = "ServerUtils";
 
-    private static final String REGISTER_INDICATOR = "a";
-    private static final String LOGIN_INDICATOR = "b";
+    private static final byte REGISTER_INDICATOR = 0x01;
+    private static final byte LOGIN_INDICATOR = 0x02;
     private static final String ANALYZE_INDICATOR = "c";
     private static final String REPORT_LIST_INDICATOR = "d";
     private static final String REPORT_INDICATOR = "e";
@@ -45,8 +45,10 @@ public class ServerUtils {
 
     public static final String SEND_MESSAGE = "socket.service.intent.action.SEND_MESSAGE";
     public static final String LOGIN_ACCEPT = "01";
-    public static final String FAILURE = "00";
-    public static final String REGISTER_ACCEPT = "01";
+    public static final String FAILURE = "01";
+    public static final String REGISTER_ACCEPT = "00";
+
+    public static final byte SUCCESS = 0x00;
 
     private PrintWriter mOutBuffer;
     private OutputStream mOutputStream;
@@ -208,8 +210,8 @@ public class ServerUtils {
                 return FAILURE;
             }
         } else if(messageType.equals(RegisterController.BROADCAST_ACTION)) {
-            if (String.valueOf(bytesRead[0]).equals("1")) {
-                return LOGIN_ACCEPT;
+            if (bytesRead[bytesRead.length-1] == SUCCESS) {
+                return REGISTER_ACCEPT;
             } else {
                 return FAILURE;
             }
@@ -316,7 +318,7 @@ public class ServerUtils {
         String indicator = "";
 
         try {
-            indicator = new String(bytes, "ISO_8859_1");;
+            indicator = new String(bytes, "ISO_8859_1");
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -325,11 +327,11 @@ public class ServerUtils {
     }
 
     public static String loginFormat(String username, String pass){
-        return LOGIN_INDICATOR + username + "@" + pass;
+        return byteToISOString(LOGIN_INDICATOR) + username + ":" + pass;
     }
 
     public static String registerFormat(String username, String pass){
-        return REGISTER_INDICATOR + username + "@" + pass;
+        return byteToISOString(REGISTER_INDICATOR) + username + ":" + pass;
     }
 
     public static byte[] formatResultsList(byte[] userID){
