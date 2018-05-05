@@ -132,7 +132,7 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
                     String results = intent.getStringExtra(SocketService.BROADCAST_KEY);
                     if(results != ServerUtils.FAILURE) {
                         Intent resultDetailIntent = new Intent(context, ResultDetailController.class);
-                        intent.putExtra(SocketService.BROADCAST_KEY, results);
+                        resultDetailIntent.putExtra(SocketService.BROADCAST_KEY, results);
                         startActivity(resultDetailIntent);
                     } else{
                         errorToast(ERROR_REPORT);
