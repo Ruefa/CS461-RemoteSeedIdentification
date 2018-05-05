@@ -309,6 +309,21 @@ public class ServerUtils {
         cookie = null;
     }
 
+    // converts a single byte to a ISO_8859_1 string
+    // used for indicators so they are converted back to bytes correctly before sending
+    private static String byteToISOString(byte indicatorByte){
+        byte[] bytes = new byte[]{indicatorByte};
+        String indicator = "";
+
+        try {
+            indicator = new String(bytes, "ISO_8859_1");;
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return indicator;
+    }
+
     public static String loginFormat(String username, String pass){
         return LOGIN_INDICATOR + username + "@" + pass;
     }
