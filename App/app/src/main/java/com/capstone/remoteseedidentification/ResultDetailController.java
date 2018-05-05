@@ -90,6 +90,7 @@ public class ResultDetailController extends AppCompatActivity {
     }
 
     private void oldSetup(){
+        // get results from intent that started the activity
         String results = getIntent().getStringExtra(SocketService.BROADCAST_KEY);
         Log.d(TAG, results);
 
