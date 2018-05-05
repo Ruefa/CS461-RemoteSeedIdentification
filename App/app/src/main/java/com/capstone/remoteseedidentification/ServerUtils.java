@@ -24,6 +24,8 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import static java.lang.Thread.sleep;
 
@@ -233,21 +235,28 @@ public class ServerUtils {
                 return FAILURE;
             } else {
                 //find location of delimiter
+                List<byte[]> byteList = new LinkedList<>();
                 int i = 0;
-                while (i < bytesRead.length && bytesRead[i] != "|".getBytes()[0]) {
+                int block = 0;
+                int found = 0;
+                while (i < bytesRead.length) {
+                    if(bytesRead[i] == "|".getBytes()[0] && found < 2){
+                        byteList.add(Arrays.copyOfRange(bytesRead, block, i));
+                        block = i + 1;
+                        found++;
+                    }
                     i++;
                 }
+                // get last item
+                byteList.add(Arrays.copyOfRange(bytesRead, block, bytesRead.length));
 
-                byte[] data = new byte[i];
-                byte[] imageBytes = new byte[bytesRead.length - i - 1];
-
-                System.arraycopy(bytesRead, 0, data, 0, data.length);
-                System.arraycopy(bytesRead, i + 1, imageBytes, 0, imageBytes.length);
+                byte[] data = byteList.get(1);
+                byte[] imageBytes = byteList.get(2);
 
                 Log.d(TAG, Arrays.toString(data));
                 String resultString = "";
                 for (int j = 0; j < data.length; j++) {
-                    resultString += new String(new byte[]{data[j]}, Charset.forName("UTF-8"));
+                    resultString += new String(new byte[]{data[j]}, Charset.forName("ASCII"));
                 }
                 Log.d(TAG, Arrays.toString(imageBytes));
 
