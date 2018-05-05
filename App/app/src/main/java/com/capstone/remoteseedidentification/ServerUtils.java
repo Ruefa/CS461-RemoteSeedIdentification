@@ -38,7 +38,7 @@ public class ServerUtils {
 
     private static final byte REGISTER_INDICATOR = 0x01;
     private static final byte LOGIN_INDICATOR = 0x02;
-    private static final String ANALYZE_INDICATOR = "c";
+    private static final byte ANALYZE_INDICATOR = 0x64;
     private static final String REPORT_LIST_INDICATOR = "d";
     private static final String REPORT_INDICATOR = "e";
     private static final String LOGOUT_INDICATOR = "z";
@@ -353,9 +353,9 @@ public class ServerUtils {
 
         ByteArrayOutputStream combiner = new ByteArrayOutputStream();
         try {
-            combiner.write(ANALYZE_INDICATOR.getBytes());
-            combiner.write(userID);
-            combiner.write("|".getBytes());
+            combiner.write(ANALYZE_INDICATOR);
+            //combiner.write(userID);
+            //combiner.write("|".getBytes());
             combiner.write(image);
             preLength = combiner.toByteArray();
 
