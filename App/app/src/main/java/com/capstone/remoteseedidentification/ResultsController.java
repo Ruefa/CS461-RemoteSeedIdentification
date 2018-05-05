@@ -107,16 +107,21 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
                     String results = intent.getStringExtra(SocketService.BROADCAST_KEY);
                     Log.d(TAG, results);
 
+                    // split results over | delimiter
                     String[] resultArray = results.split("\\|");
-                    ArrayList<String> resultList = new ArrayList<String>(Arrays.asList(resultArray));
-                    Log.d(TAG, "resultList size: " + resultList.size());
-                    Log.d(TAG, "result: " + resultList.get(0));
-                    if (resultList.size() > 0 && !resultList.get(0).equals("")) {
-                        mResultsRVAdapter.updateItems(resultList, testBitmaps());
-                    } else {
-                        ArrayList<String> emptyList = new ArrayList<>();
-                        emptyList.add("No results to display");
-                        mResultsRVAdapter.updateItems(emptyList, testBitmaps());
+                    if(!resultArray[0].equals(ServerUtils.FAILURE)) {
+                        ArrayList<String> resultList = new ArrayList<String>(Arrays.asList(resultArray));
+                        // first result is error code. remove it to get only data
+                        resultList.remove(0);
+                        Log.d(TAG, "resultList size: " + resultList.size());
+                        Log.d(TAG, "result: " + resultList.get(0));
+                        if (resultList.size() > 0 && !resultList.get(0).equals("")) {
+                            mResultsRVAdapter.updateItems(resultList, testBitmaps());
+                        } else {
+                            ArrayList<String> emptyList = new ArrayList<>();
+                            emptyList.add("No results to display");
+                            mResultsRVAdapter.updateItems(emptyList, testBitmaps());
+                        }
                     }
                 } else if (intent.getStringExtra(SocketService.ACTION_KEY).equals(ACTION_REQUEST_RESULT)) {
                     Log.d(TAG, "result request received");
@@ -142,7 +147,7 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
         intent.putExtras(bundle);
         startService(intent);
 
-        goResultDetail();
+        //goResultDetail();
     }
 
     private void goResultDetail(){
