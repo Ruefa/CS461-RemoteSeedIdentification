@@ -50,6 +50,7 @@ public class ResultDetailController extends AppCompatActivity {
 
     private GraphView mGraphView;
     private PieChart mPieChart;
+    private ImageView ivResult;
 
     // pie chart settings
     private static final int PC_TEXT_SIZE = 14;
@@ -62,14 +63,12 @@ public class ResultDetailController extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result_detail);
 
-        oldSetup();
+        ivResult = findViewById(R.id.iv_result_detail);
+
+        initData();
 
         // change to result date later
         getSupportActionBar().setTitle("4/25/2018 15:00");
-
-        initResultsGraph();
-
-        initPieChart();
     }
 
     @Override
@@ -87,6 +86,17 @@ public class ResultDetailController extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void initData(){
+        // get results from intent that started the activity
+        String results = getIntent().getStringExtra(SocketService.BROADCAST_KEY);
+        Log.d(TAG, results);
+
+        String resultArray[] = results.split("\n");
+        Log.d(TAG, Arrays.toString(resultArray));
+
+        setImageDisplay(resultArray[resultArray.length-1]);
     }
 
     private void oldSetup(){
@@ -123,9 +133,15 @@ public class ResultDetailController extends AppCompatActivity {
         series.setValuesOnTopColor(Color.RED);
     }
 
+    private void setImageDisplay(String fileName){
+        byte[] imageBytes = MainActivity.fileToBytes(fileName);
+        Bitmap thumbBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+        ivResult.setImageBitmap(thumbBitmap);
+    }
+
     private void sharePDF(){
         Bitmap screen = getScreenBitmap();
-        ((ImageView)findViewById(R.id.iv_result)).setImageBitmap(screen);
+        ((ImageView)findViewById(R.id.iv_result_detail)).setImageBitmap(screen);
 
         Uri uri = bitmapToUri(screen);
         Intent share = new Intent();
