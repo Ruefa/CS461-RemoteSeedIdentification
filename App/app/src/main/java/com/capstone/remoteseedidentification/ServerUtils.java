@@ -50,6 +50,7 @@ public class ServerUtils {
     public static final String REGISTER_ACCEPT = "00";
 
     public static final byte SUCCESS = 0x00;
+    public static final byte INVALID_MESSAGE = 0x32;
 
     private PrintWriter mOutBuffer;
     private OutputStream mOutputStream;
@@ -224,28 +225,33 @@ public class ServerUtils {
         } else if(messageType.equals(ResultsController.ACTION_VIEW_RESULTS)) {
             return new String(bytesRead, Charset.forName("ASCII"));
         } else if(messageType.equals(ResultsController.ACTION_REQUEST_RESULT)){
-            //find location of delimiter
-            int i = 0;
-            while(i < bytesRead.length && bytesRead[i] != "|".getBytes()[0]){
-                i++;
+
+            if(bytesRead[0] == INVALID_MESSAGE){
+                return FAILURE;
+            } else {
+                //find location of delimiter
+                int i = 0;
+                while (i < bytesRead.length && bytesRead[i] != "|".getBytes()[0]) {
+                    i++;
+                }
+
+                byte[] data = new byte[i];
+                byte[] imageBytes = new byte[bytesRead.length - i - 1];
+
+                System.arraycopy(bytesRead, 0, data, 0, data.length);
+                System.arraycopy(bytesRead, i + 1, imageBytes, 0, imageBytes.length);
+
+                Log.d(TAG, Arrays.toString(data));
+                String resultString = "";
+                for (int j = 0; j < data.length; j++) {
+                    resultString += new String(new byte[]{data[j]}, Charset.forName("UTF-8"));
+                }
+                Log.d(TAG, Arrays.toString(imageBytes));
+
+                String fileName = MainActivity.imageToFile("result.png", imageBytes);
+
+                return resultString + "\n" + fileName;
             }
-
-            byte[] data = new byte[i];
-            byte[] imageBytes = new byte[bytesRead.length - i - 1];
-
-            System.arraycopy(bytesRead, 0, data, 0, data.length);
-            System.arraycopy(bytesRead, i+1, imageBytes, 0, imageBytes.length);
-
-            Log.d(TAG, Arrays.toString(data));
-            String resultString = "";
-            for(int j=0; j < data.length; j++){
-                resultString += new String(new byte[]{data[j]}, Charset.forName("UTF-8"));
-            }
-            Log.d(TAG, Arrays.toString(imageBytes));
-
-            String fileName = MainActivity.imageToFile("result.png", imageBytes);
-
-            return resultString + "\n" + fileName;
         }
 
         return FAILURE;

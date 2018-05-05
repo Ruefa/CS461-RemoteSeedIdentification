@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.ValueDependentColor;
@@ -29,6 +30,9 @@ import java.util.Arrays;
 
 public class ResultsController extends AppCompatActivity implements ResultsListRVAdapter.OnResultsClickListener {
     private static final String TAG = "ResultsController";
+
+    private static final String ERROR_REPORT = "ERROR: Unable to receive report from server.";
+    private static final String ERROR_UNKNOWN = "ERROR: Unable to connect to server.";
 
     private ResultsListRVAdapter mResultsRVAdapter;
     private ProgressBar mpbResultsRV;
@@ -126,12 +130,16 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
                 } else if (intent.getStringExtra(SocketService.ACTION_KEY).equals(ACTION_REQUEST_RESULT)) {
                     Log.d(TAG, "result request received");
                     String results = intent.getStringExtra(SocketService.BROADCAST_KEY);
-                    Intent resultDetailIntent = new Intent(context, ResultDetailController.class);
-                    intent.putExtra(SocketService.BROADCAST_KEY, results);
-                    startActivity(resultDetailIntent);
+                    if(results != ServerUtils.FAILURE) {
+                        Intent resultDetailIntent = new Intent(context, ResultDetailController.class);
+                        intent.putExtra(SocketService.BROADCAST_KEY, results);
+                        startActivity(resultDetailIntent);
+                    } else{
+                        errorToast(ERROR_REPORT);
+                    }
                 }
             } else {
-                //display error
+                errorToast(ERROR_UNKNOWN);
             }
         }
     };
@@ -153,5 +161,9 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
     private void goResultDetail(){
         Intent intent = new Intent(this, ResultDetailController.class);
         startActivity(intent);
+    }
+
+    private void errorToast(String errorText){
+        Toast.makeText(getApplicationContext(), errorText, Toast.LENGTH_LONG).show();
     }
 }
