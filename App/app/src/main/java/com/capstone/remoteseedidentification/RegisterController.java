@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.net.SocketPermission;
@@ -20,6 +21,7 @@ public class RegisterController extends AppCompatActivity {
 
     private EditText etUser, etPass, etPassConfirm;
     private TextView tvError;
+    private ProgressBar pbRegister;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +32,7 @@ public class RegisterController extends AppCompatActivity {
         etPass = findViewById(R.id.et_register_pass);
         etPassConfirm = findViewById(R.id.et_register_pass_confirm);
         tvError = findViewById(R.id.tv_register_error);
+        pbRegister = findViewById(R.id.pb_register);
 
         mBroadcastManager = LocalBroadcastManager.getInstance(this);
         IntentFilter intentFilter = new IntentFilter();
@@ -47,6 +50,7 @@ public class RegisterController extends AppCompatActivity {
                 && !etPass.getText().toString().equals("")) {
             message = ServerUtils.registerFormat(etUser.getText().toString(), etPass.getText().toString());
 
+            pbRegister.setVisibility(View.VISIBLE);
             Intent intent = new Intent(this, SocketService.class);
             Bundle bundle = new Bundle();
             bundle.putString(SocketService.SEND_MESSAGE_KEY, message);
@@ -70,6 +74,8 @@ public class RegisterController extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             String response = intent.getStringExtra(SocketService.BROADCAST_KEY);
+
+            pbRegister.setVisibility(View.INVISIBLE);
 
             switch (response){
                 case ServerUtils.REGISTER_ACCEPT:
