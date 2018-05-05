@@ -32,6 +32,7 @@
     <string name="register_hint_confirm">Confirm Password</string>
     <string name="register_error_mismatch">Passwords do not match</string>
     <string name="register_button_register">Register</string>
+    <string name="register_return_login">Already have an account? Click here to login.</string>
 
     <!-- Analyze Dialog -->
     <string name="analyze_dialog_live">Live Image</string>
