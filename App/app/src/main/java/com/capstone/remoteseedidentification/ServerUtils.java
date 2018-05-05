@@ -195,7 +195,6 @@ public class ServerUtils {
 
             do {
                 byte[] bytesToCombine = new byte[messageSize];
-                Log.d(TAG, "waiting on read");
                 numBytesRead = mInputStream.read(bytesToCombine);
 
                 if(numBytesRead > 0) {
