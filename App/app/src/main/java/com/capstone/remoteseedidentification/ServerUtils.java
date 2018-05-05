@@ -9,6 +9,7 @@ import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,7 +40,7 @@ public class ServerUtils {
     private static final byte REGISTER_INDICATOR = 0x01;
     private static final byte LOGIN_INDICATOR = 0x02;
     private static final byte ANALYZE_INDICATOR = 0x64;
-    private static final String REPORT_LIST_INDICATOR = "d";
+    private static final byte REPORT_LIST_INDICATOR = 0x65;
     private static final String REPORT_INDICATOR = "e";
     private static final String LOGOUT_INDICATOR = "z";
 
@@ -138,12 +139,10 @@ public class ServerUtils {
     public void sendMessage(byte[] message){
         Log.d("Server: ", "starting sendMessage");
         if(mOutBuffer != null && !mOutBuffer.checkError()){
-//            mOutBuffer.println(message);
-//            mOutBuffer.flush();
             try {
                 mOutputStream.write(message);
                 mOutputStream.flush();
-                mSocket.shutdownOutput();
+                //mSocket.shutdownOutput();
             }
             catch (IOException e){
                 e.printStackTrace();
@@ -186,15 +185,22 @@ public class ServerUtils {
 //            numBytesRead = mInputStream.read(test);
 //            Log.d(TAG, Arrays.toString(bytesRead));
 
+            // get number of bytes being sent across socket
+            byte[] sizeBytes = new byte[4];
+            mInputStream.read(sizeBytes);
+            Log.d(TAG, "byte size: " + Arrays.toString(sizeBytes));
+
+            int messageSize = ByteBuffer.wrap(sizeBytes).getInt();
+
             do {
-                byte[] bytesToCombine = new byte[16384];
+                byte[] bytesToCombine = new byte[messageSize];
                 Log.d(TAG, "waiting on read");
                 numBytesRead = mInputStream.read(bytesToCombine);
 
                 if(numBytesRead > 0) {
                     combiner.write(bytesToCombine, 0, numBytesRead);
                 }
-            }while(numBytesRead > 0);
+            }while(numBytesRead < messageSize);
 
             bytesRead = combiner.toByteArray();
             Log.d(TAG, Arrays.toString(bytesRead));
@@ -338,10 +344,10 @@ public class ServerUtils {
         Log.d(TAG, new String(userID, Charset.forName("UTF-8")));
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {
-            byteArrayOutputStream.write(REPORT_LIST_INDICATOR.getBytes());
-            byteArrayOutputStream.write(userID);
+            byteArrayOutputStream.write(REPORT_LIST_INDICATOR);
+            //byteArrayOutputStream.write(userID);
             return addLengthToBytes(byteArrayOutputStream.toByteArray());
-        } catch (IOException e){
+        } catch (Exception e){
             e.printStackTrace();
         }
         return null;
