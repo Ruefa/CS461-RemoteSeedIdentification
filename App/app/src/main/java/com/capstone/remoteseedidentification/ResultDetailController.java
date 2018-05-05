@@ -2,6 +2,7 @@ package com.capstone.remoteseedidentification;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -41,6 +42,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ResultDetailController extends AppCompatActivity {
@@ -59,6 +61,8 @@ public class ResultDetailController extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result_detail);
+
+        oldSetup();
 
         // change to result date later
         getSupportActionBar().setTitle("4/25/2018 15:00");
@@ -83,6 +87,39 @@ public class ResultDetailController extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void oldSetup(){
+        String results = getIntent().getStringExtra(SocketService.BROADCAST_KEY);
+        Log.d(TAG, results);
+
+        String[] resultArray = results.split("\n");
+        Log.d(TAG, Arrays.toString(resultArray));
+
+        float prg = Float.valueOf(resultArray[0].split(":")[1]) * 100;
+        float tf = Float.valueOf(resultArray[1].split(":")[1]) * 100;
+
+        byte[] imageBytes = MainActivity.fileToBytes(resultArray[2]);
+        Bitmap thumbBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+        //mResultView.setImageBitmap(thumbBitmap);
+
+        BarGraphSeries<DataPoint> series = new BarGraphSeries<>(new DataPoint[]{
+                new DataPoint(0, prg),
+                new DataPoint(2, tf)
+        });
+        //mGraphView.removeAllSeries();
+        //mGraphView.addSeries(series);
+
+        series.setValueDependentColor(new ValueDependentColor<DataPoint>() {
+            @Override
+            public int get(DataPoint data) {
+                return Color.rgb((int) data.getX() * 255 / 4, (int) Math.abs(data.getY() * 255 / 6), 100);
+            }
+        });
+        series.setSpacing(50);
+
+        series.setDrawValuesOnTop(true);
+        series.setValuesOnTopColor(Color.RED);
     }
 
     private void sharePDF(){
