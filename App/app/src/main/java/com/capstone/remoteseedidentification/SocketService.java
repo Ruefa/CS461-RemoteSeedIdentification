@@ -70,10 +70,14 @@ public class SocketService extends Service {
                     if(message.getData().getString(ACTION_KEY).equals(ResultsController.ACTION_REQUEST_RESULT)){
                         Log.d(TAG, "request result");
                         intent.putExtra(ACTION_KEY, message.getData().getString(ACTION_KEY));
-                        mServer.sendMessage(ServerUtils.formatResultRequest(
-                                new byte[]{Integer.valueOf(message.getData().getString(SEND_MESSAGE_KEY)).byteValue()}, //change
-                                mServer.getCookie()
-                        ));
+                        try {
+                            mServer.sendMessage(ServerUtils.formatResultRequest(
+                                    message.getData().getString(SEND_MESSAGE_KEY).getBytes("ASCII"), //change
+                                    mServer.getCookie()
+                            ));
+                        } catch (Exception e){
+                            e.printStackTrace();
+                        }
                     } else if(message.getData().getString(ACTION_KEY).equals(ResultsController.ACTION_VIEW_RESULTS)) {
                         Log.d(TAG, "results list request");
                         intent.putExtra(ACTION_KEY, message.getData().getString(ACTION_KEY));
