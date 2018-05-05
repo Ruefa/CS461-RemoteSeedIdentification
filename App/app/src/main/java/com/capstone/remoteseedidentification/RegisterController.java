@@ -70,7 +70,7 @@ public class RegisterController extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             String response = intent.getStringExtra(SocketService.BROADCAST_KEY);
-            
+
             switch (response){
                 case ServerUtils.REGISTER_ACCEPT:
                     goMain();
