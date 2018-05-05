@@ -67,6 +67,10 @@ public class RegisterController extends AppCompatActivity {
         startActivity(new Intent(this, LoginController.class));
     }
 
+    public void goLogin(View v){
+        startActivity(new Intent(this, LoginController.class));
+    }
+
     public final static String BROADCAST_ACTION = "register_receive";
     private LocalBroadcastManager mBroadcastManager;
 
