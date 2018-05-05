@@ -100,7 +100,7 @@ public class SocketService extends Service {
                     incomingMessage = mServer.receiveMessage(message.getData().getString(OUTBOUND_KEY));
                 }
                 Log.d(TAG, "received message");
-                mServer.stopSocket();
+                //mServer.stopSocket();
 
                 intent.putExtra(BROADCAST_KEY, incomingMessage);
             }else{
