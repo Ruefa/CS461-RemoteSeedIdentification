@@ -65,10 +65,12 @@ public class RegisterController extends AppCompatActivity {
 
     public final static String BROADCAST_ACTION = "register_receive";
     private LocalBroadcastManager mBroadcastManager;
+
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String response = intent.getStringExtra(SocketService.BROADCAST_KEY);
+            
             switch (response){
                 case ServerUtils.REGISTER_ACCEPT:
                     goMain();
