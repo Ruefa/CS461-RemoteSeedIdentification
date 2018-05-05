@@ -36,14 +36,11 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
 
     private ResultsListRVAdapter mResultsRVAdapter;
     private ProgressBar mpbResultsRV;
-    private ImageView mResultView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_results);
-
-        mResultView = findViewById(R.id.iv_result);
 
         mpbResultsRV = findViewById(R.id.pb_results_rv);
         mpbResultsRV.setVisibility(View.VISIBLE);
@@ -147,6 +144,9 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
     @Override
     public void onResultsClick(String item) {
         Log.d(TAG, "item clicked: " + item);
+
+        mpbResultsRV.setVisibility(View.VISIBLE);
+
         Intent intent = new Intent(this, SocketService.class);
         Bundle bundle = new Bundle();
         bundle.putString(SocketService.SEND_MESSAGE_KEY, item);
@@ -154,8 +154,6 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
         bundle.putString(SocketService.OUTBOUND_KEY, BROADCAST_ACTION);
         intent.putExtras(bundle);
         startService(intent);
-
-        //goResultDetail();
     }
 
     private void goResultDetail(){
