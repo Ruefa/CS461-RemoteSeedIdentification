@@ -66,6 +66,7 @@ public class SocketService extends Service {
             Intent intent = new Intent(message.getData().getString(OUTBOUND_KEY));
             if(socketSuccess || mServer.mRun) {
                 if(message.getData().getString(ACTION_KEY) != null){
+                    // request result detail
                     if(message.getData().getString(ACTION_KEY).equals(ResultsController.ACTION_REQUEST_RESULT)){
                         Log.d(TAG, "request result");
                         intent.putExtra(ACTION_KEY, message.getData().getString(ACTION_KEY));
