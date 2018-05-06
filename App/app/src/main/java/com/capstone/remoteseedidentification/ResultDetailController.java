@@ -43,7 +43,10 @@ import java.io.FileOutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class ResultDetailController extends AppCompatActivity {
     private final static String TAG = "ResultDetailController";
@@ -51,6 +54,7 @@ public class ResultDetailController extends AppCompatActivity {
     private GraphView mGraphView;
     private PieChart mPieChart;
     private ImageView ivResult;
+    private Map<String, String> seedNames;
 
     // pie chart settings
     private static final int PC_TEXT_SIZE = 14;
@@ -62,6 +66,13 @@ public class ResultDetailController extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result_detail);
+
+        seedNames = new HashMap<String, String>(){};
+        seedNames.put("rc", "Red Clover");
+        seedNames.put("flax", "Flax");
+        seedNames.put("tf", "Tall Fescue");
+        seedNames.put("wheat", "Wheat");
+        seedNames.put("prg", "");
 
         ivResult = findViewById(R.id.iv_result_detail);
 
@@ -97,40 +108,19 @@ public class ResultDetailController extends AppCompatActivity {
         Log.d(TAG, Arrays.toString(resultArray));
 
         setImageDisplay(resultArray[resultArray.length-1]);
-    }
 
-    private void oldSetup(){
-        // get results from intent that started the activity
-        String results = getIntent().getStringExtra(SocketService.BROADCAST_KEY);
-        Log.d(TAG, results);
+        List<String> labels = new LinkedList<>();
+        List<String> seedPercentage = new LinkedList<>();
+        List<Integer> colors = new LinkedList<>();
+        for(int i=0; i<resultArray.length-1; i++){
+            String[] resultSplit = resultArray[i].split(",");
+            String[] nameSplit = resultSplit[0].split(":");
+            labels.add(nameSplit[0]);
+            seedPercentage.add(nameSplit[1]);
+            colors.add(Color.parseColor(resultSplit[2]));
+        }
 
-        String[] resultArray = results.split("\n");
-        Log.d(TAG, Arrays.toString(resultArray));
-
-        float prg = Float.valueOf(resultArray[0].split(":")[1]) * 100;
-        float tf = Float.valueOf(resultArray[1].split(":")[1]) * 100;
-
-        byte[] imageBytes = MainActivity.fileToBytes(resultArray[2]);
-        Bitmap thumbBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-        //mResultView.setImageBitmap(thumbBitmap);
-
-        BarGraphSeries<DataPoint> series = new BarGraphSeries<>(new DataPoint[]{
-                new DataPoint(0, prg),
-                new DataPoint(2, tf)
-        });
-        //mGraphView.removeAllSeries();
-        //mGraphView.addSeries(series);
-
-        series.setValueDependentColor(new ValueDependentColor<DataPoint>() {
-            @Override
-            public int get(DataPoint data) {
-                return Color.rgb((int) data.getX() * 255 / 4, (int) Math.abs(data.getY() * 255 / 6), 100);
-            }
-        });
-        series.setSpacing(50);
-
-        series.setDrawValuesOnTop(true);
-        series.setValuesOnTopColor(Color.RED);
+        initPieChart(labels, seedPercentage, colors);
     }
 
     private void setImageDisplay(String fileName){
@@ -237,24 +227,33 @@ public class ResultDetailController extends AppCompatActivity {
     }
 
     // initializes pie chart with data and themeing
-    private void initPieChart(){
+    private void initPieChart(List<String> labels, List<String> seedPercentage, List<Integer> colors){
         mPieChart = findViewById(R.id.pc_seed_makeup);
+        List<Integer> colorsToDisplay = new LinkedList<>();
 
         // create test data
         List<PieEntry> entries = new ArrayList<>();
-        entries.add(new PieEntry(20.3f, "Tall Fescue"));
-        entries.add(new PieEntry(24.0f, "Wheat"));
-        entries.add(new PieEntry(24.0f, "Flax"));
-        entries.add(new PieEntry(31.7f, "Red Clover"));
+        for(int i=0; i<seedPercentage.size(); i++){
+            if(Float.valueOf(seedPercentage.get(i)) > 0) {
+                entries.add(new PieEntry(Float.valueOf(seedPercentage.get(i)) * 100,
+                        seedNames.get(labels.get(i))));
+                colorsToDisplay.add(colors.get(i));
+            }
+        }
+        /*entries.add(new PieEntry(Float.valueOf(seedPercentage.get(2))*100, "Tall Fescue"));
+        entries.add(new PieEntry(Float.valueOf(seedPercentage.get(3))*100, "Wheat"));
+        entries.add(new PieEntry(Float.valueOf(seedPercentage.get(1))*100, "Flax"));
+        entries.add(new PieEntry(Float.valueOf(seedPercentage.get(0))*100, "Red Clover"));*/
 
         // create data set and add to pie chart
         // label hidden
         PieDataSet dataSet = new PieDataSet(entries, "");
         // colors appear in same order as entries
-        dataSet.setColors(getResources().getColor(R.color.blue),
+        dataSet.setColors(colorsToDisplay);
+        /*dataSet.setColors(getResources().getColor(R.color.blue),
                 getResources().getColor(R.color.light_orange),
                 getResources().getColor(R.color.gold),
-                getResources().getColor(R.color.light_red));
+                getResources().getColor(R.color.light_red));*/
         dataSet.setValueTextSize(PC_TEXT_SIZE);
         // set format of values to percentages
         dataSet.setValueFormatter(new PercentFormatter());
