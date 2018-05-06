@@ -285,7 +285,9 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
 
                 ByteBuffer byteBuffer = ByteBuffer.allocate(image.getRowBytes() * image.getHeight());
                 image.copyPixelsToBuffer(byteBuffer);
-                mByteImage = byteBuffer.array();
+                //mByteImage = byteBuffer.array();
+                mByteImage = fileToBytes(mCurrentImagePath);
+                mImagePath = mCurrentImagePath;
 
                 initConfirmation();
             }
