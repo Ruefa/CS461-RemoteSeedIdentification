@@ -48,11 +48,12 @@ public class ServerUtils {
 
     public static final String SEND_MESSAGE = "socket.service.intent.action.SEND_MESSAGE";
     public static final String LOGIN_ACCEPT = "01";
-    public static final String FAILURE = "01";
+    public static final String FAILURE = "02";
     public static final String REGISTER_ACCEPT = "00";
 
     public static final byte SUCCESS = 0x00;
     public static final byte INVALID_MESSAGE = 0x32;
+    public static final byte FAILURE_BYTES = 0x01;
 
     private PrintWriter mOutBuffer;
     private OutputStream mOutputStream;
@@ -215,7 +216,8 @@ public class ServerUtils {
         }
 
         if(messageType.equals(LoginController.BROADCAST_ACTION)) {
-            if (bytesRead.length > 1) {
+            Log.d(TAG, String.valueOf(bytesRead[0]));
+            if (bytesRead[0] == SUCCESS) {
                 cookie = bytesRead;
                 return LOGIN_ACCEPT;
             } else {
@@ -359,7 +361,7 @@ public class ServerUtils {
     }
 
     public static byte[] formatResultsList(byte[] userID){
-        Log.d(TAG, new String(userID, Charset.forName("UTF-8")));
+//        Log.d(TAG, new String(userID, Charset.forName("UTF-8")));
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {
             byteArrayOutputStream.write(REPORT_LIST_INDICATOR);
