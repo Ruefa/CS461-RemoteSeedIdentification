@@ -43,6 +43,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 
@@ -281,6 +282,10 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
                         image.getHeight(), matrix, true);
 
                 mThumbView.setImageBitmap(rotated);
+
+                ByteBuffer byteBuffer = ByteBuffer.allocate(image.getRowBytes() * image.getHeight());
+                image.copyPixelsToBuffer(byteBuffer);
+                mByteImage = byteBuffer.array();
 
                 initConfirmation();
             }
