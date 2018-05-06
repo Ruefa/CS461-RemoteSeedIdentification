@@ -44,7 +44,7 @@ public class ServerUtils {
     private static final byte ANALYZE_INDICATOR = 0x64;
     private static final byte REPORT_LIST_INDICATOR = 0x65;
     private static final byte REPORT_INDICATOR = 0x66;
-    private static final String LOGOUT_INDICATOR = "z";
+    private static final byte LOGOUT_INDICATOR = 0x63;
 
     public static final String SEND_MESSAGE = "socket.service.intent.action.SEND_MESSAGE";
     public static final String LOGIN_ACCEPT = "01";
