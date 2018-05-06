@@ -151,7 +151,11 @@ public class SocketService extends Service {
         message.arg1 = startId;
         if(intent.getStringExtra(SEND_MESSAGE_KEY).equals(RESET)){
             mServer.removeCookie();
-            mServer.stopSocket();
+            try {
+                mServer.stopSocket();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
         } else {
             message.setData(intent.getExtras());
             mServiceHandler.sendMessage(message);
