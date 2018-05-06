@@ -110,7 +110,7 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
 
                     // split results over | delimiter
                     String[] resultArray = results.split("\\|");
-                    if(!resultArray[0].equals(ServerUtils.FAILURE)) {
+                    if(resultArray.length > 1) {
                         ArrayList<String> resultList = new ArrayList<String>(Arrays.asList(resultArray));
                         // first result is error code. remove it to get only data
                         resultList.remove(0);
