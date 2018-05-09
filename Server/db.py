@@ -24,7 +24,7 @@ class Report(db.Entity):
 
 def dbInit(dbDirectory = dbDirectory):
     global db
-    db.bind(provider='sqlite', filename=str(dbDirectory/'RemoteSeedDB.sqlite'), create_db=True)
+    db.bind(provider='sqlite', filename=str(dbDirectory / 'RemoteSeedDB.sqlite'), create_db=True)
     db.generate_mapping(create_tables=True)
 
 @db_session
@@ -43,7 +43,7 @@ def login(username, password, newToken = True):
     username = username.lower()
     account = Account.get(username=username)
     if account and checkPassword(password, account.password): # Username and Password are correct
-        if newToken:
+        if not account.sessionToken or newToken:
             token = os.urandom(tokenLen)
             account.sessionToken = token
         else:

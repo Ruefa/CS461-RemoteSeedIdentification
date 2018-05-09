@@ -7,6 +7,7 @@ import threading
 
 from pony import orm
 
+import error
 import db
 
 jobQueue = queue.Queue()
@@ -51,119 +52,206 @@ def sendMsg(conn, msg):
     msg = len(msg).to_bytes(4, byteorder='big') + msg
     conn.sendall(msg)
 
-def sendReport(conn, results, imgPath):
-    msg = results.encode() + b'|'
-    print('len', len(msg), '+', os.path.getsize(str(imgPath)))
-    length = len(msg) + os.path.getsize(str(imgPath))
+def sendReport(conn, report):
+    msg = error.Success + b'|' + report.results.encode() + b'|'
+    length = len(msg) + os.path.getsize(str(report.resultsImg))
     conn.sendall(length.to_bytes(4, byteorder='big') + msg)
-    print(str(imgPath))
-    with open(str(imgPath), 'rb') as f:
+    with open(str(report.resultsImg), 'rb') as f:
         conn.sendfile(f)
 
 def newAccount(credentials):
+    if b':' not in credentials:
+        return (error.InvalidMsg,)
     username, password = credentials.split(b':')
-    if db.newAccount(username, password):
-        return bytes([1])
-    return bytes([0])
+
+    try:
+        # Account creation succeeded
+        if db.newAccount(username, password):
+            return (error.Success,)
+    except:
+        return (error.DBError,)
+
+    # Account creation failed
+    return (error.DuplicateUser,)
 
 def login(credentials):
+    if b':' not in credentials:
+        return (error.InvalidMsg,)
     username, password = credentials.split(b':')
-    auth = db.login(username, password)
+
+    try:
+        auth = db.login(username, password)
+    except:
+        return (error.DBError,)
+
+    # Successful login
     if auth:
         threadData.currentUser = username
-        return auth # Valid login
+        return (error.Success, auth)
+    # Failed Login
     threadData.currentUser = None
-    return bytes([0]) # Invalid login
+    return (error.BadCredentials,)
 
 def checkAuth(auth):
-    username = auth[:-db.tokenLen]
-    token = auth[-db.tokenLen:]
-    if db.checkToken(username, token):
-        threadData.currentUser = username
-        return bytes([1])
+    if len(auth) < tokenLen:
+        return (error.InvalidMsg,)
+    username, token = auth[:-db.tokenLen], auth[-db.tokenLen:]
+
+    try:
+        if db.checkToken(username, token):
+            threadData.currentUser = username
+            return (error.Success,)
+    except:
+        return (error.DBError,)
+
     threadData.currentUser = None
-    return bytes([0])
+    return (error.BadToken,)
 
 def runAnalysis(conn, length):
     user = threadData.currentUser
-    if user:
+    if not user:
+        return (error.Unauthorized,)
+
+    # Add a new blank report to the DB and get its ID
+    try: 
         reportID = db.newReport(user)
-        path = db.dbDirectory / user.decode() / str(reportID) / 'sample.jpg'
-        path.parent.mkdir(parents=True, exist_ok=True)
-        with open(str(path), 'wb') as f:
-            readMsgToFile(conn, length, f)
+    except:
+        return (error.DBError,)
 
+    # Write the image to a file and store the path in the DB
+    path = db.dbDirectory / user.decode() / str(reportID) / 'sample.jpg'
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(str(path), 'wb') as f:
+        readMsgToFile(conn, length, f)
+
+    try:
         db.updateReport(reportID, sourceImg=str(path))
+    except:
+        return (error.DBError,)
 
-        jobQueue.put((reportID, path))
-        
-        return str(reportID).encode()
-    return bytes([0])
+    jobQueue.put((reportID, path))
+    
+    return (error.Success, str(reportID).encode())
     
 def getReportList(_):
-    #TODO Figure out a format for this. Could just use delimiters or
-    #     could use xml or JSON, ect.
     user = threadData.currentUser
-    if user:
-        return '|'.join([str(x) for x in db.getReportList(user)]).encode()
-    return bytes([0])
+    if not user:
+        return (error.Unauthorized,)
 
+    try:
+        l = [str(x) for x in db.getReportList(user)]
+    except:
+        return (error.DBError,)
+
+    return (error.Success,'|'.join(l).encode())
+
+#TODO Handle incomplete report
 def getReport(report):
     user = threadData.currentUser
-    if user:
+    if not user:
+        return (error.Unauthorized,)
+
+    try:
         reportID = int(report)
+    except:
+        return (error.InvalidMsg,)
+    
+    try:
         r = db.getReport(reportID)
-        if r and r.results:
-            print (r.results)
-            return r.results, pathlib.Path(r.resultsImg)
-    return False
+    except:
+        return (error.DBError,)
+
+    if r:
+        return (error.Success, r)
+    return (error.InvalidReportID,)
 
 def deleteReport(report):
     user = threadData.currentUser
-    if user:
+    if not user:
+        return (error.Unauthorized,)
+
+    try:
         reportID = int(report)
+    except:
+        return (error.InvalidMsg,)
+
+    try:
         r = db.deleteReport(user, reportID)
-        if r:
-            return bytes([1])
-    return bytes([0])
+    except:
+        return (error.DBError,)
+
+    if r:
+        return (error.Success,)
+    return (error.InvalidReportID,)
 
 def deleteAllReports(_):
     user = threadData.currentUser
-    if user and db.deleteAllReports(user):
-        return bytes([1])
+    if not user:
+        return (error.Unauthorized,)
+
+    try:
+        if db.deleteAllReports(user):
+            return (error.Success,)
+    except:
+        return (error.DBError,)
     return bytes([0])
 
 def deleteAccount(_):
     user = threadData.currentUser
-    if user and db.deleteAccount(user):
-        return bytes([1])
-    return bytes([0])
+    if not user:
+        return (error.Unauthorized,)
+
+    try:
+        if db.deleteAccount(user):
+            threadData.currentUser = None
+            return (error.Success,)
+    except:
+        return (error.DBError,)
+    return (error.Failure,)
 
 def logout(_):
     user = threadData.currentUser
-    if user and db.logout(user):
-        return bytes([1])
-    return bytes([0])
+    if not user:
+        return (error.Unauthorized,)
+
+    try:
+        if db.logout(user):
+            threadData.currentUser = None
+            return (error.Success,)
+    except:
+        return (error.DBError,)
+    return (error.Failure,)
 
 def changePassword(passwords):
-    oldPass, newPass = passwords.split(b':')
+    if b'|' not in passwords:
+        return (error.InvalidMsg,)
+    oldPass, newPass = passwords.split(b'|')
+
     user = threadData.currentUser
-    if user and db.login(user, oldPass, newToken = False):
-        db.changePassword(user, newPass)
-        return bytes([1])
-    return bytes([0])
+    if not user:
+        return (error.Unauthorized,)
+
+    try:
+        if db.login(user, oldPass, newToken = False):
+            db.changePassword(user, newPass)
+            return (error.Success,)
+        # Old Password was bad
+        return (error.BadCredentials,)
+    except:
+        return (error.DBError,)
 
 def forgotPassword(user):
     password = db.newPassword(user)
     #TODO Email new password
-    return bytes([1])
+    return (error.Success,)
 
 
 dispatch = { 1:   newAccount,
              2:   login,
-             3:   changePassword,
-             4:   forgotPassword,
-             5:   deleteAccount,
+             3:   checkAuth,
+             4:   changePassword,
+             5:   forgotPassword,
+             6:   deleteAccount,
              99:  logout,
              101: getReportList,
              103: deleteReport,
@@ -176,15 +264,17 @@ def handleConn(conn):
         # Run Analysis and Get Report are special cased to avoid moving image files around in memory
         if msgType == 100:
             response = runAnalysis(conn, length)
-            sendMsg(conn, response)
         elif msgType == 102:
             msg = readMsg(conn, length)
-            report = getReport(msg)
-            sendReport(conn, *report)
+            response = getReport(msg)
+            if response[0] == error.Success:
+                sendReport(conn, response[1])
+                continue
         else:
             msg = readMsg(conn, length)
             response = dispatch[msgType](msg)
-            sendMsg(conn, response)
+        print(type(msg), response)
+        sendMsg(conn, b'|'.join(response))
 
         msgType, length = readMsgHeader(conn)
 
