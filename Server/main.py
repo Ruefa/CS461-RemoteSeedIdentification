@@ -21,4 +21,4 @@ while True:
     resultImgPath = imgPath.parent / 'result.png'
 
     results = run_analysis(str(imgPath), str(resultImgPath))
-    db.updateReport(reportID, results=results, resultsImg=str(resultImgPath))
+    db.updateReport(reportID, isAnalysisDone=True, results=results, resultsImg=str(resultImgPath))

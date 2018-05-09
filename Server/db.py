@@ -20,6 +20,7 @@ class Report(db.Entity):
     results = Optional(str)
     sourceImg = Optional(str)
     resultsImg = Optional(str)
+    isAnalysisDone = Required(bool)
     owner = Required(Account)
 
 def dbInit(dbDirectory = dbDirectory):
@@ -86,15 +87,17 @@ def newPassword(username):
     return None
 
 @db_session
-def newReport(username, sourceImg='', resultsImg='', results=''):
+def newReport(username, sourceImg='', resultsImg='', results='', isAnalysisDone = False):
     username = username.lower()
-    r = Report(owner=Account[username], sourceImg=sourceImg, resultsImg=resultsImg, results=results)
+    r = Report(owner=Account[username], sourceImg=sourceImg, resultsImg=resultsImg, isAnalysisDone=isAnalysisDone, results=results)
     commit()
     return r.id
 
 @db_session
-def updateReport(reportId, sourceImg=None, resultsImg=None, results=None):
+def updateReport(reportId, isAnalysisDone=None, sourceImg=None, resultsImg=None, results=None):
     r = Report[reportId]
+    if isAnalysisDone is not None:
+        r.isAnalysisDone = isAnalysisDone
     if sourceImg:
         r.sourceImg = sourceImg
     if resultsImg:
