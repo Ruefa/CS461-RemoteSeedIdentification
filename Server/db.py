@@ -93,11 +93,14 @@ def newReport(username, sourceImg='', resultsImg='', results=''):
     return r.id
 
 @db_session
-def updateReport(reportId, sourceImg='', resultsImg='', results=''):
+def updateReport(reportId, sourceImg=None, resultsImg=None, results=None):
     r = Report[reportId]
-    r.sourceImg = sourceImg
-    r.resultsImg = resultsImg
-    r.results = results
+    if sourceImg:
+        r.sourceImg = sourceImg
+    if resultsImg:
+        r.resultsImg = resultsImg
+    if results:
+        r.results = results
 
 @db_session
 def getReportList(username):
