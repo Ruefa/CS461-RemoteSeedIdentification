@@ -9,6 +9,7 @@ import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +24,8 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import static java.lang.Thread.sleep;
 
@@ -36,17 +39,21 @@ public class ServerUtils {
     private static final int SERVER_PORT = 5777;
     private static final String TAG = "ServerUtils";
 
-    private static final String REGISTER_INDICATOR = "a";
-    private static final String LOGIN_INDICATOR = "b";
-    private static final String ANALYZE_INDICATOR = "c";
-    private static final String REPORT_LIST_INDICATOR = "d";
-    private static final String REPORT_INDICATOR = "e";
-    private static final String LOGOUT_INDICATOR = "z";
+    private static final byte REGISTER_INDICATOR = 0x01;
+    private static final byte LOGIN_INDICATOR = 0x02;
+    private static final byte ANALYZE_INDICATOR = 0x64;
+    private static final byte REPORT_LIST_INDICATOR = 0x65;
+    private static final byte REPORT_INDICATOR = 0x66;
+    private static final byte LOGOUT_INDICATOR = 0x63;
 
     public static final String SEND_MESSAGE = "socket.service.intent.action.SEND_MESSAGE";
     public static final String LOGIN_ACCEPT = "01";
-    public static final String FAILURE = "00";
-    public static final String REGISTER_ACCEPT = "01";
+    public static final String FAILURE = "02";
+    public static final String REGISTER_ACCEPT = "00";
+
+    public static final byte SUCCESS = 0x00;
+    public static final byte INVALID_MESSAGE = 0x32;
+    public static final byte FAILURE_BYTES = 0x01;
 
     private PrintWriter mOutBuffer;
     private OutputStream mOutputStream;
@@ -136,12 +143,10 @@ public class ServerUtils {
     public void sendMessage(byte[] message){
         Log.d("Server: ", "starting sendMessage");
         if(mOutBuffer != null && !mOutBuffer.checkError()){
-//            mOutBuffer.println(message);
-//            mOutBuffer.flush();
             try {
                 mOutputStream.write(message);
                 mOutputStream.flush();
-                mSocket.shutdownOutput();
+                //mSocket.shutdownOutput();
             }
             catch (IOException e){
                 e.printStackTrace();
@@ -184,15 +189,25 @@ public class ServerUtils {
 //            numBytesRead = mInputStream.read(test);
 //            Log.d(TAG, Arrays.toString(bytesRead));
 
+            // get number of bytes being sent across socket
+            byte[] sizeBytes = new byte[4];
+            mInputStream.read(sizeBytes);
+            Log.d(TAG, "byte size: " + Arrays.toString(sizeBytes));
+
+            int messageSize = ByteBuffer.wrap(sizeBytes).getInt();
+            int maxBlockSize = 16384; // 2^14
+
             do {
-                byte[] bytesToCombine = new byte[16384];
-                Log.d(TAG, "waiting on read");
+                byte[] bytesToCombine;
+                bytesToCombine = messageSize >= maxBlockSize ? new byte[maxBlockSize] : new byte[messageSize];
                 numBytesRead = mInputStream.read(bytesToCombine);
+
+                messageSize -= numBytesRead;
 
                 if(numBytesRead > 0) {
                     combiner.write(bytesToCombine, 0, numBytesRead);
                 }
-            }while(numBytesRead > 0);
+            }while(messageSize > 0);
 
             bytesRead = combiner.toByteArray();
             Log.d(TAG, Arrays.toString(bytesRead));
@@ -201,43 +216,56 @@ public class ServerUtils {
         }
 
         if(messageType.equals(LoginController.BROADCAST_ACTION)) {
-            if (bytesRead.length > 1) {
+            Log.d(TAG, String.valueOf(bytesRead[0]));
+            if (bytesRead[0] == SUCCESS) {
                 cookie = bytesRead;
                 return LOGIN_ACCEPT;
             } else {
                 return FAILURE;
             }
         } else if(messageType.equals(RegisterController.BROADCAST_ACTION)) {
-            if (String.valueOf(bytesRead[0]).equals("1")) {
-                return LOGIN_ACCEPT;
+            if (bytesRead[bytesRead.length-1] == SUCCESS) {
+                return REGISTER_ACCEPT;
             } else {
                 return FAILURE;
             }
         } else if(messageType.equals(ResultsController.ACTION_VIEW_RESULTS)) {
-            return new String(bytesRead, Charset.forName("UTF-8"));
+            return new String(bytesRead, Charset.forName("ASCII"));
         } else if(messageType.equals(ResultsController.ACTION_REQUEST_RESULT)){
-            //find location of delimiter
-            int i = 0;
-            while(i < bytesRead.length && bytesRead[i] != "|".getBytes()[0]){
-                i++;
+
+            if(bytesRead[0] == INVALID_MESSAGE){
+                return FAILURE;
+            } else {
+                //find location of delimiter
+                List<byte[]> byteList = new LinkedList<>();
+                int i = 0;
+                int block = 0;
+                int found = 0;
+                while (i < bytesRead.length) {
+                    if(bytesRead[i] == "|".getBytes()[0] && found < 2){
+                        byteList.add(Arrays.copyOfRange(bytesRead, block, i));
+                        block = i + 1;
+                        found++;
+                    }
+                    i++;
+                }
+                // get last item
+                byteList.add(Arrays.copyOfRange(bytesRead, block, bytesRead.length));
+
+                byte[] data = byteList.get(1);
+                byte[] imageBytes = byteList.get(2);
+
+                Log.d(TAG, Arrays.toString(data));
+                String resultString = "";
+                for (int j = 0; j < data.length; j++) {
+                    resultString += new String(new byte[]{data[j]}, Charset.forName("ASCII"));
+                }
+                Log.d(TAG, Arrays.toString(imageBytes));
+
+                String fileName = MainActivity.imageToFile("result.png", imageBytes);
+
+                return resultString + "\n" + fileName;
             }
-
-            byte[] data = new byte[i];
-            byte[] imageBytes = new byte[bytesRead.length - i - 1];
-
-            System.arraycopy(bytesRead, 0, data, 0, data.length);
-            System.arraycopy(bytesRead, i+1, imageBytes, 0, imageBytes.length);
-
-            Log.d(TAG, Arrays.toString(data));
-            String resultString = "";
-            for(int j=0; j < data.length; j++){
-                resultString += new String(new byte[]{data[j]}, Charset.forName("UTF-8"));
-            }
-            Log.d(TAG, Arrays.toString(imageBytes));
-
-            String fileName = MainActivity.imageToFile("result.png", imageBytes);
-
-            return resultString + "\n" + fileName;
         }
 
         return FAILURE;
@@ -309,22 +337,37 @@ public class ServerUtils {
         cookie = null;
     }
 
+    // converts a single byte to a ISO_8859_1 string
+    // used for indicators so they are converted back to bytes correctly before sending
+    private static String byteToISOString(byte indicatorByte){
+        byte[] bytes = new byte[]{indicatorByte};
+        String indicator = "";
+
+        try {
+            indicator = new String(bytes, "ISO_8859_1");
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return indicator;
+    }
+
     public static String loginFormat(String username, String pass){
-        return LOGIN_INDICATOR + username + "@" + pass;
+        return byteToISOString(LOGIN_INDICATOR) + username + ":" + pass;
     }
 
     public static String registerFormat(String username, String pass){
-        return REGISTER_INDICATOR + username + "@" + pass;
+        return byteToISOString(REGISTER_INDICATOR) + username + ":" + pass;
     }
 
     public static byte[] formatResultsList(byte[] userID){
-        Log.d(TAG, new String(userID, Charset.forName("UTF-8")));
+//        Log.d(TAG, new String(userID, Charset.forName("UTF-8")));
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {
-            byteArrayOutputStream.write(REPORT_LIST_INDICATOR.getBytes());
-            byteArrayOutputStream.write(userID);
+            byteArrayOutputStream.write(REPORT_LIST_INDICATOR);
+            //byteArrayOutputStream.write(userID);
             return addLengthToBytes(byteArrayOutputStream.toByteArray());
-        } catch (IOException e){
+        } catch (Exception e){
             e.printStackTrace();
         }
         return null;
@@ -336,9 +379,9 @@ public class ServerUtils {
 
         ByteArrayOutputStream combiner = new ByteArrayOutputStream();
         try {
-            combiner.write(ANALYZE_INDICATOR.getBytes());
-            combiner.write(userID);
-            combiner.write("|".getBytes());
+            combiner.write(ANALYZE_INDICATOR);
+            //combiner.write(userID);
+            //combiner.write("|".getBytes());
             combiner.write(image);
             preLength = combiner.toByteArray();
 
@@ -360,9 +403,9 @@ public class ServerUtils {
     public static byte[] formatResultRequest(byte[] reportID, byte[] userID){
         try{
             ByteArrayOutputStream combiner = new ByteArrayOutputStream();
-            combiner.write(REPORT_INDICATOR.getBytes());
-            combiner.write(userID);
-            combiner.write("|".getBytes());
+            combiner.write(REPORT_INDICATOR);
+            //combiner.write(userID);
+            //combiner.write("|".getBytes());
             combiner.write(reportID);
             return addLengthToBytes(combiner.toByteArray());
         } catch (IOException e){

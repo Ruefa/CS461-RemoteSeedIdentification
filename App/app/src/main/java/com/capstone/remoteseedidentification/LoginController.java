@@ -58,13 +58,14 @@ public class LoginController extends AppCompatActivity {
         EditText etUser, etPass;
         final String message;
 
+        // get edit text components from layout
         etUser = findViewById(R.id.edit_username);
         etPass = findViewById(R.id.edit_pass);
 
         mTVError.setVisibility(View.INVISIBLE);
 
+        // user input validation
         if(!etUser.getText().toString().equals("") && !etPass.getText().toString().equals("")) {
-            //message = "b" + etUser.getText() + "@" + etPass.getText();
 
             findViewById(R.id.pb_login).setVisibility(View.VISIBLE);
 
@@ -140,5 +141,9 @@ public class LoginController extends AppCompatActivity {
     public void skipLogin(View v){
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+    }
+
+    public void forgotPassword(View v){
+        // todo
     }
 }

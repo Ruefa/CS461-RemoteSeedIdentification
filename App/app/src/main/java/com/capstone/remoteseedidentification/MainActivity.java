@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Environment;
@@ -42,6 +43,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 
@@ -84,14 +86,9 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         intentFilter.addAction(BROADCAST_ACTION);
         mBroadcastManager.registerReceiver(mBroadcastReceiver, intentFilter);
 
+        checkPermissions();
+
         mThumbView = findViewById(R.id.thumb_view);
-
-        //initCamera();
-
-        initNavigation();
-
-        //icon testing
-        ((TextView) findViewById(R.id.nav_drawer_logout)).setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_action_gallery,0,0,0);
     }
 
     private Camera getCameraInstance(){
@@ -117,14 +114,16 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         }
     }
 
-    private void initCamera(){
+    private void checkPermissions(){
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     CAMERA_PERMISSION_REQUEST);
         }
-        else {
+    }
+
+    private void initCamera(){
             mCamera = getCameraInstance();
             mCamera.setDisplayOrientation(90);
 
@@ -138,16 +137,14 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
             });
             //FrameLayout frameLayout = findViewById(R.id.cam_view);
             //frameLayout.addView(mCameraView);
-        }
     }
 
+    /* no longer used
     //sets up navigation drawer
     private void initNavigation(){
         mNavData = new ArrayList<>();
         mNavData.add(getResources().getString(R.string.nav_gallery));
         mNavData.add(getResources().getString(R.string.nav_results));
-
-        getSupportActionBar().setDisplayShowTitleEnabled(false); //hide title
 
         mNavRV = findViewById(R.id.nav_drawer_rv);
         mNavAdapter = new NavDrawerRVAdapter(this, this);
@@ -156,6 +153,7 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         mNavRV.setHasFixedSize(true);
         mNavAdapter.updateItems(mNavData);
     }
+    */
 
     @Override
     public void onNavDrawerItemClick(String item) {
@@ -228,6 +226,11 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         startActivity(intent);
     }
 
+    // overload to support calling from button in layout
+    public void goResults(View v){
+        goResults();
+    }
+
     public void takePicture(View v){
 
         //using jpg because raw is not supported on every phone
@@ -272,7 +275,19 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
                 }
             } else if(reqCode == RESULT_CAMERA_IMAGE){
                 Bitmap image = BitmapFactory.decodeFile(mCurrentImagePath);
-                mThumbView.setImageBitmap(image);
+
+                Matrix matrix = new Matrix();
+                matrix.postRotate(90);
+                Bitmap rotated = Bitmap.createBitmap(image, 0, 0, image.getWidth(),
+                        image.getHeight(), matrix, true);
+
+                mThumbView.setImageBitmap(rotated);
+
+                ByteBuffer byteBuffer = ByteBuffer.allocate(image.getRowBytes() * image.getHeight());
+                image.copyPixelsToBuffer(byteBuffer);
+                //mByteImage = byteBuffer.array();
+                mByteImage = fileToBytes(mCurrentImagePath);
+                mImagePath = mCurrentImagePath;
 
                 initConfirmation();
             }
@@ -305,6 +320,9 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
 
         acc.setVisibility(View.VISIBLE);
         deny.setVisibility(View.VISIBLE);
+        findViewById(R.id.bt_main_analyze).setVisibility(View.INVISIBLE);
+        findViewById(R.id.bt_main_results).setVisibility(View.INVISIBLE);
+        findViewById(R.id.bt_main_logout).setVisibility(View.INVISIBLE);
         //mCaptureButton.setVisibility(View.INVISIBLE);
         mThumbView.setVisibility(View.VISIBLE);
     }
@@ -315,25 +333,24 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         switch(v.getId()){
             case R.id.button_conf_accept:
                 sendImage();
-                toast = Toast.makeText(this, "Image Sent", Toast.LENGTH_LONG);
-                break;
-
-            case R.id.button_conf_deny:
-                toast = Toast.makeText(this, "Image Denied", Toast.LENGTH_LONG);
+                toast = Toast.makeText(getApplicationContext(), "Image Sent", Toast.LENGTH_LONG);
+                toast.show();
                 break;
 
             default:
                 Log.e("doImageConf", "Unknown id: " + v.getId() );
-                return;
+                break;
         }
-
-        toast.show();
 
         //restart camera preview
         //set visibility appropriately
-        mCamera.startPreview();
-        mCameraView.setVisibility(View.VISIBLE);
-        mCaptureButton.setVisibility(View.VISIBLE);
+       // mCamera.startPreview();
+        //mCameraView.setVisibility(View.VISIBLE);
+        //mCaptureButton.setVisibility(View.VISIBLE);
+        findViewById(R.id.bt_main_analyze).setVisibility(View.VISIBLE);
+        findViewById(R.id.bt_main_results).setVisibility(View.VISIBLE);
+        findViewById(R.id.bt_main_logout).setVisibility(View.VISIBLE);
+        mThumbView.setVisibility(View.INVISIBLE);
         findViewById(R.id.button_conf_accept).setVisibility(View.GONE);
         findViewById(R.id.button_conf_deny).setVisibility(View.GONE);
     }
@@ -410,7 +427,7 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         return null;
     }
 
-    public void analyzeAlertDialog() {
+    private void analyzeAlertDialog() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AnalyzeDialogStyle);
 
         builder.setTitle("Choose");
@@ -433,6 +450,11 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         });
 
         builder.show();
+    }
+
+    // overload to support onClick from button in layout
+    public void anaylzeAlertDialog(View v){
+        analyzeAlertDialog();
     }
 
     private void startCameraIntent(){

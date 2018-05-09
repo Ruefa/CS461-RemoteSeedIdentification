@@ -1,9 +1,11 @@
 package com.capstone.remoteseedidentification;
 
+import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 public class ResultsListRVAdapter extends RecyclerView.Adapter<ResultsListRVAdapter.ViewHolder> {
 
     private ArrayList<String> mResultsList;
+    private ArrayList<Bitmap> mThumbList;
     private OnResultsClickListener mClickListener;
 
     public interface OnResultsClickListener{
@@ -24,15 +27,20 @@ public class ResultsListRVAdapter extends RecyclerView.Adapter<ResultsListRVAdap
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView mTextView;
+        private ImageView mImageView;
 
         public ViewHolder(View itemView) {
             super(itemView);
             mTextView = itemView.findViewById(R.id.tv_results_rv_item);
             mTextView.setOnClickListener(this);
+
+            mImageView = itemView.findViewById(R.id.iv_results_thumbnail_view);
+            mImageView.setOnClickListener(this);
         }
 
-        public void bind(String item){
+        public void bind(String item, Bitmap bitmap){
             mTextView.setText(item);
+            mImageView.setImageBitmap(bitmap);
         }
 
         @Override
@@ -55,11 +63,12 @@ public class ResultsListRVAdapter extends RecyclerView.Adapter<ResultsListRVAdap
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.bind(mResultsList.get(position));
+        holder.bind(mResultsList.get(position), mThumbList.get(position));
     }
 
-    public void updateItems(ArrayList<String> items){
+    public void updateItems(ArrayList<String> items, ArrayList<Bitmap> bitmaps){
         mResultsList = items;
+        mThumbList = bitmaps;
         notifyDataSetChanged();
     }
 

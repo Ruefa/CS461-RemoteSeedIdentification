@@ -66,13 +66,18 @@ public class SocketService extends Service {
             Intent intent = new Intent(message.getData().getString(OUTBOUND_KEY));
             if(socketSuccess || mServer.mRun) {
                 if(message.getData().getString(ACTION_KEY) != null){
+                    // request result detail
                     if(message.getData().getString(ACTION_KEY).equals(ResultsController.ACTION_REQUEST_RESULT)){
                         Log.d(TAG, "request result");
                         intent.putExtra(ACTION_KEY, message.getData().getString(ACTION_KEY));
-                        mServer.sendMessage(ServerUtils.formatResultRequest(
-                                new byte[]{Integer.valueOf(message.getData().getString(SEND_MESSAGE_KEY)).byteValue()}, //change
-                                mServer.getCookie()
-                        ));
+                        try {
+                            mServer.sendMessage(ServerUtils.formatResultRequest(
+                                    message.getData().getString(SEND_MESSAGE_KEY).getBytes("ASCII"), //change
+                                    mServer.getCookie()
+                            ));
+                        } catch (Exception e){
+                            e.printStackTrace();
+                        }
                     } else if(message.getData().getString(ACTION_KEY).equals(ResultsController.ACTION_VIEW_RESULTS)) {
                         Log.d(TAG, "results list request");
                         intent.putExtra(ACTION_KEY, message.getData().getString(ACTION_KEY));
@@ -100,7 +105,7 @@ public class SocketService extends Service {
                     incomingMessage = mServer.receiveMessage(message.getData().getString(OUTBOUND_KEY));
                 }
                 Log.d(TAG, "received message");
-                mServer.stopSocket();
+                //mServer.stopSocket();
 
                 intent.putExtra(BROADCAST_KEY, incomingMessage);
             }else{
@@ -146,6 +151,11 @@ public class SocketService extends Service {
         message.arg1 = startId;
         if(intent.getStringExtra(SEND_MESSAGE_KEY).equals(RESET)){
             mServer.removeCookie();
+            try {
+                mServer.stopSocket();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
         } else {
             message.setData(intent.getExtras());
             mServiceHandler.sendMessage(message);
