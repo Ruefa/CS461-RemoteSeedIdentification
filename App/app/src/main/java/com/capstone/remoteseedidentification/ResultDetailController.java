@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
@@ -123,7 +124,7 @@ public class ResultDetailController extends AppCompatActivity {
             seedCount += Integer.valueOf(resultSplit[1]);
         }
 
-        initPieChart(labels, seedPercentage, colors);
+        initPieChart(labels, seedPercentage, colors, seedCount);
     }
 
     private void setImageDisplay(String fileName){
@@ -230,9 +231,12 @@ public class ResultDetailController extends AppCompatActivity {
     }
 
     // initializes pie chart with data and themeing
-    private void initPieChart(List<String> labels, List<String> seedPercentage, List<Integer> colors){
+    private void initPieChart(List<String> labels, List<String> seedPercentage, List<Integer> colors, int seedCount){
         mPieChart = findViewById(R.id.pc_seed_makeup);
         List<Integer> colorsToDisplay = new LinkedList<>();
+
+        TextView tvSeedCount = findViewById(R.id.tv_seed_count);
+        tvSeedCount.setText(String.valueOf(seedCount));
 
         // create test data
         List<PieEntry> entries = new ArrayList<>();
