@@ -91,7 +91,9 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
         for(int i=1; i<=10; i++) {
             testList.add("9/" + String.valueOf(i) + "/2018 13:05");
         }
-        mResultsRVAdapter.updateItems(testList, testBitmaps());
+        testList = new ArrayList<>();
+        testList.add("Loading your results.");
+        //mResultsRVAdapter.updateItems(testList, testBitmaps());
     }
 
     public final static String BROADCAST_ACTION = "results";
