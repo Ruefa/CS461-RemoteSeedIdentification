@@ -112,12 +112,15 @@ public class ResultDetailController extends AppCompatActivity {
         List<String> labels = new LinkedList<>();
         List<String> seedPercentage = new LinkedList<>();
         List<Integer> colors = new LinkedList<>();
+        int seedCount = 0;
+        // last index is the image so we want to ignore that.
         for(int i=0; i<resultArray.length-1; i++){
             String[] resultSplit = resultArray[i].split(",");
             String[] nameSplit = resultSplit[0].split(":");
             labels.add(nameSplit[0]);
             seedPercentage.add(nameSplit[1]);
             colors.add(Color.parseColor(resultSplit[2]));
+            seedCount += Integer.valueOf(resultSplit[1]);
         }
 
         initPieChart(labels, seedPercentage, colors);
