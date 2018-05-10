@@ -40,6 +40,7 @@
 
     <!-- Results Activity -->
     <string name="results_actionbar_title">Results</string>
+    <string name="loading_results">Loading your results.</string>
 
     <!-- Result Detail Activity -->
     <string name="result_detail_actionbar_title">Result Detail</string>
