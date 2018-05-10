@@ -44,6 +44,7 @@
         android:layout_height="0dp"
         android:src="@drawable/result_detailed"
         android:paddingTop="20dp"
+        android:paddingBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/gd_image_graph_divider"
         app:layout_constraintLeft_toLeftOf="parent"
