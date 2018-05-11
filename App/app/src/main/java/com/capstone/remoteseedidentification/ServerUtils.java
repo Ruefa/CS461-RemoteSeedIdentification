@@ -48,6 +48,7 @@ public class ServerUtils {
     private static final byte FORGOTPW_INDICATOR = 0x05;
 
     public static final String SEND_MESSAGE = "socket.service.intent.action.SEND_MESSAGE";
+    public static final String SUCCESS_STRING = "00";
     public static final String LOGIN_ACCEPT = "01";
     public static final String FORGOT_ACCEPT = "10";
     public static final String FAILURE = "02";
@@ -212,10 +213,18 @@ public class ServerUtils {
             } else {
                 return FAILURE;
             }
+          // main activity
+        } else if(messageType.equals(MainActivity.BROADCAST_ACTION)) {
+            if(bytesRead[0] == SUCCESS){
+                return SUCCESS_STRING;
+            } else{
+                return FAILURE;
+            }
+
         } else if(messageType.equals(ResultsController.ACTION_VIEW_RESULTS)) {
             return new String(bytesRead, Charset.forName("ASCII"));
-        } else if(messageType.equals(ResultsController.ACTION_REQUEST_RESULT)){
 
+        } else if(messageType.equals(ResultsController.ACTION_REQUEST_RESULT)){
             if(bytesRead[0] == INVALID_MESSAGE){
                 return FAILURE;
             } else {
