@@ -15,6 +15,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -51,6 +52,7 @@ public class LoginController extends AppCompatActivity {
         bSocketManager = LocalBroadcastManager.getInstance(this);
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(BROADCAST_ACTION);
+        intentFilter.addAction(BROADCAST_ACTION_FORGOT);
         bSocketManager.registerReceiver(mSocketReceiver, intentFilter);
 
         Intent intent = new Intent(this, SocketService.class);
@@ -80,7 +82,6 @@ public class LoginController extends AppCompatActivity {
             bundle.putString(SocketService.SEND_MESSAGE_KEY, message);
             bundle.putString(SocketService.OUTBOUND_KEY, BROADCAST_ACTION);
             intent.putExtras(bundle);
-
             startService(intent);
         }else{
             mTVError.setText(R.string.login_error_empty);
@@ -114,6 +115,7 @@ public class LoginController extends AppCompatActivity {
     };
 
     public final static String BROADCAST_ACTION = "login_receive";
+    public final static String BROADCAST_ACTION_FORGOT = "forgot_receive";
     private LocalBroadcastManager bSocketManager;
     private BroadcastReceiver mSocketReceiver = new BroadcastReceiver() {
         @Override
@@ -128,6 +130,10 @@ public class LoginController extends AppCompatActivity {
                     mTVError.setText(getText(R.string.login_error_server_connection));
                     mTVError.setVisibility(View.VISIBLE);
                     break;
+                case ServerUtils.FORGOT_ACCEPT:
+                    hideForgot();
+                    showLogin();
+                    forgotPWAlertDialog();
                 default:
                     mTVError.setText(getString(R.string.login_error_unknown));
                     mTVError.setVisibility(View.VISIBLE);
@@ -185,8 +191,9 @@ public class LoginController extends AppCompatActivity {
             Intent intent = new Intent(this, SocketService.class);
             Bundle bundle = new Bundle();
             bundle.putString(SocketService.SEND_MESSAGE_KEY, message);
-            bundle.putString(SocketService.OUTBOUND_KEY, BROADCAST_ACTION);
+            bundle.putString(SocketService.OUTBOUND_KEY, BROADCAST_ACTION_FORGOT);
             intent.putExtras(bundle);
+            startService(intent);
         } else {
             mTVError.setVisibility(View.VISIBLE);
             mTVError.setText(getString(R.string.login_error_forgot_empty));
@@ -197,5 +204,14 @@ public class LoginController extends AppCompatActivity {
         mTVError.setVisibility(View.INVISIBLE);
         hideForgot();
         showLogin();
+    }
+
+    private void forgotPWAlertDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setNeutralButton("OK", null);
+        builder.setMessage(R.string.login_dialog_password_reset_email);
+
+        builder.show();
     }
 }
