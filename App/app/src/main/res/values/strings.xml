@@ -27,6 +27,7 @@
     <string name="login_forgot_password_button">Forgot Password?</string>
     <string name="login_bt_pass_reset">Reset Password</string>
     <string name="login_bt_back">Back to login</string>
+    <string name="login_error_forgot_empty">Please enter your email</string>
 
     <!-- Register activity -->
     <string name="register_hint_username">Email</string>
