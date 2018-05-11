@@ -114,6 +114,7 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         }
     }
 
+    // asks user for permissions needed in the app
     private void checkPermissions(){
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -172,18 +173,6 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
                 goLogin();
             }
         }
-    }
-
-    //makes dummy strings for testing
-    private String[] dummyData(int numData){
-
-        String[] data = new String[numData];
-
-        for(int i=0; i<data.length; i++){
-            data[i] = String.valueOf(i+1);
-        }
-
-        return data;
     }
 
     public void goLogin(){
