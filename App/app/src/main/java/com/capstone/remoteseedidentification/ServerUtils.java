@@ -167,29 +167,6 @@ public class ServerUtils {
         ByteArrayOutputStream combiner = new ByteArrayOutputStream();
 
         try {
-            //wait for server
-//            while (available == 0){
-//                available = mInputStream.available();
-//            }
-//                incomingMessage = mInBuffer.readLine();
-//                if (incomingMessage != null) {
-//                    Log.d(TAG, incomingMessage);
-//                    return incomingMessage;
-//                }
-//                incomingMessage = null;
-//            mInputStream.available();
-//            byteRead = mInputStream.read();
-//            Log.d(TAG, String.valueOf(byteRead));
-//            if(byteRead != -1){
-//                byteArrayOutputStream.write(byteRead);
-
-//            bytesRead = new byte[available];
-//            numBytesRead = mInputStream.read(bytesRead);
-//
-//            byte[] test = new byte[50];
-//            numBytesRead = mInputStream.read(test);
-//            Log.d(TAG, Arrays.toString(bytesRead));
-
             // get number of bytes being sent across socket
             byte[] sizeBytes = new byte[4];
             mInputStream.read(sizeBytes);
