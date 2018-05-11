@@ -15,6 +15,7 @@
     <string name="button_accept">Send Image</string>
     <string name="button_deny">Cancel</string>
     <string name="button_snap">Take a picture!</string>
+    <string name="main_dialog_send_image">Sending image...</string>
 
     <!-- Login activity -->
     <string name="login_hint_username">Email</string>
