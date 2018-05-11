@@ -93,7 +93,7 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
         }
         testList = new ArrayList<>();
         testList.add(getString(R.string.loading_results));
-        //mResultsRVAdapter.updateItems(testList, testBitmaps());
+        mResultsRVAdapter.updateItems(testList, testBitmaps());
     }
 
     public final static String BROADCAST_ACTION = "results";
