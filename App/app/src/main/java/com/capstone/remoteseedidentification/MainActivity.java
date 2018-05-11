@@ -23,9 +23,9 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerView;
     private ActionBarDrawerToggle mDrawerToggle;
+    private AlertDialog mADSendImage;
 
     //testing image capture
     private ImageButton mCaptureButton;
@@ -331,6 +332,10 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
     private void sendImage(){
         Log.d(TAG, "starting send image");
         Log.d(TAG, String.valueOf(mByteImage.length));
+
+        // show dialog of sending progress
+        sendImageAlertDialog();
+
         Intent intent = new Intent(this, SocketService.class);
         Bundle bundle = new Bundle();
         bundle.putString(SocketService.SEND_IMAGE_KEY, mImagePath);
@@ -423,6 +428,17 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         });
 
         builder.show();
+    }
+
+    private void sendImageAlertDialog() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AnalyzeDialogStyle);
+
+        LayoutInflater inflater = this.getLayoutInflater();
+
+        builder.setView(inflater.inflate(R.layout.dialog_send_image, null));
+
+        mADSendImage = builder.create();
+        mADSendImage.show();
     }
 
     // overload to support onClick from button in layout
