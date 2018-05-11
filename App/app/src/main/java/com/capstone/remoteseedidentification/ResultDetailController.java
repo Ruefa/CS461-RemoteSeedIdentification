@@ -242,9 +242,6 @@ public class ResultDetailController extends AppCompatActivity {
         mPieChart = findViewById(R.id.pc_seed_makeup);
         List<Integer> colorsToDisplay = new LinkedList<>();
 
-        TextView tvSeedCount = findViewById(R.id.tv_seed_count);
-        tvSeedCount.setText(String.valueOf(seedCount));
-
         // create test data
         List<PieEntry> entries = new ArrayList<>();
         for(int i=0; i<seedPercentage.size(); i++){
