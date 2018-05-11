@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.DocumentsContract;
@@ -130,7 +131,13 @@ public class ResultDetailController extends AppCompatActivity {
     private void setImageDisplay(String fileName){
         byte[] imageBytes = MainActivity.fileToBytes(fileName);
         Bitmap thumbBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-        ivResult.setImageBitmap(thumbBitmap);
+
+        Matrix matrix = new Matrix();
+        matrix.postRotate(90);
+        Bitmap rotated = Bitmap.createBitmap(thumbBitmap, 0, 0, thumbBitmap.getWidth(),
+                thumbBitmap.getHeight(), matrix, true);
+
+        ivResult.setImageBitmap(rotated);
     }
 
     private void sharePDF(){
