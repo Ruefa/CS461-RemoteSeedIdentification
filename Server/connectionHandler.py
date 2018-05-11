@@ -139,13 +139,12 @@ def getReportList(_):
         return (error.Unauthorized,)
 
     try:
-        l = [str(x) for x in db.getReportList(user)]
+        l = [str(x.id) + '@' + x.datetime.strftime('%x %X') for x in db.getReportList(user)]
     except:
         return (error.DBError,)
 
     return (error.Success,'|'.join(l).encode())
 
-#TODO Handle incomplete report
 def getReport(report):
     user = threadData.currentUser
     if not user:
@@ -162,7 +161,9 @@ def getReport(report):
         return (error.DBError,)
 
     if r:
-        return (error.Success, r)
+        if r.isAnalysisDone:
+            return (error.Success, r)
+        return (error.ReportInProgress,)
     return (error.InvalidReportID,)
 
 def deleteReport(report):
@@ -241,9 +242,10 @@ def changePassword(passwords):
         return (error.DBError,)
 
 def forgotPassword(user):
-    password = db.newPassword(user)
+    #password = db.newPassword(user)
     #TODO Email new password
-    return (error.Success,)
+    return (error.Failure,)
+    #return (error.Success,)
 
 
 dispatch = { 1:   newAccount,

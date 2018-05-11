@@ -1,6 +1,7 @@
 import os
 import pathlib
 import string
+import datetime
 
 from passHash import hashPassword, checkPassword
 from randomPass import makePassword
@@ -20,6 +21,7 @@ class Report(db.Entity):
     results = Optional(str)
     sourceImg = Optional(str)
     resultsImg = Optional(str)
+    datetime = Required(datetime.datetime)
     isAnalysisDone = Required(bool)
     owner = Required(Account)
 
@@ -91,7 +93,8 @@ def newPassword(username):
 @db_session
 def newReport(username, sourceImg='', resultsImg='', results='', isAnalysisDone = False):
     username = username.lower()
-    r = Report(owner=Account[username], sourceImg=sourceImg, resultsImg=resultsImg, isAnalysisDone=isAnalysisDone, results=results)
+    r = Report(owner=Account[username], sourceImg=sourceImg, resultsImg=resultsImg, 
+               isAnalysisDone=isAnalysisDone, results=results, datetime=datetime.datetime.today())
     commit()
     return r.id
 
@@ -114,7 +117,7 @@ def updateReport(reportId, isAnalysisDone=None, sourceImg=None, resultsImg=None,
 def getReportList(username):
     username = username.lower()
     u = Account.get(username=username)
-    return select(x.id for x in Report if x.owner == u)[:]
+    return select(x for x in Report if x.owner == u)[:]
 
 @db_session
 def getReport(report):
