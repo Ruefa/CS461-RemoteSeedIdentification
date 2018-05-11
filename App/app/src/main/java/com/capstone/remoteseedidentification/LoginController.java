@@ -31,6 +31,7 @@ public class LoginController extends AppCompatActivity {
     boolean mBound = false;
 
     private TextView mTVError;
+    private EditText mEtUser, mEtPass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +41,10 @@ public class LoginController extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, 0);
         }
+
+        // get edit text components from layout
+        mEtUser = findViewById(R.id.edit_username);
+        mEtPass = findViewById(R.id.edit_pass);
 
         bSocketManager = LocalBroadcastManager.getInstance(this);
         IntentFilter intentFilter = new IntentFilter();
@@ -55,21 +60,16 @@ public class LoginController extends AppCompatActivity {
     }
 
     public void doLogin(View v){
-        EditText etUser, etPass;
         final String message;
-
-        // get edit text components from layout
-        etUser = findViewById(R.id.edit_username);
-        etPass = findViewById(R.id.edit_pass);
 
         mTVError.setVisibility(View.INVISIBLE);
 
         // user input validation
-        if(!etUser.getText().toString().equals("") && !etPass.getText().toString().equals("")) {
+        if(!mEtUser.getText().toString().equals("") && !mEtPass.getText().toString().equals("")) {
 
             findViewById(R.id.pb_login).setVisibility(View.VISIBLE);
 
-            message = ServerUtils.loginFormat(etUser.getText().toString(), etPass.getText().toString());
+            message = ServerUtils.loginFormat(mEtUser.getText().toString(), mEtPass.getText().toString());
 
             Log.d(TAG, "doLogin");
 
@@ -143,7 +143,39 @@ public class LoginController extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void hideLogin(){
+        mEtPass.setVisibility(View.INVISIBLE);
+        findViewById(R.id.button_login).setVisibility(View.INVISIBLE);
+        findViewById(R.id.button_forgot_pw).setVisibility(View.INVISIBLE);
+    }
+
+    private void showLogin(){
+        mEtPass.setVisibility(View.VISIBLE);
+        findViewById(R.id.button_login).setVisibility(View.VISIBLE);
+        findViewById(R.id.button_forgot_pw).setVisibility(View.VISIBLE);
+    }
+
+    private void hideForgot(){
+        findViewById(R.id.bt_login_reset).setVisibility(View.INVISIBLE);
+        findViewById(R.id.bt_login_back).setVisibility(View.INVISIBLE);
+    }
+
+    private void showForgot(){
+        findViewById(R.id.bt_login_reset).setVisibility(View.VISIBLE);
+        findViewById(R.id.bt_login_back).setVisibility(View.VISIBLE);
+    }
+
     public void forgotPassword(View v){
-        // todo
+        hideLogin();
+        showForgot();
+    }
+
+    public void resetPassword(View v){
+
+    }
+
+    public void backToLogin(View v){
+        hideForgot();
+        showLogin();
     }
 }
