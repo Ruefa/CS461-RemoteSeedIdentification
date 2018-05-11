@@ -69,6 +69,7 @@ public class ResultDetailController extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result_detail);
 
+        // translate seed names from server results to full name
         seedNames = new HashMap<String, String>(){};
         seedNames.put("rc", "Red Clover");
         seedNames.put("flax", "Flax");
@@ -268,6 +269,9 @@ public class ResultDetailController extends AppCompatActivity {
         dataSet.setValueTextSize(PC_TEXT_SIZE);
         // set format of values to percentages
         dataSet.setValueFormatter(new PercentFormatter());
+        // set value label position
+        //dataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+        //dataSet.setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
         mPieChart.setData(new PieData(dataSet));
 
         // center legend text horizontally and set text size
