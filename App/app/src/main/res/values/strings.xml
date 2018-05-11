@@ -25,6 +25,8 @@
     <string name="login_error_server_connection">Error connecting with server</string>
     <string name="login_error_unknown">An unknown error occurred</string>
     <string name="login_forgot_password_button">Forgot Password?</string>
+    <string name="login_bt_pass_reset">Reset Password</string>
+    <string name="login_bt_back">Back to login</string>
 
     <!-- Register activity -->
     <string name="register_hint_username">Email</string>
