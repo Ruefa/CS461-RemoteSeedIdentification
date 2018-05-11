@@ -124,6 +124,8 @@ public class LoginController extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             mPBLogin.setVisibility(View.INVISIBLE);
+            mTVError.setVisibility(View.INVISIBLE);
+
             String response = intent.getStringExtra(SocketService.BROADCAST_KEY);
             switch(response){
                 // login successful
@@ -140,6 +142,12 @@ public class LoginController extends AppCompatActivity {
                     hideForgot();
                     showLogin();
                     forgotPWAlertDialog();
+                    break;
+                // bad user credentials
+                case ServerUtils.BAD_CRED:
+                    mTVError.setText(getString(R.string.login_error_invalid));
+                    mTVError.setVisibility(View.VISIBLE);
+                    break;
                 // unknown error
                 default:
                     mTVError.setText(getString(R.string.login_error_unknown));
