@@ -139,22 +139,6 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
             //frameLayout.addView(mCameraView);
     }
 
-    /* no longer used
-    //sets up navigation drawer
-    private void initNavigation(){
-        mNavData = new ArrayList<>();
-        mNavData.add(getResources().getString(R.string.nav_gallery));
-        mNavData.add(getResources().getString(R.string.nav_results));
-
-        mNavRV = findViewById(R.id.nav_drawer_rv);
-        mNavAdapter = new NavDrawerRVAdapter(this, this);
-        mNavRV.setAdapter(mNavAdapter);
-        mNavRV.setLayoutManager(new LinearLayoutManager(this));
-        mNavRV.setHasFixedSize(true);
-        mNavAdapter.updateItems(mNavData);
-    }
-    */
-
     @Override
     public void onNavDrawerItemClick(String item) {
         if(item.equals(getString(R.string.nav_gallery))) {
