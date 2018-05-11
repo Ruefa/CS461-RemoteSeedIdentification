@@ -29,6 +29,7 @@
     <string name="login_bt_back">Back to login</string>
     <string name="login_error_forgot_empty">Please enter your email</string>
     <string name="login_dialog_password_reset_email">Your new password has been sent to your email.</string>
+    <string name="login_error_invalid">Invalid username or password</string>
 
     <!-- Register activity -->
     <string name="register_hint_username">Email</string>
