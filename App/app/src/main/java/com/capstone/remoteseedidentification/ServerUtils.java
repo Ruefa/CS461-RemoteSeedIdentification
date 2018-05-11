@@ -52,10 +52,14 @@ public class ServerUtils {
     public static final String FORGOT_ACCEPT = "10";
     public static final String FAILURE = "02";
     public static final String REGISTER_ACCEPT = "00";
+    public static final String DUP_USER_STRING = "0A";
+    public static final String BAD_CRED = "0C";
 
     public static final byte SUCCESS = 0x00;
     public static final byte INVALID_MESSAGE = 0x32;
     public static final byte FAILURE_BYTES = 0x01;
+    public static final byte DUP_USER = 0x0A;
+    public static final byte INVALID_CRED = 0x0C;
 
     private PrintWriter mOutBuffer;
     private OutputStream mOutputStream;
@@ -103,27 +107,12 @@ public class ServerUtils {
                 //create BufferedReader from socket input stream
                 mInBuffer = new BufferedReader(new InputStreamReader(mSocket.getInputStream()));
                 mInputStream = mSocket.getInputStream();
-                //sendMessage(mInitMessage);
 
-                //loop endlessly waiting for input data
-                //stopSocket() sets mRun to false and ends the loop
-                /*while(mRun){
-                    Log.d(TAG, "waiting for input");
-                    incomingMessage = mInBuffer.readLine();
-                    if(incomingMessage != null && mMessageCallback != null){
-                        return; //temporarilly not using a socket server
-                    }
-                    incomingMessage = null;
-                }*/
             } catch (Exception e){
                 e.printStackTrace();
                 return false;
             //empty output buffers and close socket
-            } /*finally {
-                //mOutBuffer.flush();
-                //mOutBuffer.close();
-                //socket.close();
-            }*/
+            }
         } catch (Exception e){
             e.printStackTrace();
             return false;
@@ -148,7 +137,6 @@ public class ServerUtils {
             try {
                 mOutputStream.write(message);
                 mOutputStream.flush();
-                //mSocket.shutdownOutput();
             }
             catch (IOException e){
                 e.printStackTrace();
@@ -201,6 +189,8 @@ public class ServerUtils {
             if (bytesRead[0] == SUCCESS) {
                 cookie = bytesRead;
                 return LOGIN_ACCEPT;
+            } else if(bytesRead[0] == INVALID_CRED) {
+                return BAD_CRED;
             } else {
                 return FAILURE;
             }
@@ -217,6 +207,8 @@ public class ServerUtils {
         } else if(messageType.equals(RegisterController.BROADCAST_ACTION)) {
             if (bytesRead[bytesRead.length-1] == SUCCESS) {
                 return REGISTER_ACCEPT;
+            } else if(bytesRead[bytesRead.length-1] == DUP_USER) {
+                return DUP_USER_STRING;
             } else {
                 return FAILURE;
             }
