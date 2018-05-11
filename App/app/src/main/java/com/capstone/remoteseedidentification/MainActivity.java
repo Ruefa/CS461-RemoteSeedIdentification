@@ -302,13 +302,9 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
     }
 
     public void doImageConf(View v){
-        Toast toast;
-
         switch(v.getId()){
             case R.id.button_conf_accept:
                 sendImage();
-                toast = Toast.makeText(getApplicationContext(), "Image Sent", Toast.LENGTH_LONG);
-                toast.show();
                 break;
 
             default:
@@ -350,7 +346,25 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Toast toast;
+
             Log.d(TAG, "main receiving");
+
+            mADSendImage.dismiss();
+
+            String response = intent.getStringExtra(SocketService.BROADCAST_KEY);
+            switch (response){
+                case ServerUtils.SUCCESS_STRING:
+                    toast = Toast.makeText(getApplicationContext(), "Image Sent", Toast.LENGTH_LONG);
+                    toast.show();
+                    break;
+                case ServerUtils.FAILURE:
+                    toast = Toast.makeText(getApplicationContext(), "Image failed to send", Toast.LENGTH_LONG);
+                    toast.show();
+                    break;
+                default:
+                    Log.d(TAG, "UNKNOWN return from server");
+            }
         }
     };
 
