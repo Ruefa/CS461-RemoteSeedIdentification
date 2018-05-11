@@ -13,3 +13,6 @@ Annotator/fix.py
 App/test_server/
 Data/
 Annotator/weights
+Annotator/.idea/
+Annotator/__pycache__/
+Annotator/venv/
