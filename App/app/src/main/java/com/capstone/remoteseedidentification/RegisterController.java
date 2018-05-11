@@ -89,6 +89,10 @@ public class RegisterController extends AppCompatActivity {
                     tvError.setText(getString(R.string.login_error_server_connection));
                     tvError.setVisibility(View.VISIBLE);
                     break;
+                case ServerUtils.DUP_USER_STRING:
+                    tvError.setText(getString(R.string.register_dup_user));
+                    tvError.setVisibility(View.VISIBLE);
+                    break;
                 default:
                     tvError.setText(getString(R.string.login_error_unknown));
                     tvError.setVisibility(View.VISIBLE);
