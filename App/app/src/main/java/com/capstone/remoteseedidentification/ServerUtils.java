@@ -49,6 +49,7 @@ public class ServerUtils {
 
     public static final String SEND_MESSAGE = "socket.service.intent.action.SEND_MESSAGE";
     public static final String LOGIN_ACCEPT = "01";
+    public static final String FORGOT_ACCEPT = "10";
     public static final String FAILURE = "02";
     public static final String REGISTER_ACCEPT = "00";
 
@@ -173,6 +174,7 @@ public class ServerUtils {
             Log.d(TAG, "byte size: " + Arrays.toString(sizeBytes));
 
             int messageSize = ByteBuffer.wrap(sizeBytes).getInt();
+            // largest # of bytes to read from socket at a time
             int maxBlockSize = 16384; // 2^14
 
             do {
@@ -193,6 +195,7 @@ public class ServerUtils {
             e.printStackTrace();
         }
 
+        // login
         if(messageType.equals(LoginController.BROADCAST_ACTION)) {
             Log.d(TAG, String.valueOf(bytesRead[0]));
             if (bytesRead[0] == SUCCESS) {
@@ -201,6 +204,16 @@ public class ServerUtils {
             } else {
                 return FAILURE;
             }
+
+          // forgot password
+        } else if(messageType.equals(LoginController.BROADCAST_ACTION_FORGOT)) {
+            if(bytesRead[0] == SUCCESS) {
+                return FORGOT_ACCEPT;
+            } else{
+                return FAILURE;
+            }
+
+          // register
         } else if(messageType.equals(RegisterController.BROADCAST_ACTION)) {
             if (bytesRead[bytesRead.length-1] == SUCCESS) {
                 return REGISTER_ACCEPT;
