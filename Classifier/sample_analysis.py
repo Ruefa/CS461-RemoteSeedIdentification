@@ -2,15 +2,16 @@
 #                                                                                                 #
 #   File: sample_analysis.py                                                                      #
 #   Author: Ethan Takla                                                                           #
-#   Last modified: 4/5/2018                                                                       #
+#   Last modified: 5/10/2018                                                                       #
 #   Description: This file contains all the tools to localize and predict the species of          #
 #                an arbitrary amount of seeds in an image. The large sample image is partitioned  #
 #                into many small slices, which are each individually analyzed by the classifier.  #
 #                A single-shot multibox detector (SSD) is used along with a VGG-16 base network   #
 #                to run perform classification. Slice deltas are 1/3 of the slice width so seeds  #
-#                caught on the edges will be guaranteed to appear wholly in at least image.       #
+#                caught on the edges will be guaranteed to appear wholly in at least one image.   #
 #                Probability-based non-maximal suppression is used to merge any redundant         #
-#                detections.                                                                      #
+#                detections. A novel "Interest Region Processing" method is used to ensure        #
+#                processing isn't wasted on empty slices.                                         #
 #   Inputs:                                                                                       #
 #           -img        Path to the image to be analzyed                                          #
 #           -weights    Path to the weights file for the classifier                               #
@@ -18,6 +19,28 @@
 #           results.png     A .PNG image of all of the image overlaid with the seed detections    #
 #           statistics.dat  A text-based file containing the possible species and their           #
 #                           composition percentages                                               #
+#                                                                                                 #
+#   MIT License                                                                                   #
+#                                                                                                 #
+#   Copyright (c) 2018 Ethan Takla                                                                #
+#                                                                                                 #
+#   Permission is hereby granted, free of charge, to any person obtaining a copy                  #
+#   of this software and associated documentation files (the "Software"), to deal                 #
+#   in the Software without restriction, including without limitation the rights                  #
+#   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell                     #
+#   copies of the Software, and to permit persons to whom the Software is                         #
+#   furnished to do so, subject to the following conditions:                                      #
+#                                                                                                 #
+#   The above copyright notice and this permission notice shall be included in all                #
+#   copies or substantial portions of the Software.                                               #
+#                                                                                                 #
+#   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR                    #
+#   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,                      #
+#   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE                   #
+#   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER                        #
+#   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,                 #
+#   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE                 #
+#   SOFTWARE.                                                                                     #
 #                                                                                                 #
 # ************************************************************************************************#
 
@@ -60,6 +83,9 @@ DETECTION_THRESHOLDS = [0.7, 0.7, 0.9, 0.9, 0.9]
 # DPI of the result image
 RESULT_DPI = 200
 
+# Slice overlap coefficient
+SLICE_OVERLAP = 3
+
 # Colors to use for the bounding boxes
 COLORS = ["#000000", "#000000", "#067BC2", "#ECC30B", "#F37748", "#d56062"]
 
@@ -85,16 +111,16 @@ species_names = ['prg', 'tf', 'flax', 'wheat', 'rc']
 # Chop up an sample image into smaller, overlapping windows
 def partition_image(image, shape):
     # Step half the shape dimension to avoid losing seeds on the edges
-    partitions_x = math.floor(image.shape[1] / shape[0]) * 3
-    partitions_y = math.floor(image.shape[0] / shape[1]) * 3
+    partitions_x = math.floor(image.shape[1] / shape[0]) * SLICE_OVERLAP
+    partitions_y = math.floor(image.shape[0] / shape[1]) * SLICE_OVERLAP
 
     image_set = []
 
     for x in range(partitions_x):
         for y in range(partitions_y):
 
-            start_x = int(x * (shape[0] / 3))
-            start_y = int(y * (shape[1] / 3))
+            start_x = int(x * (shape[0] / SLICE_OVERLAP))
+            start_y = int(y * (shape[1] / SLICE_OVERLAP))
             end_x = start_x + shape[0]
             end_y = start_y + shape[1]
 
@@ -143,7 +169,7 @@ def detect(img):
 
     # Find edges of seeds by using an adaptive threshold
     thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C,\
-            cv2.THRESH_BINARY,11,10)
+            cv2.THRESH_BINARY, 11, 10)
 
     # Find the histogram of the threshold image
     hist = cv2.calcHist([thresh], [0], None, [256], [0, 256])
@@ -178,8 +204,6 @@ def gen_slice_predictions(image_slice, net):
 
     # Evaluate the net
     y = net(xx)
-    top_k = 10
-
     detections = y.data
 
     # scale each detection back up to the image
@@ -189,6 +213,7 @@ def gen_slice_predictions(image_slice, net):
         j = 0
 
         while detections[0, i, j, 0] >= DETECTION_THRESHOLDS[i-1]:
+
             # Get the score of the prediction
             score = detections[0, i, j, 0]
 

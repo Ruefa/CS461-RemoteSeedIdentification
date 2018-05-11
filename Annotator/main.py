@@ -1,3 +1,36 @@
+# ************************************************************************************************#
+#                                                                                                 #
+#   File: main.py                                                                                 #
+#   Author: Ethan Takla                                                                           #
+#   Last modified: 5/10/2018                                                                      #
+#   Description: This is a seed annotation tool used to build and annotate seed data sets.        #
+#                The tool supports loading and saving annotations, as well as manual and          #
+#                automated annotations. It can also partition large sample images into smaller    #
+#                slices, and generate data sets in the VOC 2007 format for deep learning.         #
+#                                                                                                 #
+#   MIT License                                                                                   #
+#                                                                                                 #
+#   Copyright (c) 2018 Ethan Takla                                                                #
+#                                                                                                 #
+#   Permission is hereby granted, free of charge, to any person obtaining a copy                  #
+#   of this software and associated documentation files (the "Software"), to deal                 #
+#   in the Software without restriction, including without limitation the rights                  #
+#   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell                     #
+#   copies of the Software, and to permit persons to whom the Software is                         #
+#   furnished to do so, subject to the following conditions:                                      #
+#                                                                                                 #
+#   The above copyright notice and this permission notice shall be included in all                #
+#   copies or substantial portions of the Software.                                               #
+#                                                                                                 #
+#   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR                    #
+#   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,                      #
+#   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE                   #
+#   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER                        #
+#   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,                 #
+#   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE                 #
+#   SOFTWARE.                                                                                     #
+#                                                                                                 #
+# ************************************************************************************************#
 
 import tkinter as tk
 from tkinter import Tk, Text, BOTH, W, N, E, S, filedialog
@@ -12,11 +45,11 @@ from datetime import datetime
 import math
 import ntpath
 import sys
-import numpy as np
 
 # Add the classifier to the include files
 sys.path.append("../Classifier/")
 
+import numpy as np
 import torch
 from ssd import build_ssd
 import torch.nn as nn
@@ -56,7 +89,7 @@ class MainWindow(Frame):
     dataset_filenames = []
 
     # Index of the sample currently being annotated
-    current_sample = 5000
+    current_sample = 0
 
     def __init__(self):
         super().__init__()
