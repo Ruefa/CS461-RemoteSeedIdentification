@@ -49,6 +49,7 @@ public class LoginController extends AppCompatActivity {
         mEtPass = findViewById(R.id.edit_pass);
         mPBLogin = findViewById(R.id.pb_login);
 
+        // initialize broadcast receiver to get messages from socket
         bSocketManager = LocalBroadcastManager.getInstance(this);
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(BROADCAST_ACTION);
@@ -63,6 +64,7 @@ public class LoginController extends AppCompatActivity {
         mTVError = findViewById(R.id.tv_login_error);
     }
 
+    // performs login functionality
     public void doLogin(View v){
         final String message;
 
@@ -89,9 +91,9 @@ public class LoginController extends AppCompatActivity {
         }
     }
 
+    // changes to main activity
     private void goMain(){
         Intent intent = new Intent(this, MainActivity.class);
-
         startActivity(intent);
     }
 
@@ -114,6 +116,7 @@ public class LoginController extends AppCompatActivity {
         }
     };
 
+    // handles call back from socket
     public final static String BROADCAST_ACTION = "login_receive";
     public final static String BROADCAST_ACTION_FORGOT = "forgot_receive";
     private LocalBroadcastManager bSocketManager;
@@ -123,17 +126,21 @@ public class LoginController extends AppCompatActivity {
             mPBLogin.setVisibility(View.INVISIBLE);
             String response = intent.getStringExtra(SocketService.BROADCAST_KEY);
             switch(response){
+                // login successful
                 case ServerUtils.LOGIN_ACCEPT:
                     goMain();
                     break;
+                // server connection failed
                 case SocketService.BROADCAST_FAILURE:
                     mTVError.setText(getText(R.string.login_error_server_connection));
                     mTVError.setVisibility(View.VISIBLE);
                     break;
+                // forgot password success
                 case ServerUtils.FORGOT_ACCEPT:
                     hideForgot();
                     showLogin();
                     forgotPWAlertDialog();
+                // unknown error
                 default:
                     mTVError.setText(getString(R.string.login_error_unknown));
                     mTVError.setVisibility(View.VISIBLE);
@@ -141,53 +148,64 @@ public class LoginController extends AppCompatActivity {
         }
     };
 
+    // change activity to register activity
     public void doRegister(View v){
         Intent intent = new Intent(this, RegisterController.class);
         startActivity(intent);
     }
 
+    // for testing only
     public void skipLogin(View v){
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 
+    // hides login specific components
     private void hideLogin(){
         mEtPass.setVisibility(View.INVISIBLE);
         findViewById(R.id.button_login).setVisibility(View.INVISIBLE);
         findViewById(R.id.button_forgot_pw).setVisibility(View.INVISIBLE);
     }
 
+    // shows login specific components
     private void showLogin(){
         mEtPass.setVisibility(View.VISIBLE);
         findViewById(R.id.button_login).setVisibility(View.VISIBLE);
         findViewById(R.id.button_forgot_pw).setVisibility(View.VISIBLE);
     }
 
+    // hides forgot pw specific components
     private void hideForgot(){
         findViewById(R.id.bt_login_reset).setVisibility(View.INVISIBLE);
         findViewById(R.id.bt_login_back).setVisibility(View.INVISIBLE);
     }
 
+    // show forgot pw specific components
     private void showForgot(){
         findViewById(R.id.bt_login_reset).setVisibility(View.VISIBLE);
         findViewById(R.id.bt_login_back).setVisibility(View.VISIBLE);
     }
 
+    // begin forgot password procedure
     public void forgotPassword(View v){
         hideLogin();
         showForgot();
     }
 
+    // perform password reset
     public void resetPassword(View v){
         String input = mEtUser.getText().toString();
 
         mTVError.setVisibility(View.INVISIBLE);
 
+        // check user input
         if(!input.isEmpty()) {
             mPBLogin.setVisibility(View.VISIBLE);
 
+            // get forgot pw message format
             String message = ServerUtils.forgotPWFormat(input);
 
+            // send message to server
             Intent intent = new Intent(this, SocketService.class);
             Bundle bundle = new Bundle();
             bundle.putString(SocketService.SEND_MESSAGE_KEY, message);
@@ -195,17 +213,20 @@ public class LoginController extends AppCompatActivity {
             intent.putExtras(bundle);
             startService(intent);
         } else {
+            // display error message
             mTVError.setVisibility(View.VISIBLE);
             mTVError.setText(getString(R.string.login_error_forgot_empty));
         }
     }
 
+    // return to regular login view
     public void backToLogin(View v){
-        mTVError.setVisibility(View.INVISIBLE);
+        mTVError.setVisibility(View.INVISIBLE); // hide incase it is visible
         hideForgot();
         showLogin();
     }
 
+    // Shows an alert dialog informing user to check their email for new password
     private void forgotPWAlertDialog(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
