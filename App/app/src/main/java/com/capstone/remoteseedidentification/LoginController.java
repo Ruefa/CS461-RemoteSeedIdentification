@@ -32,6 +32,7 @@ public class LoginController extends AppCompatActivity {
 
     private TextView mTVError;
     private EditText mEtUser, mEtPass;
+    private ProgressBar mPBLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +46,7 @@ public class LoginController extends AppCompatActivity {
         // get edit text components from layout
         mEtUser = findViewById(R.id.edit_username);
         mEtPass = findViewById(R.id.edit_pass);
+        mPBLogin = findViewById(R.id.pb_login);
 
         bSocketManager = LocalBroadcastManager.getInstance(this);
         IntentFilter intentFilter = new IntentFilter();
@@ -116,7 +118,7 @@ public class LoginController extends AppCompatActivity {
     private BroadcastReceiver mSocketReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            findViewById(R.id.pb_login).setVisibility(View.INVISIBLE);
+            mPBLogin.setVisibility(View.INVISIBLE);
             String response = intent.getStringExtra(SocketService.BROADCAST_KEY);
             switch(response){
                 case ServerUtils.LOGIN_ACCEPT:
@@ -171,10 +173,28 @@ public class LoginController extends AppCompatActivity {
     }
 
     public void resetPassword(View v){
+        String input = mEtUser.getText().toString();
 
+        mTVError.setVisibility(View.INVISIBLE);
+
+        if(!input.isEmpty()) {
+            mPBLogin.setVisibility(View.VISIBLE);
+
+            String message = ServerUtils.forgotPWFormat(input);
+
+            Intent intent = new Intent(this, SocketService.class);
+            Bundle bundle = new Bundle();
+            bundle.putString(SocketService.SEND_MESSAGE_KEY, message);
+            bundle.putString(SocketService.OUTBOUND_KEY, BROADCAST_ACTION);
+            intent.putExtras(bundle);
+        } else {
+            mTVError.setVisibility(View.VISIBLE);
+            mTVError.setText(getString(R.string.login_error_forgot_empty));
+        }
     }
 
     public void backToLogin(View v){
+        mTVError.setVisibility(View.INVISIBLE);
         hideForgot();
         showLogin();
     }
