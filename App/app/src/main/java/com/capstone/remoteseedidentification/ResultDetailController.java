@@ -286,6 +286,11 @@ public class ResultDetailController extends AppCompatActivity {
         mPieChart.setHoleRadius(mPieChart.getHoleRadius()-15);
         mPieChart.setTransparentCircleRadius(mPieChart.getTransparentCircleRadius()-15);
 
+        // set center text on pie chart
+        mPieChart.setDrawCenterText(true);
+        mPieChart.setCenterText(String.valueOf(seedCount) + "\nseeds");
+        mPieChart.setCenterTextSize(PC_TEXT_SIZE);
+
         // hide description
         Description description = new Description();
         description.setText("");
