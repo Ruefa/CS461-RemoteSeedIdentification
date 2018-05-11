@@ -45,6 +45,7 @@ public class ServerUtils {
     private static final byte REPORT_LIST_INDICATOR = 0x65;
     private static final byte REPORT_INDICATOR = 0x66;
     private static final byte LOGOUT_INDICATOR = 0x63;
+    private static final byte FORGOTPW_INDICATOR = 0x05;
 
     public static final String SEND_MESSAGE = "socket.service.intent.action.SEND_MESSAGE";
     public static final String LOGIN_ACCEPT = "01";
@@ -358,6 +359,10 @@ public class ServerUtils {
 
     public static String registerFormat(String username, String pass){
         return byteToISOString(REGISTER_INDICATOR) + username + ":" + pass;
+    }
+
+    public static String forgotPWFormat(String username){
+        return byteToISOString(FORGOTPW_INDICATOR) + username;
     }
 
     public static byte[] formatResultsList(byte[] userID){
