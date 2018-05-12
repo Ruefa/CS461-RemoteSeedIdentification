@@ -16,6 +16,12 @@
     <string name="button_deny">Cancel</string>
     <string name="button_snap">Take a picture!</string>
     <string name="main_dialog_send_image">Sending image...</string>
+    <string name="bt_main_account">Manage Account</string>
+    <string name="et_main_oldpw">Old password</string>
+    <string name="et_main_newpw">New password</string>
+    <string name="et_main_newpw_conf">Confirm new password</string>
+    <string name="bt_main_changepw">Change passsword</string>
+    <string name="bt_main_back">Cancel</string>
 
     <!-- Login activity -->
     <string name="login_hint_username">Email</string>
