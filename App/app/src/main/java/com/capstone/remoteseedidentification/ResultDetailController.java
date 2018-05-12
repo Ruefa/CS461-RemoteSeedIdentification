@@ -266,20 +266,12 @@ public class ResultDetailController extends AppCompatActivity {
                 colorsToDisplay.add(colors.get(i));
             }
         }
-        /*entries.add(new PieEntry(Float.valueOf(seedPercentage.get(2))*100, "Tall Fescue"));
-        entries.add(new PieEntry(Float.valueOf(seedPercentage.get(3))*100, "Wheat"));
-        entries.add(new PieEntry(Float.valueOf(seedPercentage.get(1))*100, "Flax"));
-        entries.add(new PieEntry(Float.valueOf(seedPercentage.get(0))*100, "Red Clover"));*/
 
         // create data set and add to pie chart
         // label hidden
         PieDataSet dataSet = new PieDataSet(entries, "");
         // colors appear in same order as entries
         dataSet.setColors(colorsToDisplay);
-        /*dataSet.setColors(getResources().getColor(R.color.blue),
-                getResources().getColor(R.color.light_orange),
-                getResources().getColor(R.color.gold),
-                getResources().getColor(R.color.light_red));*/
         dataSet.setValueTextSize(PC_TEXT_SIZE);
         // set format of values to percentages
         dataSet.setValueFormatter(new PercentFormatter());
