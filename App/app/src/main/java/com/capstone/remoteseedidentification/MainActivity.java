@@ -348,10 +348,15 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         @Override
         public void onReceive(Context context, Intent intent) {
             Toast toast;
+            TextView errorTV = findViewById(R.id.tv_main_error);
+
+            errorTV.setVisibility(View.INVISIBLE);
 
             Log.d(TAG, "main receiving");
 
-            mADSendImage.dismiss();
+            if(mADSendImage != null) {
+                mADSendImage.dismiss();
+            }
 
             String response = intent.getStringExtra(SocketService.BROADCAST_KEY);
             switch (response){
@@ -362,6 +367,20 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
                 case ServerUtils.FAILURE:
                     toast = Toast.makeText(getApplicationContext(), "Image failed to send", Toast.LENGTH_LONG);
                     toast.show();
+                    break;
+                case ServerUtils.CHANGE_ACCEPT:
+                    toast = Toast.makeText(getApplicationContext(), "Password changed successfully", Toast.LENGTH_LONG);
+                    toast.show();
+                    if(findViewById(R.id.bt_main_analyze).getVisibility() != View.VISIBLE) {
+                        switchChangePassword();
+                    }
+                    break;
+                case ServerUtils.BAD_CRED:
+                    errorTV.setText(R.string.tv_error_bad_creds);
+                    if(findViewById(R.id.bt_main_changepw).getVisibility() != View.VISIBLE){
+                        switchChangePassword();
+                    }
+                    errorTV.setVisibility(View.VISIBLE);
                     break;
                 default:
                     Log.d(TAG, "UNKNOWN return from server");
@@ -505,7 +524,30 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
     }
 
     public void doChangePW(View v){
+        TextView errorTV = findViewById(R.id.tv_main_error);
+        String oldPW = ((EditText)findViewById(R.id.et_main_oldpw)).getText().toString();
+        String newPW = ((EditText)findViewById(R.id.et_main_newpw)).getText().toString();
+        String newPWConf = ((EditText)findViewById(R.id.et_main_newpw_conf)).getText().toString();
 
+        errorTV.setVisibility(View.INVISIBLE);
+
+        if(oldPW.isEmpty() || newPW.isEmpty() || newPWConf.isEmpty()){
+            errorTV.setText(getText(R.string.tv_error_empty));
+            errorTV.setVisibility(View.VISIBLE);
+        } else if(!newPW.equals(newPWConf)) {
+            errorTV.setText(getText(R.string.tv_error_match));
+            errorTV.setVisibility(View.VISIBLE);
+        } else {
+            String message = ServerUtils.changePWFormat(oldPW, newPW);
+
+            // send message to server
+            Intent intent = new Intent(this, SocketService.class);
+            Bundle bundle = new Bundle();
+            bundle.putString(SocketService.SEND_MESSAGE_KEY, message);
+            bundle.putString(SocketService.OUTBOUND_KEY, BROADCAST_ACTION);
+            intent.putExtras(bundle);
+            startService(intent);
+        }
     }
 
     // overload to support onClick from button in layout
