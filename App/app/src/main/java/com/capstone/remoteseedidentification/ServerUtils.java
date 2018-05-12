@@ -57,12 +57,14 @@ public class ServerUtils {
     public static final String REGISTER_ACCEPT = "00";
     public static final String DUP_USER_STRING = "0A";
     public static final String BAD_CRED = "0C";
+    public static final String REPORT_NOT_FINISHED_STRING = "14";
 
     public static final byte SUCCESS = 0x00;
     public static final byte INVALID_MESSAGE = 0x32;
     public static final byte FAILURE_BYTES = 0x01;
     public static final byte DUP_USER = 0x0A;
     public static final byte INVALID_CRED = 0x0C;
+    public static final byte REPORT_NOT_READY  = 0x14;
 
     private PrintWriter mOutBuffer;
     private OutputStream mOutputStream;
@@ -235,6 +237,8 @@ public class ServerUtils {
         } else if(messageType.equals(ResultsController.ACTION_REQUEST_RESULT)){
             if(bytesRead[0] == INVALID_MESSAGE){
                 return FAILURE;
+            } else if(bytesRead[0] == REPORT_NOT_READY) {
+                return REPORT_NOT_FINISHED_STRING;
             } else {
                 //find location of delimiter
                 List<byte[]> byteList = new LinkedList<>();
