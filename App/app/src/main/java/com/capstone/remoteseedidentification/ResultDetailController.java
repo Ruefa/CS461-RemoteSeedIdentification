@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -40,6 +41,7 @@ import com.jjoe64.graphview.series.DataPoint;
 import org.w3c.dom.Document;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.net.URI;
@@ -142,10 +144,14 @@ public class ResultDetailController extends AppCompatActivity {
     }
 
     private void sharePDF(){
+        // get bitmap image of screen
         Bitmap screen = getScreenBitmap();
-        ((ImageView)findViewById(R.id.iv_result_detail)).setImageBitmap(screen);
-
-        Uri uri = bitmapToUri(screen);
+        // save bitmap to pdf and get path
+        String filePath = bitmapToPDF(screen);
+        // convert pdf file to uri
+        File pdfFile = new File(filePath);
+        Uri uri = FileProvider.getUriForFile(this, "com.example.android.fileprovider", pdfFile);
+        // share pdf using intent
         Intent share = new Intent();
         share.setAction(Intent.ACTION_SEND);
         share.setType("application/pdf");
@@ -165,6 +171,7 @@ public class ResultDetailController extends AppCompatActivity {
         return screen;
     }
 
+    // extracts bitmap from view
     private Bitmap getBitmapFromView(View view){
         Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(returnedBitmap);
@@ -180,32 +187,39 @@ public class ResultDetailController extends AppCompatActivity {
         return returnedBitmap;
     }
 
-    private Uri bitmapToUri(Bitmap bitmap){
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(this.getContentResolver(), bitmap,
-                PDF_PATH_TITLE, null);
-        return Uri.parse(path);
-    }
-
-    private void bitmapToPDF(Bitmap bitmap){
+    // converts bitmap to pdf
+    // returns string of pdf path
+    private String bitmapToPDF(Bitmap bitmap){
         com.itextpdf.text.Document document = new com.itextpdf.text.Document();
         String dirPath = android.os.Environment.getExternalStorageDirectory().toString();
-        try {
-            PdfWriter.getInstance(document, new FileOutputStream(dirPath + "/" + PDF_PATH_TITLE + ".pdf"));
-            document.open();
-            Image img = Image.getInstance(dirPath + "/" + PDF_PATH_TITLE + ".png");
-            //img = Image.getInstance(bitmap);
+        String pdfFileName = dirPath + "/" + PDF_PATH_TITLE + ".pdf";
+        String imageFileName = dirPath + "/" + PDF_PATH_TITLE + ".png";
 
+        try {
+            // open pdf file for writing
+            PdfWriter.getInstance(document, new FileOutputStream(pdfFileName));
+            document.open();
+            // save bitmap to png file. must convert Bitmap to Image this way
+            FileOutputStream outputStream = new FileOutputStream(imageFileName);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 30, outputStream);
+            outputStream.flush();
+            outputStream.close();
+            // open saved bitmap as Image object
+            Image img = Image.getInstance(imageFileName);
+
+            // properly scale image
             float scalar = ((document.getPageSize().getWidth() - document.leftMargin()
             - document.rightMargin() - 0) / img.getWidth()) * 100;
             img.scalePercent(scalar);
             img.setAlignment(Image.ALIGN_CENTER | Image.ALIGN_TOP);
+
             document.add(img);
             document.close();
         } catch (Exception e){
             e.printStackTrace();
         }
+
+        return pdfFileName;
     }
 
     // deprecated. now using pie chart
