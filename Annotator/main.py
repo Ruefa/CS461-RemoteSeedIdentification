@@ -1,3 +1,15 @@
+# ************************************************************************************************#
+#                                                                                                 #
+#   File: main.py                                                                                 #
+#   Author: Ethan Takla                                                                           #
+#   Last modified: 5/10/2018                                                                      #
+#   Description: This is a seed annotation tool used to build and annotate seed data sets.        #
+#                The tool supports loading and saving annotations, as well as manual and          #
+#                automated annotations. It can also partition large sample images into smaller    #
+#                slices, and generate data sets in the VOC 2007 format for deep learning.         #
+#                                                                                                 #
+#                                                                                                 #
+# ************************************************************************************************#
 
 import tkinter as tk
 from tkinter import Tk, Text, BOTH, W, N, E, S, filedialog
@@ -12,11 +24,11 @@ from datetime import datetime
 import math
 import ntpath
 import sys
-import numpy as np
 
 # Add the classifier to the include files
 sys.path.append("../Classifier/")
 
+import numpy as np
 import torch
 from ssd import build_ssd
 import torch.nn as nn
@@ -56,7 +68,7 @@ class MainWindow(Frame):
     dataset_filenames = []
 
     # Index of the sample currently being annotated
-    current_sample = 5000
+    current_sample = 0
 
     def __init__(self):
         super().__init__()

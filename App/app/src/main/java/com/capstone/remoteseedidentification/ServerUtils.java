@@ -45,15 +45,22 @@ public class ServerUtils {
     private static final byte REPORT_LIST_INDICATOR = 0x65;
     private static final byte REPORT_INDICATOR = 0x66;
     private static final byte LOGOUT_INDICATOR = 0x63;
+    private static final byte FORGOTPW_INDICATOR = 0x05;
 
     public static final String SEND_MESSAGE = "socket.service.intent.action.SEND_MESSAGE";
+    public static final String SUCCESS_STRING = "00";
     public static final String LOGIN_ACCEPT = "01";
+    public static final String FORGOT_ACCEPT = "10";
     public static final String FAILURE = "02";
     public static final String REGISTER_ACCEPT = "00";
+    public static final String DUP_USER_STRING = "0A";
+    public static final String BAD_CRED = "0C";
 
     public static final byte SUCCESS = 0x00;
     public static final byte INVALID_MESSAGE = 0x32;
     public static final byte FAILURE_BYTES = 0x01;
+    public static final byte DUP_USER = 0x0A;
+    public static final byte INVALID_CRED = 0x0C;
 
     private PrintWriter mOutBuffer;
     private OutputStream mOutputStream;
@@ -101,27 +108,12 @@ public class ServerUtils {
                 //create BufferedReader from socket input stream
                 mInBuffer = new BufferedReader(new InputStreamReader(mSocket.getInputStream()));
                 mInputStream = mSocket.getInputStream();
-                //sendMessage(mInitMessage);
 
-                //loop endlessly waiting for input data
-                //stopSocket() sets mRun to false and ends the loop
-                /*while(mRun){
-                    Log.d(TAG, "waiting for input");
-                    incomingMessage = mInBuffer.readLine();
-                    if(incomingMessage != null && mMessageCallback != null){
-                        return; //temporarilly not using a socket server
-                    }
-                    incomingMessage = null;
-                }*/
             } catch (Exception e){
                 e.printStackTrace();
                 return false;
             //empty output buffers and close socket
-            } /*finally {
-                //mOutBuffer.flush();
-                //mOutBuffer.close();
-                //socket.close();
-            }*/
+            }
         } catch (Exception e){
             e.printStackTrace();
             return false;
@@ -146,7 +138,6 @@ public class ServerUtils {
             try {
                 mOutputStream.write(message);
                 mOutputStream.flush();
-                //mSocket.shutdownOutput();
             }
             catch (IOException e){
                 e.printStackTrace();
@@ -166,35 +157,13 @@ public class ServerUtils {
         ByteArrayOutputStream combiner = new ByteArrayOutputStream();
 
         try {
-            //wait for server
-//            while (available == 0){
-//                available = mInputStream.available();
-//            }
-//                incomingMessage = mInBuffer.readLine();
-//                if (incomingMessage != null) {
-//                    Log.d(TAG, incomingMessage);
-//                    return incomingMessage;
-//                }
-//                incomingMessage = null;
-//            mInputStream.available();
-//            byteRead = mInputStream.read();
-//            Log.d(TAG, String.valueOf(byteRead));
-//            if(byteRead != -1){
-//                byteArrayOutputStream.write(byteRead);
-
-//            bytesRead = new byte[available];
-//            numBytesRead = mInputStream.read(bytesRead);
-//
-//            byte[] test = new byte[50];
-//            numBytesRead = mInputStream.read(test);
-//            Log.d(TAG, Arrays.toString(bytesRead));
-
             // get number of bytes being sent across socket
             byte[] sizeBytes = new byte[4];
             mInputStream.read(sizeBytes);
             Log.d(TAG, "byte size: " + Arrays.toString(sizeBytes));
 
             int messageSize = ByteBuffer.wrap(sizeBytes).getInt();
+            // largest # of bytes to read from socket at a time
             int maxBlockSize = 16384; // 2^14
 
             do {
@@ -215,24 +184,47 @@ public class ServerUtils {
             e.printStackTrace();
         }
 
+        // login
         if(messageType.equals(LoginController.BROADCAST_ACTION)) {
             Log.d(TAG, String.valueOf(bytesRead[0]));
             if (bytesRead[0] == SUCCESS) {
                 cookie = bytesRead;
                 return LOGIN_ACCEPT;
+            } else if(bytesRead[0] == INVALID_CRED) {
+                return BAD_CRED;
             } else {
                 return FAILURE;
             }
+
+          // forgot password
+        } else if(messageType.equals(LoginController.BROADCAST_ACTION_FORGOT)) {
+            if(bytesRead[0] == SUCCESS) {
+                return FORGOT_ACCEPT;
+            } else{
+                return FAILURE;
+            }
+
+          // register
         } else if(messageType.equals(RegisterController.BROADCAST_ACTION)) {
             if (bytesRead[bytesRead.length-1] == SUCCESS) {
                 return REGISTER_ACCEPT;
+            } else if(bytesRead[bytesRead.length-1] == DUP_USER) {
+                return DUP_USER_STRING;
             } else {
                 return FAILURE;
             }
+          // main activity
+        } else if(messageType.equals(MainActivity.BROADCAST_ACTION)) {
+            if(bytesRead[0] == SUCCESS){
+                return SUCCESS_STRING;
+            } else{
+                return FAILURE;
+            }
+
         } else if(messageType.equals(ResultsController.ACTION_VIEW_RESULTS)) {
             return new String(bytesRead, Charset.forName("ASCII"));
-        } else if(messageType.equals(ResultsController.ACTION_REQUEST_RESULT)){
 
+        } else if(messageType.equals(ResultsController.ACTION_REQUEST_RESULT)){
             if(bytesRead[0] == INVALID_MESSAGE){
                 return FAILURE;
             } else {
@@ -358,6 +350,10 @@ public class ServerUtils {
 
     public static String registerFormat(String username, String pass){
         return byteToISOString(REGISTER_INDICATOR) + username + ":" + pass;
+    }
+
+    public static String forgotPWFormat(String username){
+        return byteToISOString(FORGOTPW_INDICATOR) + username;
     }
 
     public static byte[] formatResultsList(byte[] userID){

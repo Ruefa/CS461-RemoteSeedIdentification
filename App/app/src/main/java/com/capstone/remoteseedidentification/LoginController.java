@@ -15,6 +15,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +32,8 @@ public class LoginController extends AppCompatActivity {
     boolean mBound = false;
 
     private TextView mTVError;
+    private EditText mEtUser, mEtPass;
+    private ProgressBar mPBLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,9 +44,16 @@ public class LoginController extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, 0);
         }
 
+        // get edit text components from layout
+        mEtUser = findViewById(R.id.edit_username);
+        mEtPass = findViewById(R.id.edit_pass);
+        mPBLogin = findViewById(R.id.pb_login);
+
+        // initialize broadcast receiver to get messages from socket
         bSocketManager = LocalBroadcastManager.getInstance(this);
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(BROADCAST_ACTION);
+        intentFilter.addAction(BROADCAST_ACTION_FORGOT);
         bSocketManager.registerReceiver(mSocketReceiver, intentFilter);
 
         Intent intent = new Intent(this, SocketService.class);
@@ -54,22 +64,18 @@ public class LoginController extends AppCompatActivity {
         mTVError = findViewById(R.id.tv_login_error);
     }
 
+    // performs login functionality
     public void doLogin(View v){
-        EditText etUser, etPass;
         final String message;
-
-        // get edit text components from layout
-        etUser = findViewById(R.id.edit_username);
-        etPass = findViewById(R.id.edit_pass);
 
         mTVError.setVisibility(View.INVISIBLE);
 
         // user input validation
-        if(!etUser.getText().toString().equals("") && !etPass.getText().toString().equals("")) {
+        if(!mEtUser.getText().toString().equals("") && !mEtPass.getText().toString().equals("")) {
 
             findViewById(R.id.pb_login).setVisibility(View.VISIBLE);
 
-            message = ServerUtils.loginFormat(etUser.getText().toString(), etPass.getText().toString());
+            message = ServerUtils.loginFormat(mEtUser.getText().toString(), mEtPass.getText().toString());
 
             Log.d(TAG, "doLogin");
 
@@ -78,7 +84,6 @@ public class LoginController extends AppCompatActivity {
             bundle.putString(SocketService.SEND_MESSAGE_KEY, message);
             bundle.putString(SocketService.OUTBOUND_KEY, BROADCAST_ACTION);
             intent.putExtras(bundle);
-
             startService(intent);
         }else{
             mTVError.setText(R.string.login_error_empty);
@@ -86,9 +91,9 @@ public class LoginController extends AppCompatActivity {
         }
     }
 
+    // changes to main activity
     private void goMain(){
         Intent intent = new Intent(this, MainActivity.class);
-
         startActivity(intent);
     }
 
@@ -111,21 +116,39 @@ public class LoginController extends AppCompatActivity {
         }
     };
 
+    // handles call back from socket
     public final static String BROADCAST_ACTION = "login_receive";
+    public final static String BROADCAST_ACTION_FORGOT = "forgot_receive";
     private LocalBroadcastManager bSocketManager;
     private BroadcastReceiver mSocketReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            findViewById(R.id.pb_login).setVisibility(View.INVISIBLE);
+            mPBLogin.setVisibility(View.INVISIBLE);
+            mTVError.setVisibility(View.INVISIBLE);
+
             String response = intent.getStringExtra(SocketService.BROADCAST_KEY);
             switch(response){
+                // login successful
                 case ServerUtils.LOGIN_ACCEPT:
                     goMain();
                     break;
+                // server connection failed
                 case SocketService.BROADCAST_FAILURE:
                     mTVError.setText(getText(R.string.login_error_server_connection));
                     mTVError.setVisibility(View.VISIBLE);
                     break;
+                // forgot password success
+                case ServerUtils.FORGOT_ACCEPT:
+                    hideForgot();
+                    showLogin();
+                    forgotPWAlertDialog();
+                    break;
+                // bad user credentials
+                case ServerUtils.BAD_CRED:
+                    mTVError.setText(getString(R.string.login_error_invalid));
+                    mTVError.setVisibility(View.VISIBLE);
+                    break;
+                // unknown error
                 default:
                     mTVError.setText(getString(R.string.login_error_unknown));
                     mTVError.setVisibility(View.VISIBLE);
@@ -133,17 +156,91 @@ public class LoginController extends AppCompatActivity {
         }
     };
 
+    // change activity to register activity
     public void doRegister(View v){
         Intent intent = new Intent(this, RegisterController.class);
         startActivity(intent);
     }
 
+    // for testing only
     public void skipLogin(View v){
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 
+    // hides login specific components
+    private void hideLogin(){
+        mEtPass.setVisibility(View.INVISIBLE);
+        findViewById(R.id.button_login).setVisibility(View.INVISIBLE);
+        findViewById(R.id.button_forgot_pw).setVisibility(View.INVISIBLE);
+    }
+
+    // shows login specific components
+    private void showLogin(){
+        mEtPass.setVisibility(View.VISIBLE);
+        findViewById(R.id.button_login).setVisibility(View.VISIBLE);
+        findViewById(R.id.button_forgot_pw).setVisibility(View.VISIBLE);
+    }
+
+    // hides forgot pw specific components
+    private void hideForgot(){
+        findViewById(R.id.bt_login_reset).setVisibility(View.INVISIBLE);
+        findViewById(R.id.bt_login_back).setVisibility(View.INVISIBLE);
+    }
+
+    // show forgot pw specific components
+    private void showForgot(){
+        findViewById(R.id.bt_login_reset).setVisibility(View.VISIBLE);
+        findViewById(R.id.bt_login_back).setVisibility(View.VISIBLE);
+    }
+
+    // begin forgot password procedure
     public void forgotPassword(View v){
-        // todo
+        hideLogin();
+        showForgot();
+    }
+
+    // perform password reset
+    public void resetPassword(View v){
+        String input = mEtUser.getText().toString();
+
+        mTVError.setVisibility(View.INVISIBLE);
+
+        // check user input
+        if(!input.isEmpty()) {
+            mPBLogin.setVisibility(View.VISIBLE);
+
+            // get forgot pw message format
+            String message = ServerUtils.forgotPWFormat(input);
+
+            // send message to server
+            Intent intent = new Intent(this, SocketService.class);
+            Bundle bundle = new Bundle();
+            bundle.putString(SocketService.SEND_MESSAGE_KEY, message);
+            bundle.putString(SocketService.OUTBOUND_KEY, BROADCAST_ACTION_FORGOT);
+            intent.putExtras(bundle);
+            startService(intent);
+        } else {
+            // display error message
+            mTVError.setVisibility(View.VISIBLE);
+            mTVError.setText(getString(R.string.login_error_forgot_empty));
+        }
+    }
+
+    // return to regular login view
+    public void backToLogin(View v){
+        mTVError.setVisibility(View.INVISIBLE); // hide incase it is visible
+        hideForgot();
+        showLogin();
+    }
+
+    // Shows an alert dialog informing user to check their email for new password
+    private void forgotPWAlertDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setNeutralButton("OK", null);
+        builder.setMessage(R.string.login_dialog_password_reset_email);
+
+        builder.show();
     }
 }

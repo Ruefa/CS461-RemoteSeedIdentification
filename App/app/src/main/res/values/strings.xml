@@ -15,6 +15,7 @@
     <string name="button_accept">Send Image</string>
     <string name="button_deny">Cancel</string>
     <string name="button_snap">Take a picture!</string>
+    <string name="main_dialog_send_image">Sending image...</string>
 
     <!-- Login activity -->
     <string name="login_hint_username">Email</string>
@@ -25,6 +26,11 @@
     <string name="login_error_server_connection">Error connecting with server</string>
     <string name="login_error_unknown">An unknown error occurred</string>
     <string name="login_forgot_password_button">Forgot Password?</string>
+    <string name="login_bt_pass_reset">Reset Password</string>
+    <string name="login_bt_back">Back to login</string>
+    <string name="login_error_forgot_empty">Please enter your email</string>
+    <string name="login_dialog_password_reset_email">Your new password has been sent to your email.</string>
+    <string name="login_error_invalid">Invalid username or password</string>
 
     <!-- Register activity -->
     <string name="register_hint_username">Email</string>
@@ -33,6 +39,7 @@
     <string name="register_error_mismatch">Passwords do not match</string>
     <string name="register_button_register">Register</string>
     <string name="register_return_login">Already have an account? Click here to login.</string>
+    <string name="register_dup_user">An account with that username already exists.</string>
 
     <!-- Analyze Dialog -->
     <string name="analyze_dialog_live">Live Image</string>
@@ -40,6 +47,7 @@
 
     <!-- Results Activity -->
     <string name="results_actionbar_title">Results</string>
+    <string name="loading_results">Loading your results.</string>
 
     <!-- Result Detail Activity -->
     <string name="result_detail_actionbar_title">Result Detail</string>

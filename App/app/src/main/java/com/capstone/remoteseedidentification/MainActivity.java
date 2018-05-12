@@ -23,9 +23,9 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerView;
     private ActionBarDrawerToggle mDrawerToggle;
+    private AlertDialog mADSendImage;
 
     //testing image capture
     private ImageButton mCaptureButton;
@@ -114,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         }
     }
 
+    // asks user for permissions needed in the app
     private void checkPermissions(){
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -138,22 +140,6 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
             //FrameLayout frameLayout = findViewById(R.id.cam_view);
             //frameLayout.addView(mCameraView);
     }
-
-    /* no longer used
-    //sets up navigation drawer
-    private void initNavigation(){
-        mNavData = new ArrayList<>();
-        mNavData.add(getResources().getString(R.string.nav_gallery));
-        mNavData.add(getResources().getString(R.string.nav_results));
-
-        mNavRV = findViewById(R.id.nav_drawer_rv);
-        mNavAdapter = new NavDrawerRVAdapter(this, this);
-        mNavRV.setAdapter(mNavAdapter);
-        mNavRV.setLayoutManager(new LinearLayoutManager(this));
-        mNavRV.setHasFixedSize(true);
-        mNavAdapter.updateItems(mNavData);
-    }
-    */
 
     @Override
     public void onNavDrawerItemClick(String item) {
@@ -188,18 +174,6 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
                 goLogin();
             }
         }
-    }
-
-    //makes dummy strings for testing
-    private String[] dummyData(int numData){
-
-        String[] data = new String[numData];
-
-        for(int i=0; i<data.length; i++){
-            data[i] = String.valueOf(i+1);
-        }
-
-        return data;
     }
 
     public void goLogin(){
@@ -328,13 +302,9 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
     }
 
     public void doImageConf(View v){
-        Toast toast;
-
         switch(v.getId()){
             case R.id.button_conf_accept:
                 sendImage();
-                toast = Toast.makeText(getApplicationContext(), "Image Sent", Toast.LENGTH_LONG);
-                toast.show();
                 break;
 
             default:
@@ -358,6 +328,10 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
     private void sendImage(){
         Log.d(TAG, "starting send image");
         Log.d(TAG, String.valueOf(mByteImage.length));
+
+        // show dialog of sending progress
+        sendImageAlertDialog();
+
         Intent intent = new Intent(this, SocketService.class);
         Bundle bundle = new Bundle();
         bundle.putString(SocketService.SEND_IMAGE_KEY, mImagePath);
@@ -372,7 +346,25 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Toast toast;
+
             Log.d(TAG, "main receiving");
+
+            mADSendImage.dismiss();
+
+            String response = intent.getStringExtra(SocketService.BROADCAST_KEY);
+            switch (response){
+                case ServerUtils.SUCCESS_STRING:
+                    toast = Toast.makeText(getApplicationContext(), "Image Sent", Toast.LENGTH_LONG);
+                    toast.show();
+                    break;
+                case ServerUtils.FAILURE:
+                    toast = Toast.makeText(getApplicationContext(), "Image failed to send", Toast.LENGTH_LONG);
+                    toast.show();
+                    break;
+                default:
+                    Log.d(TAG, "UNKNOWN return from server");
+            }
         }
     };
 
@@ -450,6 +442,17 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         });
 
         builder.show();
+    }
+
+    private void sendImageAlertDialog() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AnalyzeDialogStyle);
+
+        LayoutInflater inflater = this.getLayoutInflater();
+
+        builder.setView(inflater.inflate(R.layout.dialog_send_image, null));
+
+        mADSendImage = builder.create();
+        mADSendImage.show();
     }
 
     // overload to support onClick from button in layout
