@@ -1,8 +1,6 @@
-# CS461 - Remote Seed Analytics
+# Oregon State Senior Capstone Project - Remote Seed Analytics
 
 The Remote Seed Analytics project brings deep learning to the grass seed industry using an NVIDIA Jetson TX2 and an Android phone. Once the Android application is downloaded, clients can take pictures of seed samples using their smartphone camera (12 megapixels) and a 3D-printed 4" x 3" tray. A remote Jetson processor uses state-of-the-art deep learning methods to analyze the sample and send back a report. Once analysis is completed, clients can view metrics such as species composition and seed count of their sample and save the results to a remote database for later retrieval. 
-
-Also included in this repository is a custom seed annotation tool, which was used to build a database of over 15,000 seeds to train the neural network. 
 
 ## Features
 
@@ -45,7 +43,7 @@ This project can be split up into three main categories: the Android application
 
 ## License
 
-Copyright (c) 2018
+Copyright (c) 2018 Alexander Ruef, Ethan Takla, Quanah Green, Daniel Curry. All rights reserved.
 
 ## Acknowledgments
 
