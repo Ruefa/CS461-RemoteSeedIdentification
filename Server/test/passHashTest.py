@@ -10,6 +10,7 @@ def _test(p):
     assert len(h) == 80 # 16 byte salt + 64 byte hash
     assert checkPassword(p, h)
     assert not checkPassword(b'Not It', h)
+    print('Pass\n')
 
 
 # Tests for passHash
@@ -19,19 +20,19 @@ def test_passhash():
     #------------#
 
     # Normal password
+    print('Testing normal password...')
     _test(b'Password123&$#') 
-    print('Normal password test passed')
 
     # Empty password
+    print('Testing empty password...')
     _test(b'')
-    print('Empty password test passed')
 
     # Very short(tm) password
+    print('Testing short password...')
     _test(b'a')
-    print('Short password test passed')
 
     # Stupidly long canadian password
+    print('Testing long password...')
     _test(b' eh '.join(b'word' for _ in range(1000)))
-    print('Long password test passed')
 
 test_passhash()
