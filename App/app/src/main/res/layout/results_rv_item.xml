@@ -10,7 +10,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent=".6"/>
+        app:layout_constraintGuide_percent=".8"/>
 
     <TextView
         android:id="@+id/tv_results_rv_item"

@@ -33,6 +33,7 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
 
     private static final String ERROR_REPORT = "ERROR: Unable to receive report from server.";
     private static final String ERROR_UNKNOWN = "ERROR: Unable to connect to server.";
+    private static final String ERROR_UNFINISHED = "Report is still being analyzed.";
 
     private ResultsListRVAdapter mResultsRVAdapter;
     private ProgressBar mpbResultsRV;
@@ -93,7 +94,7 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
         }
         testList = new ArrayList<>();
         testList.add(getString(R.string.loading_results));
-        mResultsRVAdapter.updateItems(testList, testBitmaps());
+        mResultsRVAdapter.updateItems(testList, testList, testBitmaps());
     }
 
     public final static String BROADCAST_ACTION = "results";
@@ -118,23 +119,38 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
                         resultList.remove(0);
                         Log.d(TAG, "resultList size: " + resultList.size());
                         Log.d(TAG, "result: " + resultList.get(0));
+
+                        // parse result titles from ids
+                        ArrayList<String> idList = new ArrayList<>();
+                        ArrayList<String> nameList = new ArrayList<>();
+                        for(String result : resultList){
+                            String[] split = result.split("@");
+                            if(split.length == 2){
+                                idList.add(split[0]);
+                                Log.d(TAG, split[0]);
+                                nameList.add(split[1]);
+                            }
+                        }
+
                         if (resultList.size() > 0 && !resultList.get(0).equals("")) {
-                            mResultsRVAdapter.updateItems(resultList, testBitmaps());
+                            mResultsRVAdapter.updateItems(nameList, idList, testBitmaps());
                         } else {
                             ArrayList<String> emptyList = new ArrayList<>();
                             emptyList.add("No results to display");
-                            mResultsRVAdapter.updateItems(emptyList, testBitmaps());
+                            mResultsRVAdapter.updateItems(emptyList, emptyList, testBitmaps());
                         }
                     }
                 } else if (intent.getStringExtra(SocketService.ACTION_KEY).equals(ACTION_REQUEST_RESULT)) {
                     Log.d(TAG, "result request received");
                     String results = intent.getStringExtra(SocketService.BROADCAST_KEY);
-                    if(results != ServerUtils.FAILURE) {
+                    if(results.equals(ServerUtils.FAILURE)) {
+                        errorToast(ERROR_REPORT);
+                    } else if(results.equals(ServerUtils.REPORT_NOT_FINISHED_STRING)) {
+                        errorToast(ERROR_UNFINISHED);
+                    } else {
                         Intent resultDetailIntent = new Intent(context, ResultDetailController.class);
                         resultDetailIntent.putExtra(SocketService.BROADCAST_KEY, results);
                         startActivity(resultDetailIntent);
-                    } else{
-                        errorToast(ERROR_REPORT);
                     }
                 }
             } else {

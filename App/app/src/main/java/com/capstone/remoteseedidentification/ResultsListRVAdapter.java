@@ -17,6 +17,7 @@ import java.util.ArrayList;
 public class ResultsListRVAdapter extends RecyclerView.Adapter<ResultsListRVAdapter.ViewHolder> {
 
     private ArrayList<String> mResultsList;
+    private ArrayList<String> mIdsList;
     private ArrayList<Bitmap> mThumbList;
     private OnResultsClickListener mClickListener;
 
@@ -40,12 +41,12 @@ public class ResultsListRVAdapter extends RecyclerView.Adapter<ResultsListRVAdap
 
         public void bind(String item, Bitmap bitmap){
             mTextView.setText(item);
-            mImageView.setImageBitmap(bitmap);
+            //mImageView.setImageBitmap(bitmap);
         }
 
         @Override
         public void onClick(View v) {
-            String item = mResultsList.get(getAdapterPosition());
+            String item = mIdsList.get(getAdapterPosition());
             mClickListener.onResultsClick(item);
         }
     }
@@ -66,8 +67,9 @@ public class ResultsListRVAdapter extends RecyclerView.Adapter<ResultsListRVAdap
         holder.bind(mResultsList.get(position), mThumbList.get(position));
     }
 
-    public void updateItems(ArrayList<String> items, ArrayList<Bitmap> bitmaps){
+    public void updateItems(ArrayList<String> items, ArrayList<String> ids, ArrayList<Bitmap> bitmaps){
         mResultsList = items;
+        mIdsList = ids;
         mThumbList = bitmaps;
         notifyDataSetChanged();
     }
