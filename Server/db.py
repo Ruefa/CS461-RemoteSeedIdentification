@@ -29,7 +29,7 @@ class Report(db.Entity):
 
 def dbInit(dbDirectory = dbDirectory):
     global db
-    db.bind(provider='sqlite', filename=str(':memory:'), create_db=True)
+    db.bind(provider='sqlite', filename=str(dbDirectory / 'RemoteSeedDB.sqlite'), create_db=True)
     db.generate_mapping(create_tables=True)
 
 @db_session

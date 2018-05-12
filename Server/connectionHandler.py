@@ -195,7 +195,7 @@ def deleteAllReports(_):
             return (error.Success,)
     except:
         return (error.DBError,)
-    return bytes([0])
+    return error.Failure
 
 def deleteAccount(_):
     user = threadData.currentUser
