@@ -33,6 +33,7 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
 
     private static final String ERROR_REPORT = "ERROR: Unable to receive report from server.";
     private static final String ERROR_UNKNOWN = "ERROR: Unable to connect to server.";
+    private static final String ERROR_UNFINISHED = "Report is still being analyzed.";
 
     private ResultsListRVAdapter mResultsRVAdapter;
     private ProgressBar mpbResultsRV;
@@ -142,12 +143,14 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
                 } else if (intent.getStringExtra(SocketService.ACTION_KEY).equals(ACTION_REQUEST_RESULT)) {
                     Log.d(TAG, "result request received");
                     String results = intent.getStringExtra(SocketService.BROADCAST_KEY);
-                    if(results != ServerUtils.FAILURE) {
+                    if(results.equals(ServerUtils.FAILURE)) {
+                        errorToast(ERROR_REPORT);
+                    } else if(results.equals(ServerUtils.REPORT_NOT_FINISHED_STRING)) {
+                        errorToast(ERROR_UNFINISHED);
+                    } else {
                         Intent resultDetailIntent = new Intent(context, ResultDetailController.class);
                         resultDetailIntent.putExtra(SocketService.BROADCAST_KEY, results);
                         startActivity(resultDetailIntent);
-                    } else{
-                        errorToast(ERROR_REPORT);
                     }
                 }
             } else {
