@@ -297,6 +297,7 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         deny.setVisibility(View.VISIBLE);
         findViewById(R.id.bt_main_analyze).setVisibility(View.INVISIBLE);
         findViewById(R.id.bt_main_results).setVisibility(View.INVISIBLE);
+        findViewById(R.id.bt_main_account).setVisibility(View.INVISIBLE);
         findViewById(R.id.bt_main_logout).setVisibility(View.INVISIBLE);
         //mCaptureButton.setVisibility(View.INVISIBLE);
         mThumbView.setVisibility(View.VISIBLE);
@@ -320,6 +321,7 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         //mCaptureButton.setVisibility(View.VISIBLE);
         findViewById(R.id.bt_main_analyze).setVisibility(View.VISIBLE);
         findViewById(R.id.bt_main_results).setVisibility(View.VISIBLE);
+        findViewById(R.id.bt_main_account).setVisibility(View.VISIBLE);
         findViewById(R.id.bt_main_logout).setVisibility(View.VISIBLE);
         mThumbView.setVisibility(View.INVISIBLE);
         findViewById(R.id.button_conf_accept).setVisibility(View.GONE);
