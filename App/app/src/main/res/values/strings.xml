@@ -22,6 +22,9 @@
     <string name="et_main_newpw_conf">Confirm new password</string>
     <string name="bt_main_changepw">Change passsword</string>
     <string name="bt_main_back">Cancel</string>
+    <string name="tv_error_empty">You must fill out every field</string>
+    <string name="tv_error_match">Your new password does not match</string>
+    <string name="tv_error_bad_creds">Your old password does is incorrect</string>
 
     <!-- Login activity -->
     <string name="login_hint_username">Email</string>
