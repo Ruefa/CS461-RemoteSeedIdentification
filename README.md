@@ -1,4 +1,4 @@
-# Oregon State Senior Capstone Project - Remote Seed Analytics
+# Oregon State Capstone Project - Remote Seed Analytics
 
 The Remote Seed Analytics project brings deep learning to the grass seed industry using an NVIDIA Jetson TX2 and an Android phone. Once the Android application is downloaded, clients can take pictures of seed samples using their smartphone camera (12 megapixels) and a 3D-printed 4" x 3" tray. A remote Jetson processor uses state-of-the-art deep learning methods to analyze the sample and send back a report. Once analysis is completed, clients can view metrics such as species composition and seed count of their sample and save the results to a remote database for later retrieval. 
 
@@ -19,7 +19,7 @@ This project can be split up into three main categories: the Android application
 * A VGG-16 base network is used in the Single-Shot Detector (SSD) to analyze the sample in small slices
 * A novel Interest Region Processing (IRP) method ensures processing time is proportional to the # of seeds in the sample
 * 99.6% precision and 98.1% recall was achieved on a test set of 2,500 seeds
-* Custom auto-annotation tool used to build large datasets. A dataset of over 15,000 seeds was created using this. 
+* Custom auto-annotation tool used to build large datasets. Using the tool, a dataset of over 15,000 seeds was created.
 * Can detect four species of seeds: Red clover, flax, wheat, and tall fescue grass
 * Can analyze thousands of seeds at one time
 
@@ -47,4 +47,4 @@ Copyright (c) 2018 Alexander Ruef, Ethan Takla, Quanah Green, Daniel Curry. All 
 
 ## Acknowledgments
 
-* Special thanks to Max deGroot and Ellis Brown for developing an [awesome python implementation](https://github.com/amdegroot/ssd.pytorch/blob/master/README.md) of the Single Shot Detector 
+* Special thanks to Max deGroot and Ellis Brown for developing an [awesome python implementation](https://github.com/amdegroot/ssd.pytorch/blob/master/) of the Single Shot Detector 
