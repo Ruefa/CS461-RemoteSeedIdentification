@@ -46,11 +46,13 @@ public class ServerUtils {
     private static final byte REPORT_INDICATOR = 0x66;
     private static final byte LOGOUT_INDICATOR = 0x63;
     private static final byte FORGOTPW_INDICATOR = 0x05;
+    private static final byte CHANGEPW_INDICATOR = 0x04;
 
     public static final String SEND_MESSAGE = "socket.service.intent.action.SEND_MESSAGE";
     public static final String SUCCESS_STRING = "00";
     public static final String LOGIN_ACCEPT = "01";
     public static final String FORGOT_ACCEPT = "10";
+    public static final String CHANGE_ACCEPT = "10";
     public static final String FAILURE = "02";
     public static final String REGISTER_ACCEPT = "00";
     public static final String DUP_USER_STRING = "0A";
@@ -216,8 +218,14 @@ public class ServerUtils {
           // main activity
         } else if(messageType.equals(MainActivity.BROADCAST_ACTION)) {
             if(bytesRead[0] == SUCCESS){
-                return SUCCESS_STRING;
-            } else{
+                if(bytesRead.length > 1) {
+                    return SUCCESS_STRING;
+                } else {
+                    return CHANGE_ACCEPT;
+                }
+            } else if(bytesRead[0] == INVALID_CRED) {
+                return BAD_CRED;
+            } else {
                 return FAILURE;
             }
 
@@ -356,8 +364,11 @@ public class ServerUtils {
         return byteToISOString(FORGOTPW_INDICATOR) + username;
     }
 
+    public static String changePWFormat(String oldPW, String newPW){
+        return byteToISOString(CHANGEPW_INDICATOR) + oldPW + "|" + newPW;
+    }
+
     public static byte[] formatResultsList(byte[] userID){
-//        Log.d(TAG, new String(userID, Charset.forName("UTF-8")));
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {
             byteArrayOutputStream.write(REPORT_LIST_INDICATOR);
