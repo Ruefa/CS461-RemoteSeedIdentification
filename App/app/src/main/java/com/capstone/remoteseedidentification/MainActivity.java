@@ -30,6 +30,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -455,10 +456,68 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         mADSendImage.show();
     }
 
+    private void accountAlertDialog() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AnalyzeDialogStyle);
+
+        builder.setTitle("Choose");
+        builder.setItems(R.array.account_items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    // change password
+                    case 0:
+                        switchChangePassword();
+                        break;
+
+                    default:
+                        Log.d(TAG, "Unknown item clicked");
+                }
+            }
+        });
+
+        builder.show();
+    }
+
+    private void switchChangePassword(){
+        Button analyze = findViewById(R.id.bt_main_analyze);
+        Button results = findViewById(R.id.bt_main_results);
+        Button account = findViewById(R.id.bt_main_account);
+        Button logout = findViewById(R.id.bt_main_logout);
+        analyze.setVisibility(analyze.getVisibility() == View.VISIBLE ? View.INVISIBLE : View.VISIBLE);
+        results.setVisibility(results.getVisibility() == View.VISIBLE ? View.INVISIBLE : View.VISIBLE);
+        account.setVisibility(account.getVisibility() == View.VISIBLE ? View.INVISIBLE : View.VISIBLE);
+        logout.setVisibility(logout.getVisibility() == View.VISIBLE ? View.INVISIBLE : View.VISIBLE);
+
+        Button changepw = findViewById(R.id.bt_main_changepw);
+        Button cancel = findViewById(R.id.bt_main_cancel);
+        EditText oldpw = findViewById(R.id.et_main_oldpw);
+        EditText newpw = findViewById(R.id.et_main_newpw);
+        EditText newpwconf = findViewById(R.id.et_main_newpw_conf);
+        changepw.setVisibility(changepw.getVisibility() == View.VISIBLE ? View.INVISIBLE : View.VISIBLE);
+        cancel.setVisibility(cancel.getVisibility() == View.VISIBLE ? View.INVISIBLE : View.VISIBLE);
+        oldpw.setVisibility(oldpw.getVisibility() == View.VISIBLE ? View.INVISIBLE : View.VISIBLE);
+        newpw.setVisibility(newpw.getVisibility() == View.VISIBLE ? View.INVISIBLE : View.VISIBLE);
+        newpwconf.setVisibility(newpwconf.getVisibility() == View.VISIBLE ? View.INVISIBLE : View.VISIBLE);
+    }
+
+    public void switchChangePassword(View v) {
+        switchChangePassword();
+    }
+
+    public void doChangePW(View v){
+
+    }
+
     // overload to support onClick from button in layout
     public void anaylzeAlertDialog(View v){
         analyzeAlertDialog();
     }
+
+    // overload to support onClick from button in layout
+    public void accountAlertDialog(View v){
+        accountAlertDialog();
+    }
+
 
     private void startCameraIntent(){
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
