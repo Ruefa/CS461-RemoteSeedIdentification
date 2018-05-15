@@ -37,6 +37,9 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
 
     private ResultsListRVAdapter mResultsRVAdapter;
     private ProgressBar mpbResultsRV;
+    private String mClicked; // item recently clicked in recycler view
+
+    public static final String ACTION_BAR_TITLE = "AB_TITLE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,6 +143,7 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
                             mResultsRVAdapter.updateItems(emptyList, emptyList, testBitmaps());
                         }
                     }
+                    // result detail message
                 } else if (intent.getStringExtra(SocketService.ACTION_KEY).equals(ACTION_REQUEST_RESULT)) {
                     Log.d(TAG, "result request received");
                     String results = intent.getStringExtra(SocketService.BROADCAST_KEY);
@@ -150,6 +154,7 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
                     } else {
                         Intent resultDetailIntent = new Intent(context, ResultDetailController.class);
                         resultDetailIntent.putExtra(SocketService.BROADCAST_KEY, results);
+                        resultDetailIntent.putExtra(ACTION_BAR_TITLE, mClicked);
                         startActivity(resultDetailIntent);
                     }
                 }
@@ -163,11 +168,15 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
     public void onResultsClick(String item) {
         Log.d(TAG, "item clicked: " + item);
 
+        String[] split = item.split(",");
+
+        mClicked = split[1];
+
         mpbResultsRV.setVisibility(View.VISIBLE);
 
         Intent intent = new Intent(this, SocketService.class);
         Bundle bundle = new Bundle();
-        bundle.putString(SocketService.SEND_MESSAGE_KEY, item);
+        bundle.putString(SocketService.SEND_MESSAGE_KEY, split[0]);
         bundle.putString(SocketService.ACTION_KEY, ACTION_REQUEST_RESULT);
         bundle.putString(SocketService.OUTBOUND_KEY, BROADCAST_ACTION);
         intent.putExtras(bundle);
