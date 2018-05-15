@@ -130,6 +130,7 @@
         app:layout_constraintTop_toBottomOf="@id/edit_username"
         app:layout_constraintRight_toRightOf="@id/edit_username"/>
 
+    <!-- hiding get login button
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -138,5 +139,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
+    -->
 
 </android.support.constraint.ConstraintLayout>
