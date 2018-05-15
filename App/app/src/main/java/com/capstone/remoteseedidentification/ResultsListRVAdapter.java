@@ -47,6 +47,7 @@ public class ResultsListRVAdapter extends RecyclerView.Adapter<ResultsListRVAdap
         @Override
         public void onClick(View v) {
             String item = mIdsList.get(getAdapterPosition());
+            item += "," + mResultsList.get(getAdapterPosition());
             mClickListener.onResultsClick(item);
         }
     }
