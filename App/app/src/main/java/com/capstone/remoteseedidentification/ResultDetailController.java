@@ -82,9 +82,6 @@ public class ResultDetailController extends AppCompatActivity {
         ivResult = findViewById(R.id.iv_result_detail);
 
         initData();
-
-        // change to result date later
-        getSupportActionBar().setTitle("4/25/2018 15:00");
     }
 
     @Override
@@ -113,6 +110,9 @@ public class ResultDetailController extends AppCompatActivity {
         Log.d(TAG, Arrays.toString(resultArray));
 
         setImageDisplay(resultArray[resultArray.length-1]);
+
+        // set action bar title
+        getSupportActionBar().setTitle(getIntent().getStringExtra(ResultsController.ACTION_BAR_TITLE));
 
         List<String> labels = new LinkedList<>();
         List<String> seedPercentage = new LinkedList<>();
