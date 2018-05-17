@@ -47,4 +47,4 @@ Copyright (c) 2018 Alexander Ruef, Ethan Takla, Quanah Green, Daniel Curry. All 
 
 ## Acknowledgments
 
-* Special thanks to Max deGroot and Ellis Brown for developing an [awesome python implementation](https://github.com/amdegroot/ssd.pytorch/blob/master/) of the Single Shot Detector 
+* Special thanks to Max deGroot and Ellis Brown for developing an [awesome python implementation](https://github.com/amdegroot/ssd.pytorch/) of the Single Shot Detector 
