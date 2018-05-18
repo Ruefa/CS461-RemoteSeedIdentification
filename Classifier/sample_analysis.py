@@ -407,14 +407,14 @@ def save_predicitons(image, predictions):
     file.close()
 
 
-def run_analysis(img, directory, weights='ssd300_0712_13000.pth'):
+def run_analysis(imgPath, resultPath, weights='ssd300_0712_13000.pth'):
 
     # Load the weights
     net = build_ssd('test', 300, len(species_names)+1)  # initialize SSD
     net.load_weights(weights)
 
     # Load the image
-    sample = cv2.imread(directory + '/' + img, cv2.IMREAD_COLOR)
+    sample = cv2.imread(imgPath, cv2.IMREAD_COLOR)
 
     # Generate predictions
     predictions = analyze_sample(sample, net, [300, 300])
@@ -460,7 +460,7 @@ def run_analysis(img, directory, weights='ssd300_0712_13000.pth'):
         specie_counter += 1
 
     # Save the image
-    plt.savefig(directory + '/result.png', bbox_inches='tight', pad_inches=0, dpi=RESULT_DPI)
+    plt.savefig(resultPath, bbox_inches='tight', pad_inches=0, dpi=RESULT_DPI)
 
     total_seeds = 0
 
