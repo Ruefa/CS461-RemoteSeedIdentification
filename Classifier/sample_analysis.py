@@ -2,7 +2,7 @@
 #                                                                                                 #
 #   File: sample_analysis.py                                                                      #
 #   Author: Ethan Takla                                                                           #
-#   Last modified: 5/10/2018                                                                       #
+#   Last modified: 5/17/2018                                                                       #
 #   Description: This file contains all the tools to localize and predict the species of          #
 #                an arbitrary amount of seeds in an image. The large sample image is partitioned  #
 #                into many small slices, which are each individually analyzed by the classifier.  #
@@ -20,6 +20,27 @@
 #           statistics.dat  A text-based file containing the possible species and their           #
 #                           composition percentages                                               #
 #                                                                                                 #
+#   MIT License                                                                                   #
+#                                                                                                 #
+#   Copyright (c) 2018 Ethan Takla                                                                #
+#                                                                                                 #
+#   Permission is hereby granted, free of charge, to any person obtaining a copy                  #
+#   of this software and associated documentation files (the "Software"), to deal                 #
+#   in the Software without restriction, including without limitation the rights                  #
+#   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell                     #
+#   copies of the Software, and to permit persons to whom the Software is                         #
+#   furnished to do so, subject to the following conditions:                                      #
+#                                                                                                 #
+#   The above copyright notice and this permission notice shall be included in all                #
+#   copies or substantial portions of the Software.                                               #
+#                                                                                                 #
+#   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR                    #
+#   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,                      #
+#   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE                   #
+#   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER                        #
+#   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,                 #
+#   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE                 #
+#   SOFTWARE.                                                                                     #
 #                                                                                                 #
 # ************************************************************************************************#
 
@@ -57,13 +78,16 @@ OVERLAP_THRESHOLD = [0.75, 0.65, 0.6, 0.55, 0.6]
 EDGE_THRESHOLD = 0.003
 
 # Confidence required to consider a detection valid, different for each specie
-DETECTION_THRESHOLDS = [0.7, 0.7, 0.9, 0.9, 0.9]
+DETECTION_THRESHOLDS = [0.7, 0.75, 0.85, 0.85, 0.85]
 
 # DPI of the result image
 RESULT_DPI = 200
 
 # Slice overlap coefficient
 SLICE_OVERLAP = 3
+
+# Contrast applied during interest region processing
+DETECT_CONTRAST = 128
 
 # Colors to use for the bounding boxes
 COLORS = ["#000000", "#000000", "#067BC2", "#ECC30B", "#F37748", "#d56062"]
@@ -139,6 +163,16 @@ def partition_image(image, shape):
 
 
 def detect(img):
+
+    # Convert to a signed int so we can properly adjust the contrast
+    img = np.int16(img)
+
+    # Change contrast and ensure values are within 0-255
+    img = img * (DETECT_CONTRAST / 127 + 1) - DETECT_CONTRAST
+    img = np.clip(img, 0, 255)
+
+    # Convert back to image pixel type
+    img = np.uint8(img)
 
     # Blur to make segmenting easier
     img = cv2.medianBlur(img, 11)
@@ -392,14 +426,14 @@ def save_predicitons(image, predictions):
     file.close()
 
 
-def run_analysis(imgPath, resultPath, weights='ssd300_0712_11000.pth'):
+def run_analysis(img, directory, weights='ssd300_0712_4000.pth'):
 
     # Load the weights
     net = build_ssd('test', 300, len(species_names)+1)  # initialize SSD
     net.load_weights(weights)
 
     # Load the image
-    sample = cv2.imread(imgPath, cv2.IMREAD_COLOR)
+    sample = cv2.imread(directory + '/' + img, cv2.IMREAD_COLOR)
 
     # Generate predictions
     predictions = analyze_sample(sample, net, [300, 300])
@@ -445,7 +479,7 @@ def run_analysis(imgPath, resultPath, weights='ssd300_0712_11000.pth'):
         specie_counter += 1
 
     # Save the image
-    plt.savefig(resultPath, bbox_inches='tight', pad_inches=0, dpi=RESULT_DPI)
+    plt.savefig(directory + '/result.png', bbox_inches='tight', pad_inches=0, dpi=RESULT_DPI)
 
     total_seeds = 0
 

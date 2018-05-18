@@ -9,6 +9,12 @@ Annotator/TFDatasetVOC
 Annotator/WheatDatasetVOC
 Annotator/RCDatasetVOC
 Annotator/raw_images
+Annotator/FlaxS8DatasetVOC
+Annotator/MultiS8DatasetVOC
+Annotator/TFS8DatasetVOC
+Annotator/WheatS8DatasetVOC
+Annotator/RCS8DatasetVOC
+Annotator/Master
 Annotator/fix.py
 App/test_server/
 Data/

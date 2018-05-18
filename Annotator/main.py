@@ -693,16 +693,16 @@ class MainWindow(Frame):
     def partition_image(self, image, shape):
 
         # Step half the shape dimension to avoid losing seeds on the edges
-        partitions_x = math.floor(image.shape[0] / shape[0]) * 3
-        partitions_y = math.floor(image.shape[1] / shape[1]) * 3
+        partitions_x = math.floor(image.shape[0] / shape[0]) * 1
+        partitions_y = math.floor(image.shape[1] / shape[1]) * 1
 
         image_set = []
 
         for x in range(partitions_x):
             for y in range(partitions_y):
 
-                start_x = int(x * (shape[0] / 3))
-                start_y = int(y * (shape[1] / 3))
+                start_x = int(x * (shape[0] / 1))
+                start_y = int(y * (shape[1] / 1))
                 end_x = start_x + shape[0]
                 end_y = start_y + shape[1]
 
