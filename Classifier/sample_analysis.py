@@ -426,7 +426,7 @@ def save_predicitons(image, predictions):
     file.close()
 
 
-def run_analysis(img, directory, weights='ssd300_0712_4000.pth'):
+def run_analysis(img, directory, weights='ssd300_0712_13000.pth'):
 
     # Load the weights
     net = build_ssd('test', 300, len(species_names)+1)  # initialize SSD
