@@ -72,7 +72,7 @@ public class SocketService extends Service {
                         intent.putExtra(ACTION_KEY, message.getData().getString(ACTION_KEY));
                         try {
                             mServer.sendMessage(ServerUtils.formatResultRequest(
-                                    message.getData().getString(SEND_MESSAGE_KEY).getBytes("ASCII"), //change
+                                    message.getData().getString(SEND_MESSAGE_KEY).getBytes("ASCII"),
                                     mServer.getCookie()
                             ));
                         } catch (Exception e){

@@ -2,9 +2,11 @@ package com.capstone.remoteseedidentification;
 
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,15 +22,21 @@ public class ResultsListRVAdapter extends RecyclerView.Adapter<ResultsListRVAdap
     private ArrayList<String> mIdsList;
     private ArrayList<Bitmap> mThumbList;
     private OnResultsClickListener mClickListener;
+    private OnDeleteClickListener mDeleteListener;
 
     public interface OnResultsClickListener{
         void onResultsClick(String item);
+    }
+
+    public interface OnDeleteClickListener{
+        void onResultsDeleteClick(String item);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView mTextView;
         private ImageView mImageView;
+        private ImageButton mDeleteButton;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -37,6 +45,14 @@ public class ResultsListRVAdapter extends RecyclerView.Adapter<ResultsListRVAdap
 
             mImageView = itemView.findViewById(R.id.iv_results_thumbnail_view);
             mImageView.setOnClickListener(this);
+
+            mDeleteButton = itemView.findViewById(R.id.bt_results_delete);
+            mDeleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mDeleteListener.onResultsDeleteClick(mIdsList.get(getAdapterPosition()));
+                }
+            });
         }
 
         public void bind(String item, Bitmap bitmap){
@@ -52,8 +68,9 @@ public class ResultsListRVAdapter extends RecyclerView.Adapter<ResultsListRVAdap
         }
     }
 
-    public ResultsListRVAdapter(OnResultsClickListener clickListener){
+    public ResultsListRVAdapter(OnResultsClickListener clickListener, OnDeleteClickListener deleteListener){
         mClickListener = clickListener;
+        mDeleteListener = deleteListener;
     }
 
     @Override

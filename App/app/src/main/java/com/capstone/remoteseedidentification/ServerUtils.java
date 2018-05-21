@@ -47,6 +47,7 @@ public class ServerUtils {
     private static final byte LOGOUT_INDICATOR = 0x63;
     private static final byte FORGOTPW_INDICATOR = 0x05;
     private static final byte CHANGEPW_INDICATOR = 0x04;
+    private static final byte DELETE_RESULT_INDICATOR = 0x67;
 
     public static final String SEND_MESSAGE = "socket.service.intent.action.SEND_MESSAGE";
     public static final String SUCCESS_STRING = "00";
@@ -382,6 +383,10 @@ public class ServerUtils {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static String deleteResultFormat(String resultID){
+        return byteToISOString(DELETE_RESULT_INDICATOR) + resultID;
     }
 
     public static byte[] prepareImage(byte[] image, byte[] userID){

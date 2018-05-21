@@ -28,7 +28,8 @@ import com.jjoe64.graphview.series.DataPoint;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class ResultsController extends AppCompatActivity implements ResultsListRVAdapter.OnResultsClickListener {
+public class ResultsController extends AppCompatActivity
+        implements ResultsListRVAdapter.OnResultsClickListener, ResultsListRVAdapter.OnDeleteClickListener {
     private static final String TAG = "ResultsController";
 
     private static final String ERROR_REPORT = "ERROR: Unable to receive report from server.";
@@ -54,6 +55,14 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
         intentFilter.addAction(BROADCAST_ACTION);
         mBroadcastManager.registerReceiver(mBroadcastReceiver, intentFilter);
 
+        requestResultsList();
+
+        getSupportActionBar().setTitle(getString(R.string.results_actionbar_title));
+
+        initResultsList();
+    }
+
+    private void requestResultsList(){
         Intent listIntent = new Intent(this, SocketService.class);
         Bundle bundle = new Bundle();
         bundle.putString(SocketService.SEND_MESSAGE_KEY, "request list");
@@ -61,10 +70,6 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
         bundle.putString(SocketService.OUTBOUND_KEY, BROADCAST_ACTION);
         listIntent.putExtras(bundle);
         startService(listIntent);
-
-        getSupportActionBar().setTitle(getString(R.string.results_actionbar_title));
-
-        initResultsList();
     }
 
     private ArrayList<Bitmap> testBitmaps(){
@@ -82,7 +87,7 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
 
     private void initResultsList(){
         RecyclerView rvResults = findViewById(R.id.rv_results_list);
-        mResultsRVAdapter = new ResultsListRVAdapter(this);
+        mResultsRVAdapter = new ResultsListRVAdapter(this, this);
         rvResults.setAdapter(mResultsRVAdapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setReverseLayout(true);
@@ -159,7 +164,12 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
                     }
                 }
             } else {
-                errorToast(ERROR_UNKNOWN);
+                String results = intent.getStringExtra(SocketService.BROADCAST_KEY);
+                if (results.getBytes()[0] == ServerUtils.SUCCESS){
+                    requestResultsList();
+                } else {
+                    errorToast(ERROR_UNKNOWN);
+                }
             }
         }
     };
@@ -178,6 +188,20 @@ public class ResultsController extends AppCompatActivity implements ResultsListR
         Bundle bundle = new Bundle();
         bundle.putString(SocketService.SEND_MESSAGE_KEY, split[0]);
         bundle.putString(SocketService.ACTION_KEY, ACTION_REQUEST_RESULT);
+        bundle.putString(SocketService.OUTBOUND_KEY, BROADCAST_ACTION);
+        intent.putExtras(bundle);
+        startService(intent);
+    }
+
+    @Override
+    public void onResultsDeleteClick(String item) {
+        Log.d(TAG, item);
+
+        String message = ServerUtils.deleteResultFormat(item);
+
+        Intent intent = new Intent(this, SocketService.class);
+        Bundle bundle = new Bundle();
+        bundle.putString(SocketService.SEND_MESSAGE_KEY, message);
         bundle.putString(SocketService.OUTBOUND_KEY, BROADCAST_ACTION);
         intent.putExtras(bundle);
         startService(intent);
