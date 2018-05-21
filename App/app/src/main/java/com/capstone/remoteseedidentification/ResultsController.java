@@ -190,7 +190,11 @@ public class ResultsController extends AppCompatActivity
     public void onResultsDeleteClick(String item) {
         Log.d(TAG, item);
 
-        String message = ServerUtils.deleteResultFormat(item);
+        deleteAlertDialog(item);
+    }
+
+    private void sendDeleteMessage(String resultID){
+        String message = ServerUtils.deleteResultFormat(resultID);
 
         Intent intent = new Intent(this, SocketService.class);
         Bundle bundle = new Bundle();
