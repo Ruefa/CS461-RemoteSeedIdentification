@@ -208,4 +208,26 @@ public class ResultsController extends AppCompatActivity
     private void errorToast(String errorText){
         Toast.makeText(getApplicationContext(), errorText, Toast.LENGTH_LONG).show();
     }
+
+    private void deleteAlertDialog(final String item) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AnalyzeDialogStyle);
+
+        builder.setTitle("Are you sure you want to delete this report?");
+
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                sendDeleteMessage(item);
+            }
+        });
+
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.show();
+    }
 }
