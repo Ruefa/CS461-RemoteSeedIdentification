@@ -646,7 +646,8 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         mAccount.setVisibility(View.INVISIBLE);
         mLogout.setVisibility(View.INVISIBLE);
 
-        //show help buttons and dialog
+        //show help buttons and dialog and first button
+        mAnalyze.setVisibility(View.VISIBLE);
         mHelpDialog.setVisibility(View.VISIBLE);
         mNext.setVisibility(View.VISIBLE);
         mClose.setVisibility(View.VISIBLE);
