@@ -15,6 +15,8 @@ import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintSet;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
     private ListView mDrawerView;
     private ActionBarDrawerToggle mDrawerToggle;
     private AlertDialog mADSendImage;
+    private ConstraintLayout mRootLayout; // root view of activity
 
     //testing image capture
     private ImageButton mCaptureButton;
@@ -78,6 +81,18 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
 
     private String mCurrentImagePath;
 
+    //main buttons
+    private Button mAnalyze;
+    private Button mResults;
+    private Button mAccount;
+    private Button mLogout;
+
+    //help buttons
+    private Button mNext;
+    private Button mClose;
+    private TextView mHelpDialog;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,6 +106,21 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         checkPermissions();
 
         mThumbView = findViewById(R.id.thumb_view);
+
+        mAnalyze = findViewById(R.id.bt_main_analyze);
+        mResults = findViewById(R.id.bt_main_results);
+        mAccount = findViewById(R.id.bt_main_account);
+        mLogout = findViewById(R.id.bt_main_logout);
+
+        // help views
+        mNext = findViewById(R.id.bt_main_help_next);
+        mClose = findViewById(R.id.bt_main_help_close);
+        mHelpDialog = findViewById(R.id.tv_main_help_dialog);
+
+        // get root layout and constraints
+        mRootLayout = findViewById(R.id.cl_main);
+
+        startHelp();
     }
 
     private Camera getCameraInstance(){
@@ -590,5 +620,69 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
 
         mCurrentImagePath = image.getAbsolutePath();
         return image;
+    }
+
+    public void startHelp(){
+        Log.d(TAG, "startHelp");
+
+        // hide buttons
+        mResults.setVisibility(View.INVISIBLE);
+        mAccount.setVisibility(View.INVISIBLE);
+        mLogout.setVisibility(View.INVISIBLE);
+
+        //show help buttons and dialog
+        mHelpDialog.setVisibility(View.VISIBLE);
+        mNext.setVisibility(View.VISIBLE);
+        mClose.setVisibility(View.VISIBLE);
+
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone(mRootLayout);
+
+        constraintSet.connect(mHelpDialog.getId(), ConstraintSet.BOTTOM, mAnalyze.getId(), ConstraintSet.TOP);
+        constraintSet.applyTo(mRootLayout);
+    }
+
+    public void closeHelp(View v){
+        closeHelp();
+    }
+
+    private void closeHelp(){
+        mAnalyze.setVisibility(View.VISIBLE);
+        mResults.setVisibility(View.VISIBLE);
+        mAccount.setVisibility(View.VISIBLE);
+        mLogout.setVisibility(View.VISIBLE);
+
+        mHelpDialog.setVisibility(View.INVISIBLE);
+        mNext.setVisibility(View.INVISIBLE);
+        mClose.setVisibility(View.INVISIBLE);
+    }
+
+    public void nextHelp(View v){
+        ConstraintSet constraintSet = new ConstraintSet();
+
+        if(mAnalyze.getVisibility() == View.VISIBLE){
+            mAnalyze.setVisibility(View.INVISIBLE);
+            mResults.setVisibility(View.VISIBLE);
+
+            constraintSet.clone(mRootLayout);
+            constraintSet.connect(mHelpDialog.getId(), ConstraintSet.BOTTOM, mResults.getId(), ConstraintSet.TOP);
+            constraintSet.applyTo(mRootLayout);
+        } else if(mResults.getVisibility() == View.VISIBLE){
+            mResults.setVisibility(View.INVISIBLE);
+            mAccount.setVisibility(View.VISIBLE);
+
+            constraintSet.clone(mRootLayout);
+            constraintSet.connect(mHelpDialog.getId(), ConstraintSet.BOTTOM, mAccount.getId(), ConstraintSet.TOP);
+            constraintSet.applyTo(mRootLayout);
+        } else if(mAccount.getVisibility() == View.VISIBLE){
+            mAccount.setVisibility(View.INVISIBLE);
+            mLogout.setVisibility(View.VISIBLE);
+
+            constraintSet.clone(mRootLayout);
+            constraintSet.connect(mHelpDialog.getId(), ConstraintSet.BOTTOM, mLogout.getId(), ConstraintSet.TOP);
+            constraintSet.applyTo(mRootLayout);
+        } else {
+            closeHelp();
+        }
     }
 }
