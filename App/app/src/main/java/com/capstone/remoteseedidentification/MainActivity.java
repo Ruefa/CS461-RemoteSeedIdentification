@@ -652,6 +652,8 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         mNext.setVisibility(View.VISIBLE);
         mClose.setVisibility(View.VISIBLE);
 
+        mHelpDialog.setText(R.string.tv_main_help_analyze);
+
         ConstraintSet constraintSet = new ConstraintSet();
         constraintSet.clone(mRootLayout);
 
@@ -681,6 +683,8 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
             mAnalyze.setVisibility(View.INVISIBLE);
             mResults.setVisibility(View.VISIBLE);
 
+            mHelpDialog.setText(R.string.tv_main_help_results);
+
             constraintSet.clone(mRootLayout);
             constraintSet.connect(mHelpDialog.getId(), ConstraintSet.BOTTOM, mResults.getId(), ConstraintSet.TOP);
             constraintSet.applyTo(mRootLayout);
@@ -688,12 +692,16 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
             mResults.setVisibility(View.INVISIBLE);
             mAccount.setVisibility(View.VISIBLE);
 
+            mHelpDialog.setText(R.string.tv_main_help_account);
+
             constraintSet.clone(mRootLayout);
             constraintSet.connect(mHelpDialog.getId(), ConstraintSet.BOTTOM, mAccount.getId(), ConstraintSet.TOP);
             constraintSet.applyTo(mRootLayout);
         } else if(mAccount.getVisibility() == View.VISIBLE){
             mAccount.setVisibility(View.INVISIBLE);
             mLogout.setVisibility(View.VISIBLE);
+
+            mHelpDialog.setText(R.string.tv_main_help_logout);
 
             constraintSet.clone(mRootLayout);
             constraintSet.connect(mHelpDialog.getId(), ConstraintSet.BOTTOM, mLogout.getId(), ConstraintSet.TOP);
