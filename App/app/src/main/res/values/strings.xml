@@ -25,6 +25,9 @@
     <string name="tv_error_empty">You must fill out every field</string>
     <string name="tv_error_match">Your new password does not match</string>
     <string name="tv_error_bad_creds">Your old password does is incorrect</string>
+    <!-- help -->
+    <string name="bt_main_help_next">Next</string>
+    <string name="bt_main_help_close">Close</string>
 
     <!-- Login activity -->
     <string name="login_hint_username">Email</string>
