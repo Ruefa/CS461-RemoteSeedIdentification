@@ -28,6 +28,7 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -119,8 +120,23 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
 
         // get root layout and constraints
         mRootLayout = findViewById(R.id.cl_main);
+    }
 
-        startHelp();
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_help:
+                startHelp();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private Camera getCameraInstance(){
@@ -420,7 +436,7 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
         }
     };
 
-    @Override
+    /*@Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(mDrawerToggle.onOptionsItemSelected(item)){
             return true;
@@ -430,7 +446,7 @@ public class MainActivity extends AppCompatActivity implements NavDrawerRVAdapte
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
+    }*/
 
     public static String imageToFile(String fileName, byte[] data){
         File photo = new File(Environment.getExternalStorageDirectory(), fileName);
