@@ -29,6 +29,10 @@
     <string name="bt_main_help_next">Next</string>
     <string name="bt_main_help_close">Close</string>
     <string name="action_main_help">Help</string>
+    <string name="tv_main_help_analyze">Upload an image of seeds to be analyzed</string>
+    <string name="tv_main_help_results">Results from image analysis can be found here</string>
+    <string name="tv_main_help_account">Manage your account\nand change your password</string>
+    <string name="tv_main_help_logout">Logout of your account\nand return to the login screen</string>
 
     <!-- Login activity -->
     <string name="login_hint_username">Email</string>

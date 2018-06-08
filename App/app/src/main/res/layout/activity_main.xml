@@ -207,7 +207,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/shape_help_bubble"
-        android:text="test with longer text lol\ntest"
+        android:text="@string/tv_main_help_analyze"
         android:paddingStart="20dp"
         android:paddingEnd="5dp"
         android:paddingBottom="17dp"
